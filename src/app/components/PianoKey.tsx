@@ -7,7 +7,8 @@ type PianoKeyProps = {
 
 function PianoKey({ name, active }: PianoKeyProps) {
   const keyStyle = {
-    backgroundColor: active ? "yellow" : "white", // Apply your active style here
+    backgroundColor: active ? "#CE7B91" : "white",
+    color: active ? "white" : "var(--color-primary)",
   };
 
   return (
