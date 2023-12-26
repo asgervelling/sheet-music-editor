@@ -10,9 +10,10 @@ export default function Piano() {
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
 
   const onKeyDown = (event: KeyboardEvent) => {
+    // Add if not already in activeKeys
     noteNames.forEach((name) => {
-      if (event.key === KeyMap[name]) {
-        setActiveKeys(activeKeys.concat(KeyMap[name]));
+      if (event.key === KeyMap[name] && !activeKeys.includes(event.key)) {
+        setActiveKeys([...activeKeys, event.key]);
       }
     });    
   };
@@ -26,6 +27,7 @@ export default function Piano() {
   }
 
   useEffect(() => {
+    console.log(activeKeys);
     document.addEventListener("keydown", onKeyDown);
     document.addEventListener("keyup", onKeyUp);
 
