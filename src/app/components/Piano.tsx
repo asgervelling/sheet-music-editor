@@ -2,8 +2,10 @@
 import React, { useEffect, useState } from "react";
 import { Key } from "ts-key-enum";
 import PianoKey from "./PianoKey";
+import ComputerKey from "./ComputerKey";
 import History from "./History";
 import { Note, NoteNames, NoteLength, KeyMap } from "@/lib/music_theory";
+import NoteLengthControls from "./NoteLengthControls";
 
 export default function Piano() {
   const noteNames: NoteNames[] = Object.values(NoteNames);
@@ -60,6 +62,7 @@ export default function Piano() {
         ))}
       </div>
       <History notes={history} />
+      <NoteLengthControls />
     </div>
   );
 }
