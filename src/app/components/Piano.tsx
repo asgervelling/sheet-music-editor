@@ -2,20 +2,29 @@
 import React, { useEffect, useState } from "react";
 import { Key } from "ts-key-enum";
 import PianoKey from "./PianoKey";
+import History from "./History";
 import { Note, NoteNames, NoteLength, KeyMap } from "@/lib/music_theory";
 
 export default function Piano() {
   const noteNames: NoteNames[] = Object.values(NoteNames);
 
+  const [currentLength, setCurrentLength] = useState<NoteLength>(
+    NoteLength.Quarter
+  );
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
+  const [history, setHistory] = useState<Note[]>([]);
 
   const onKeyDown = (event: KeyboardEvent) => {
     // Add if not already in activeKeys
     noteNames.forEach((name) => {
       if (event.key === KeyMap[name] && !activeKeys.includes(event.key)) {
         setActiveKeys([...activeKeys, event.key]);
+        history.push({
+          name: name,
+          length: currentLength,
+        });
       }
-    });    
+    });
   };
 
   const onKeyUp = (event: KeyboardEvent) => {
@@ -24,7 +33,7 @@ export default function Piano() {
         setActiveKeys(activeKeys.filter((key) => key !== KeyMap[name]));
       }
     });
-  }
+  };
 
   useEffect(() => {
     console.log(activeKeys);
@@ -39,11 +48,18 @@ export default function Piano() {
   }, [activeKeys]);
 
   return (
-    <div className="flex flex-row">
-      {/* All 12 notes */}
-      {noteNames.map((name, i) => (
-        <PianoKey key={i} name={name} active={activeKeys.includes(KeyMap[name])} />
-      ))}
+    <div className="w-1/3">
+      <div className="flex flex-row w-full h-full">
+        {/* All 12 notes */}
+        {noteNames.map((name, i) => (
+          <PianoKey
+            key={i}
+            name={name}
+            active={activeKeys.includes(KeyMap[name])}
+          />
+        ))}
+      </div>
+      <History notes={history} />
     </div>
   );
 }
