@@ -1,8 +1,21 @@
-import { NoteNames } from "@/lib/music_theory"
+"use client";
 
-function PianoKey({ name }: { name: string }) {
+type PianoKeyProps = {
+  name: string;
+  active: boolean;
+};
+
+function PianoKey({ name, active }: PianoKeyProps) {
+  const keyStyle = {
+    backgroundColor: active ? "yellow" : "white", // Apply your active style here
+  };
+
   return (
-    <div className="w-10 h-40 bg-white border border-black rounded-md">
+    <div className="flex flex-col justify-end items-center
+      w-10 h-40 p-1
+      bg-white border border-black rounded-md"
+      style={keyStyle}
+    >
       <p>{name}</p>
     </div>
   )

@@ -1,15 +1,17 @@
+import { Key } from "ts-key-enum";
+
 export enum NoteNames {
   C = "C",
-  Db = "Db",
+  Db = "D♭",
   D = "D",
-  Eb = "Eb",
+  Eb = "E♭",
   E = "E",
   F = "F",
-  Gb = "Gb",
+  Gb = "G♭",
   G = "G",
-  Ab = "Ab",
+  Ab = "A♭",
   A = "A",
-  Bb = "Bb",
+  Bb = "B♭",
   B = "B",
 }
 
@@ -24,4 +26,20 @@ export enum NoteLength {
 export type Note = {
   name: NoteNames;
   length: NoteLength;
+};
+
+// Temporary
+export const KeyMap: Record<NoteNames, string> = {
+  [NoteNames.C]: 'a',
+  [NoteNames.Db]: 'w',
+  [NoteNames.D]: 's',
+  [NoteNames.Eb]: 'e',
+  [NoteNames.E]: 'd',
+  [NoteNames.F]: 'f',
+  [NoteNames.Gb]: 't',
+  [NoteNames.G]: 'g',
+  [NoteNames.Ab]: 'y',
+  [NoteNames.A]: 'h',
+  [NoteNames.Bb]: 'u',
+  [NoteNames.B]: 'j',
 };
