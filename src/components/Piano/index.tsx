@@ -66,7 +66,6 @@ export default function Piano() {
         ))}
       </div>
       <History notes={history} />
-      <NoteLengthControls />
     </div>
   );
 }
