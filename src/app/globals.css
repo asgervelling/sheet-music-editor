@@ -7,6 +7,10 @@
   --color-bg: #FFFACC;
 }
 
+svg {
+  display: block;
+}
+
 /* @media (prefers-color-scheme: dark) {
   :root {
     --color-primary: 255, 255, 255;
