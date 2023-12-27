@@ -36,7 +36,7 @@ export default function Piano() {
       <div className="flex flex-row w-full h-full">
         {noteNames.map((noteName, i) => {
           const active = state.pressedKeys[NoteToKey[noteName]] || false;
-          return <PianoKey key={i} noteName={NoteToKey[noteName]} active={active} />;
+          return <PianoKey key={i} noteName={noteName} active={active} />;
         })}
       </div>
     </div>

@@ -1,0 +1,26 @@
+.piano-key {
+  height: 200px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.white-key {
+  width: 50px;
+  background-color: white;
+  border: 1px solid #000;
+  cursor: pointer;
+}
+
+.black-key {
+  width: 30px;
+  height: 120px;
+  background-color: black;
+  position: absolute;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.active {
+  background-color: #f0f0f0; /* Change the background color for active keys */
+}

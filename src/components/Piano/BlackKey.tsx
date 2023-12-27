@@ -9,7 +9,7 @@ export default function BlackKey({ noteName, active }: PianoKeyProps) {
 
   return (
     <div 
-      className="w-full h-28 p-1
+      className="w-3/5 h-28 p-1
                  flex flex-col justify-end items-center
                  border border-black rounded-md"
       style={keyStyle}
