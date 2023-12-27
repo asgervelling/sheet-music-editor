@@ -31,8 +31,8 @@ const PianoSVG = () => {
   }, [dispatch]);
 
   return (
-    <div className="w-full h-full">
-      <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 34">
+    <>
+      <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 11">
         <g id="Keyboard">
           <g id="Octave" stroke="#111" strokeWidth="0.125">
             <g id="WhiteKeys">
@@ -55,7 +55,7 @@ const PianoSVG = () => {
           </g>
         </g>
       </svg>
-    </div>
+    </>
   );
 };
 
