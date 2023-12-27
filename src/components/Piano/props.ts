@@ -1,4 +1,4 @@
 export type PianoKeyProps = {
-  name: string;
+  noteName: string;
   active: boolean;
 };

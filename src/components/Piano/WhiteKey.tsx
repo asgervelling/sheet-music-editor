@@ -1,7 +1,7 @@
 "use client";
 import { PianoKeyProps } from "./props";
 
-export default function WhiteKey({ name, active }: PianoKeyProps) {
+export default function WhiteKey({ noteName, active }: PianoKeyProps) {
   const keyStyle = {
     backgroundColor: active ? "#CE7B91" : "white",
     color: active ? "white" : "var(--color-primary)",
@@ -14,7 +14,7 @@ export default function WhiteKey({ name, active }: PianoKeyProps) {
                  border border-black rounded-md"
       style={keyStyle}
     >
-      <p>{name}</p>
+      <p>{noteName}</p>
     </div>
   )
 }

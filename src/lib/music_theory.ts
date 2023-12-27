@@ -43,3 +43,9 @@ export const NoteToKey: Record<NoteName, string> = {
   [NoteName.Bb]: 'u',
   [NoteName.B]: 'j',
 };
+
+// Opposite of NoteToKey
+export const KeyToNote: Record<string, NoteName> = Object.entries(NoteToKey).reduce((acc, [note, key]) => {
+  acc[key] = note as NoteName;
+  return acc;
+}, {} as Record<string, NoteName>);
