@@ -1,6 +1,6 @@
 "use client";
-import React, { useContext, useEffect } from "react";
-import { KeyToNote, NoteName, NoteToKey } from "@/lib/music_theory";
+import React, { useContext } from "react";
+import { NoteName, NoteToKey } from "@/lib/music_theory";
 import { StateContext } from "@/app/context/StateContext";
 
 const ACTIVE_COLOR = "#CE7B91";
@@ -10,13 +10,16 @@ type PianoKeyProps = {
 };
 
 export const WhitePianoKey = ({ i }: PianoKeyProps) => {
-  // Use context
+  const mapping = (i: number) => {
+    const codomain = [0, 2, 4, 5, 7, 9, 11];
+    return codomain.indexOf(i);
+  };
   const { state, dispatch } = useContext(StateContext)!;
 
   const noteNames: NoteName[] = Object.values(NoteName);
   const noteName = noteNames[i];
   const isActive = state.pressedKeys[NoteToKey[noteName]] || false;
-  const x = i * 4 + 2;
+  const x = mapping(i) * 4 + 2;
   const y = 2;
   const w = 4;
   const h = 16;
@@ -34,20 +37,25 @@ export const WhitePianoKey = ({ i }: PianoKeyProps) => {
         strokeWidth="0.125"
       />
     </g>
-  )
+  );
 };
 
 export const BlackPianoKey = ({ i }: PianoKeyProps) => {
-  // Use context
+  const mapping = (i: number) => {
+    const codomain = [1, 3, 6, 8, 10];
+    return codomain.indexOf(i);
+  };
   const { state, dispatch } = useContext(StateContext)!;
 
   const noteNames: NoteName[] = Object.values(NoteName);
   const noteName = noteNames[i];
   const isActive = state.pressedKeys[NoteToKey[noteName]] || false;
-  const x = i * 4 + 4.75;
+  const offset = mapping(i) < 2 ? 4.75 : 8.75;
+  const x = mapping(i) * 4 + offset;
   const y = 2;
   const w = 2.5;
   const h = 10;
+
   return (
     <g key={i} fill={isActive ? ACTIVE_COLOR : "black"}>
       <rect
@@ -56,27 +64,8 @@ export const BlackPianoKey = ({ i }: PianoKeyProps) => {
         width={w}
         height={h}
         fill={isActive ? ACTIVE_COLOR : "black"}
+        z={1}
       />
     </g>
-  )
+  );
 };
-
-type SVGPianoKeyProps = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-};
-
-export default function SVGPianoKey({ x, y, width, height }: SVGPianoKeyProps) {
-  return (
-    <rect
-      x={x}
-      y={y}
-      width={width}
-      height={height}
-      stroke="var(--color-primary)"
-      strokeWidth="0.125"
-    />
-  )
-}
