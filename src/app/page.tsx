@@ -1,5 +1,4 @@
 import KeyboardKey from "@/components/KeyboardKey"
-import Piano from "../components/Piano"
 import { StateProvider } from "./context/StateContext"
 import PianoSVG from "@/components/PianoSVG"
 
@@ -12,5 +11,5 @@ export default function Home() {
         <KeyboardKey keyName="2" />
       </StateProvider>
     </main>
-  )
+  ) 
 }
