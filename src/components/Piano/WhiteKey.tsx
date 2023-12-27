@@ -1,5 +1,6 @@
 "use client";
 import { PianoKeyProps } from "./props";
+import "./PianoKey.css";
 
 export default function WhiteKey({ noteName, active }: PianoKeyProps) {
   const keyStyle = {
@@ -9,9 +10,7 @@ export default function WhiteKey({ noteName, active }: PianoKeyProps) {
 
   return (
     <div 
-      className="w-full h-40 p-1
-                 flex flex-col justify-end items-center
-                 border border-black rounded-md"
+      className="piano-key white-key"
       style={keyStyle}
     >
       <p>{noteName}</p>

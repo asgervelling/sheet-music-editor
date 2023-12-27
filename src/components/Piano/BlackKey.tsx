@@ -1,5 +1,6 @@
 "use client";
 import { PianoKeyProps } from "./props";
+import "./PianoKey.css";
 
 export default function BlackKey({ noteName, active }: PianoKeyProps) {
   const keyStyle = {
@@ -9,9 +10,7 @@ export default function BlackKey({ noteName, active }: PianoKeyProps) {
 
   return (
     <div 
-      className="w-3/5 h-28 p-1
-                 flex flex-col justify-end items-center
-                 border border-black rounded-md"
+      className="piano-key black-key"
       style={keyStyle}
     >
       <p>{noteName}</p>
