@@ -1,5 +1,5 @@
 import React from "react";
-import SVGPianoKey, { WhitePianoKey } from "./SVGPianoKey";
+import SVGPianoKey, { WhitePianoKey, BlackPianoKey } from "./SVGPianoKey";
 
 
 const PianoSVG = () => {
@@ -11,26 +11,22 @@ const PianoSVG = () => {
       <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 34">
         <g id="Keyboard">
           <g id="Octave" stroke="#111" strokeWidth="0.125">
-            <g id="WhiteKeys" fill="#eee">
+            <g id="WhiteKeys">
               <WhitePianoKey i={0} />
               <WhitePianoKey i={1} />
               <WhitePianoKey i={2} />
               <WhitePianoKey i={3} />
-              {/* <SVGPianoKey x={2} y={2} width={4} height={whiteHeight} />
-              <SVGPianoKey x={6} y={2} width={4} height={whiteHeight} />
-              <SVGPianoKey x={10} y={2} width={4} height={whiteHeight} />
-              <SVGPianoKey x={14} y={2} width={4} height={whiteHeight} /> */}
-              <SVGPianoKey x={18} y={2} width={4} height={whiteHeight} />
-              <SVGPianoKey x={22} y={2} width={4} height={whiteHeight} />
-              <SVGPianoKey x={26} y={2} width={4} height={whiteHeight} />
+              <WhitePianoKey i={4} />
+              <WhitePianoKey i={5} />
+              <WhitePianoKey i={6} />
             </g>
 
-            <g id="BlackKeys" fill="#000">
-              <SVGPianoKey x={4.75} y={2} width={2.5} height={blackHeight} />
-              <SVGPianoKey x={8.75} y={2} width={2.5} height={blackHeight} />
-              <SVGPianoKey x={16.75} y={2} width={2.5} height={blackHeight} />
-              <SVGPianoKey x={20.75} y={2} width={2.5} height={blackHeight} />
-              <SVGPianoKey x={24.75} y={2} width={2.5} height={blackHeight} />
+            <g id="BlackKeys">
+              <BlackPianoKey i={0} />
+              <BlackPianoKey i={1} />
+              <BlackPianoKey i={3} />
+              <BlackPianoKey i={4} />
+              <BlackPianoKey i={5} />
             </g>
           </g>
         </g>
