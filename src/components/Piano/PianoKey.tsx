@@ -1,15 +1,21 @@
 "use client";
+import { useContext, useEffect } from "react";
+import { StateContext } from "@/app/context/StateContext";
 import BlackKey from "./BlackKey";
-import { PianoKeyProps } from "./props";
 import WhiteKey from "./WhiteKey";
 
-function PianoKey({ name, active }: PianoKeyProps) {
+type PianoKeyProps = {
+  keyName: string;
+  active: boolean;
+};
+
+function PianoKey({ keyName, active }: PianoKeyProps) {
   return (
     <div className="w-[200px]">
-      {name.length === 2 ? (
-        <BlackKey name={name} active={active} />
+      {keyName.length === 2 ? (
+        <BlackKey name={keyName} active={active} />
       ) : (
-        <WhiteKey name={name} active={active} />
+        <WhiteKey name={keyName} active={active} />
       )}
     </div>
   );

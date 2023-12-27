@@ -27,6 +27,7 @@ const reducer = (state: State, action: Action): State => {
         },
       };
     case 'KEY_RELEASED':
+      console.log('KEY_RELEASED', action.payload.key);
       const { [action.payload.key]: _, ...rest } = state.pressedKeys;
       return {
         ...state,

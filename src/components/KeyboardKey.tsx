@@ -34,7 +34,7 @@ const KeyboardKey: React.FC<KeyboardKeyProps> = ({ keyName }) => {
       window.removeEventListener('keydown', handleKeyPress);
       window.removeEventListener('keyup', handleKeyRelease);
     };
-  }, [dispatch, keyName]);
+  }, [dispatch]);
 
   return (
     <div style={{ backgroundColor: isKeyPressed ? 'yellow' : 'white', padding: '10px', margin: '5px' }}>

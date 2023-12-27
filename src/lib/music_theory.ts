@@ -1,6 +1,6 @@
 import { Key } from "ts-key-enum";
 
-export enum NoteNames {
+export enum NoteName {
   C = "C",
   Db = "D♭",
   D = "D",
@@ -24,22 +24,22 @@ export enum NoteLength {
 }
 
 export type Note = {
-  name: NoteNames;
+  name: NoteName;
   length: NoteLength;
 };
 
 // Temporary
-export const NoteToKey: Record<NoteNames, string> = {
-  [NoteNames.C]: 'a',
-  [NoteNames.Db]: 'w',
-  [NoteNames.D]: 's',
-  [NoteNames.Eb]: 'e',
-  [NoteNames.E]: 'd',
-  [NoteNames.F]: 'f',
-  [NoteNames.Gb]: 't',
-  [NoteNames.G]: 'g',
-  [NoteNames.Ab]: 'y',
-  [NoteNames.A]: 'h',
-  [NoteNames.Bb]: 'u',
-  [NoteNames.B]: 'j',
+export const NoteToKey: Record<NoteName, string> = {
+  [NoteName.C]: 'a',
+  [NoteName.Db]: 'w',
+  [NoteName.D]: 's',
+  [NoteName.Eb]: 'e',
+  [NoteName.E]: 'd',
+  [NoteName.F]: 'f',
+  [NoteName.Gb]: 't',
+  [NoteName.G]: 'g',
+  [NoteName.Ab]: 'y',
+  [NoteName.A]: 'h',
+  [NoteName.Bb]: 'u',
+  [NoteName.B]: 'j',
 };
