@@ -16,11 +16,11 @@ export enum NoteNames {
 }
 
 export enum NoteLength {
-  Whole = "Whole",
-  Half = "Half",
-  Quarter = "Quarter",
-  Eighth = "Eighth",
-  Sixteenth = "Sixteenth",
+  Whole = 1,
+  Half,
+  Quarter,
+  Eighth,
+  Sixteenth,
 }
 
 export type Note = {
@@ -29,7 +29,7 @@ export type Note = {
 };
 
 // Temporary
-export const KeyMap: Record<NoteNames, string> = {
+export const NoteToKey: Record<NoteNames, string> = {
   [NoteNames.C]: 'a',
   [NoteNames.Db]: 'w',
   [NoteNames.D]: 's',

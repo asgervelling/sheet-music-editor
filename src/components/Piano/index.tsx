@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import PianoKey from "./PianoKey";
 import History from "../History";
-import { Note, NoteNames, NoteLength, KeyMap } from "@/lib/music_theory";
+import { Note, NoteNames, NoteLength, NoteToKey } from "@/lib/music_theory";
 import NoteLengthControls from "../NoteLengthControls";
 
 export default function Piano() {
@@ -11,26 +11,33 @@ export default function Piano() {
   const [currentLength, setCurrentLength] = useState<NoteLength>(
     NoteLength.Quarter
   );
-  const [activeKeys, setActiveKeys] = useState<string[]>([]);
+  const [activeKeys, setActiveKeys] = useState<Set<string>>(new Set());
   const [history, setHistory] = useState<Note[]>([]);
 
   const onKeyDown = (event: KeyboardEvent) => {
     // Add if not already in activeKeys
     noteNames.forEach((name) => {
-      if (event.key === KeyMap[name] && !activeKeys.includes(event.key)) {
-        setActiveKeys([...activeKeys, event.key]);
-        history.push({
-          name: name,
-          length: currentLength,
-        });
+      if (event.key === NoteToKey[name] && !activeKeys.has(event.key)) {
+        setActiveKeys((prevKeys) => new Set(prevKeys.add(event.key)));
+        setHistory((prevHistory) => [
+          ...prevHistory,
+          {
+            name: name,
+            length: currentLength,
+          },
+        ]);
       }
     });
   };
 
   const onKeyUp = (event: KeyboardEvent) => {
     noteNames.forEach((name) => {
-      if (event.key === KeyMap[name]) {
-        setActiveKeys(activeKeys.filter((key) => key !== KeyMap[name]));
+      if (event.key === NoteToKey[name]) {
+        setActiveKeys((prevKeys) => {
+          const newKeys = new Set(prevKeys);
+          newKeys.delete(event.key);
+          return newKeys;
+        });
       }
     });
   };
@@ -44,7 +51,7 @@ export default function Piano() {
       document.removeEventListener("keydown", onKeyDown);
       document.removeEventListener("keyup", onKeyUp);
     };
-  }, [activeKeys]);
+  }, [activeKeys, currentLength]);
 
   return (
     <div className="w-1/3">
@@ -54,7 +61,7 @@ export default function Piano() {
           <PianoKey
             key={i}
             name={name}
-            active={activeKeys.includes(KeyMap[name])}
+            active={activeKeys.has(NoteToKey[name])}
           />
         ))}
       </div>

@@ -11,7 +11,7 @@ export default function History({ notes }: HistoryProps) {
   return (
     <div className="flex flex-col">
       <h1 className="text-2xl">History</h1>
-      <p className="break-words">[{notes.map((note) => `${note.name}, `)}]</p>
+      <p className="break-words">[{notes.map((note) => `(${note.name}, ${note.length})`)}]</p>
     </div>
   );
 }
