@@ -37,7 +37,6 @@ const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case Message.SET_NOTE_LENGTH:
       // Set the current note length
-      console.log(Message.SET_NOTE_LENGTH, action.payload.noteLength!);
       return {
         ...state,
         currNoteLength: action.payload.noteLength!,
@@ -46,8 +45,8 @@ const reducer = (state: State, action: Action): State => {
     case Message.TOGGLE_PIANO_KEY:
       // If the piano key is on, turn it off, and vice versa
       const noteName = action.payload.noteName;
-      console.log(Message.TOGGLE_PIANO_KEY, noteName);
       if (state.activeNotes.has(noteName)) {
+        // Remove the note from the active notes
         return {
           ...state,
           activeNotes: new Set(
@@ -55,6 +54,7 @@ const reducer = (state: State, action: Action): State => {
           ),
         };
       }
+      // Add the note to the active notes
       return {
         ...state,
         activeNotes: new Set(Array.from(state.activeNotes).concat(noteName)),
