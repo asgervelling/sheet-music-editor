@@ -47,23 +47,9 @@ const reducer = (state: State, action: Action): State => {
     case Message.TOGGLE_PIANO_KEY:
       // If the piano key is on, turn it off, and vice versa
       const noteName = action.payload.noteName;
-      const alreadyActive = state.activeNotes.has(noteName);
-
-      let updatedActiveNotes = new Set(state.activeNotes); // create a new set based on the current activeNotes
-
-      if (alreadyActive) {
-        // If the note is already in the set, remove it
-        updatedActiveNotes.delete(noteName);
-      } else {
-        // If the note is not in the set, add it
-        updatedActiveNotes.add(noteName);
-      }
-
-      console.log(updatedActiveNotes);
-
       return {
         ...state,
-        activeNotes: updatedActiveNotes,
+        activeNotes: new Set(Array.from(state.activeNotes).concat(noteName)),
       };
 
     case Message.COMMIT:
