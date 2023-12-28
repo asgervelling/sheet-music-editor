@@ -54,5 +54,5 @@ export default function NoteLengthControls() {
 };
 
 function isNoteLengthKey(key: string): boolean {
-  return ["1", "2", "3", "4", "5", "6"].includes(key);
+  return ["1", "2", "3", "4", "5"].includes(key);
 }
