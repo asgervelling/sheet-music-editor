@@ -1,6 +1,5 @@
 "use client";
 import { WhitePianoKey, BlackPianoKey } from "./SVGPianoKey";
-import { KeyToNote } from "@/lib/music_theory";
 
 const Piano = () => {
   return (
@@ -30,9 +29,5 @@ const Piano = () => {
     </>
   );
 };
-
-function isPianoKey(key: string): boolean {
-  return Object.keys(KeyToNote).includes(key);
-}
 
 export default Piano;

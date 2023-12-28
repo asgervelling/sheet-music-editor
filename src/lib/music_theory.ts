@@ -1,5 +1,3 @@
-import { Key } from "ts-key-enum";
-
 export enum NoteName {
   C = "C",
   Db = "D♭",
