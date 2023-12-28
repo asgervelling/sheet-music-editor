@@ -3,6 +3,7 @@ import Piano from "@/components/Piano";
 import NoteLengthControls from "@/components/NoteLengthControls";
 import Staff from "@/components/Staff";
 import KeyDispatcher from "@/components/KeyDispatcher";
+import History from "@/components/History";
 
 export default function Home() {
   return (
@@ -16,7 +17,7 @@ export default function Home() {
           <Piano />
         </div>
         <div className="py-20 px-32 col-span-2">
-          <Staff />
+          <History />
         </div>
       </div>
     </StateProvider>

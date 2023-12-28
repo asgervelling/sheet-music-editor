@@ -1,11 +1,12 @@
 "use client";
-import { NoteLength } from '@/lib/music_theory';
+import { KeyToNote, Note, NoteLength, NoteName, PianoKeys } from '@/lib/music_theory';
 import React, { createContext, useReducer, ReactNode, Dispatch } from 'react';
 import { MessageType } from './messages';
 
 interface State {
   heldPianoKeys: Record<string, boolean>;
   currNoteLength: NoteLength;
+  history: Note[];
 }
 
 interface Action {
@@ -19,25 +20,30 @@ interface Action {
 const initialState: State = {
   heldPianoKeys: {},
   currNoteLength: NoteLength.Quarter,
+  history: [],
 };
 
 /**
  * Reducer for the state.
- * Create a new state based on the action type
- * and payload, as well as the previous state.
+ * Create a new state based on the previous
+ * state and and an action.
  */
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case MessageType.PIANO_KEY_PRESSED:
+      // Update the collection of held piano keys and
+      // update the history of played notes.
       console.log(MessageType.PIANO_KEY_PRESSED, action.payload.key!);
-      const s = {
+      const noteName: NoteName = KeyToNote[action.payload.key!];
+      const note: Note = { name: noteName, length: state.currNoteLength };
+      return {
         ...state,
         heldPianoKeys: {
           ...state.heldPianoKeys,
           [action.payload.key!]: true,
         },
+        history: [...state.history, note],
       };
-      return s;
     case MessageType.PIANO_KEY_RELEASED:
       console.log(MessageType.PIANO_KEY_RELEASED, action.payload.key!);
       const { [action.payload.key!]: _, ...rest } = state.heldPianoKeys;
