@@ -14,6 +14,7 @@ interface Action {
   payload: {
     key?: string;
     noteLength?: NoteLength;
+    history?: Note[];
   };
 }
 
@@ -31,42 +32,49 @@ const initialState: State = {
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case MessageType.PIANO_KEY_PRESSED:
-      // Update the collection of held piano keys and
-      // update the history of played notes.
-      console.log(MessageType.PIANO_KEY_PRESSED, action.payload.key!);
-      const noteName: NoteName = KeyToNote[action.payload.key!];
-      const note: Note = { name: noteName, length: state.currNoteLength };
-      const updatedState = {
-        ...state,
-        heldPianoKeys: {
-          ...state.heldPianoKeys,
-          [action.payload.key!]: true,
-        },
-        history: [...state.history, note],
-      };
-      console.log('Updated State:', updatedState.heldPianoKeys);
-      return updatedState;
+      const key = action.payload.key!;
+      const keyAlreadyHeld = state.heldPianoKeys[key] === true;
+
+      // Update state with the new key being held
+      if (!keyAlreadyHeld) {
+        console.log(MessageType.PIANO_KEY_PRESSED, key);
+        
+        const noteName: NoteName = KeyToNote[key];
+        const note: Note = { name: noteName, length: state.currNoteLength };
+
+        return {
+          ...state,
+          heldPianoKeys: {
+            ...state.heldPianoKeys,
+            [key]: true,
+          },
+          history: [...state.history, note],
+        };
+      }
+      
+      // If the key is already held, do nothing
+      return state;
+
     case MessageType.PIANO_KEY_RELEASED:
       console.log(MessageType.PIANO_KEY_RELEASED, action.payload.key!);
       const { [action.payload.key!]: _, ...rest } = state.heldPianoKeys;
-      const releasedState = {
+      return {
         ...state,
         heldPianoKeys: rest,
       };
-      console.log('Updated State:', releasedState.heldPianoKeys);
-      return releasedState;
+
     case MessageType.SET_NOTE_LENGTH:
       console.log(MessageType.SET_NOTE_LENGTH, action.payload.noteLength!);
-      const noteLengthState = {
+      return {
         ...state,
         currNoteLength: action.payload.noteLength!,
       };
-      console.log('Updated Note length:', noteLengthState.currNoteLength);
-      return noteLengthState;
+
     default:
       return state;
   }
 };
+
 
 interface StateContextProps {
   children: ReactNode;

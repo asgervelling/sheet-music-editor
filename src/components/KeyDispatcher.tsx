@@ -14,8 +14,9 @@ export default function KeyDispatcher() {
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
-      const keyAlreadyHeld = state.heldPianoKeys[event.key] === true;
-      if (isPianoKey(event.key) && !keyAlreadyHeld) {
+      console.log("Handle key press", event.key);
+      // const keyAlreadyHeld = state.heldPianoKeys[event.key] === true;
+      if (isPianoKey(event.key)) {
         dispatch({
           type: MessageType.PIANO_KEY_PRESSED,
           payload: { key: event.key },
