@@ -1,36 +1,52 @@
 "use client";
+import { NoteLength } from '@/lib/music_theory';
 import React, { createContext, useReducer, ReactNode, Dispatch } from 'react';
+import { MessageType } from './messages';
 
 interface State {
   pressedKeys: Record<string, boolean>;
+  currNoteLength: NoteLength;
 }
 
 interface Action {
   type: string;
   payload: {
-    key: string;
+    key?: string;
+    noteLength?: NoteLength;
   };
 }
 
 const initialState: State = {
   pressedKeys: {},
+  currNoteLength: NoteLength.Quarter,
 };
 
+/**
+ * KEY_PRESSED: For holding down keys \
+ * KEY_RELEASED: For releasing keys \
+ * SET_NOTE_LENGTH: For setting the current note length
+ */
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
-    case 'KEY_PRESSED':
+    case MessageType.KEY_PRESSED:
       return {
         ...state,
         pressedKeys: {
           ...state.pressedKeys,
-          [action.payload.key]: true,
+          [action.payload.key!]: true,
         },
       };
-    case 'KEY_RELEASED':
-      const { [action.payload.key]: _, ...rest } = state.pressedKeys;
+    case MessageType.KEY_RELEASED:
+      const { [action.payload.key!]: _, ...rest } = state.pressedKeys;
       return {
         ...state,
         pressedKeys: rest,
+      };
+    case MessageType.SET_NOTE_LENGTH:
+      console.log("Current note length: ", action.payload.noteLength!);
+      return {
+        ...state,
+        currNoteLength: action.payload.noteLength!,
       };
     default:
       return state;

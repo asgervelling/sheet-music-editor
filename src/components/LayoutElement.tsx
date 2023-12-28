@@ -5,5 +5,5 @@ type LayoutElementProps = {
 };
 
 export default function LayoutElement({ children, className }: LayoutElementProps) {
-  return <div className={`grid items-center py-20 px-32 ${className}`}>{children}</div>;
+  return <div className={`py-20 px-32 ${className}`}>{children}</div>;
 }

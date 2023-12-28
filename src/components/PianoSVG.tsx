@@ -3,7 +3,7 @@ import React, { useContext, useEffect } from "react";
 import { WhitePianoKey, BlackPianoKey } from "./SVGPianoKey";
 import { StateContext } from "@/app/context/StateContext";
 import { KeyToNote } from "@/lib/music_theory";
-
+import { MessageType } from "@/app/context/messages";
 
 const PianoSVG = () => {
   const { state, dispatch } = useContext(StateContext)!;
@@ -11,22 +11,28 @@ const PianoSVG = () => {
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (isPianoKey(event.key)) {
-        dispatch({ type: 'KEY_PRESSED', payload: { key: event.key } });
+        dispatch({
+          type: MessageType.KEY_PRESSED,
+          payload: { key: event.key },
+        });
       }
     };
 
     const handleKeyRelease = (event: KeyboardEvent) => {
       if (isPianoKey(event.key)) {
-        dispatch({ type: 'KEY_RELEASED', payload: { key: event.key } });
+        dispatch({ 
+          type: MessageType.KEY_RELEASED,
+          payload: { key: event.key }
+        });
       }
     };
 
-    window.addEventListener('keydown', handleKeyPress);
-    window.addEventListener('keyup', handleKeyRelease);
+    window.addEventListener("keydown", handleKeyPress);
+    window.addEventListener("keyup", handleKeyRelease);
 
     return () => {
-      window.removeEventListener('keydown', handleKeyPress);
-      window.removeEventListener('keyup', handleKeyRelease);
+      window.removeEventListener("keydown", handleKeyPress);
+      window.removeEventListener("keyup", handleKeyRelease);
     };
   }, [dispatch]);
 
@@ -60,7 +66,6 @@ const PianoSVG = () => {
 };
 
 function isPianoKey(key: string): boolean {
-  console.log("isPianoKey", key, ": ", Object.keys(KeyToNote).includes(key));
   return Object.keys(KeyToNote).includes(key);
 }
 

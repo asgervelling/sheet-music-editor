@@ -1,0 +1,5 @@
+export enum MessageType {
+  KEY_PRESSED = "KEY_PRESSED",
+  KEY_RELEASED = "KEY_RELEASED",
+  SET_NOTE_LENGTH = "SET_NOTE_LENGTH",
+}
