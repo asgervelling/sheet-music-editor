@@ -118,11 +118,11 @@ function commit(state: State, musicalEvent: MusicalEvent): State {
   };
 }
 
-interface StateContextProps {
+type StateContextProps = {
   children: ReactNode;
 }
 
-interface StateContextValue {
+type StateContextValue = {
   state: State;
   dispatch: Dispatch<Action>;
 }

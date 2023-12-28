@@ -15,13 +15,14 @@ export default function History() {
     <>
       <h1>History (Simple implementation: No chords)</h1>
       <div className="flex flex-wrap items-center gap-4">
-        {state.history.map((musicEvent, i) => (
+        {state.history.map((musicEvent: MusicalEvent, i) => (
           <div
             key={i}
             className="flex items-center
                        p-2 rounded-md
                        border border-[var(--color-primary)]"
           >
+            <NoteLengthIcon noteLength={musicEvent[0].length} />
             [{musicEvent.map(note => note.name).join(", ")}]
             {/* <HistoryEntry musicEvent={musicEvent} /> */}
           </div>
