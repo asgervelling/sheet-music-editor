@@ -1,4 +1,3 @@
-import LayoutElement from "@/components/LayoutElement";
 import { StateProvider } from "./context/StateContext";
 import PianoSVG from "@/components/PianoSVG";
 import NoteLengthControls from "@/components/NoteLengthControls";
@@ -8,16 +7,16 @@ export default function Home() {
     <StateProvider>
       <div className="grid grid-cols-2 grid-rows-2 h-screen">
         {/* Row 1 */}
-        <LayoutElement className="bg-blue-300">
+        <div className="py-20 px-32 bg-blue-300">
           <NoteLengthControls />
           {/* <UndoRedoControls />
           <ArrowKeyControls /> */}
-        </LayoutElement>
-        <LayoutElement>
+        </div>
+        <div className="py-20 px-32 ">
           <PianoSVG />
-        </LayoutElement>
+        </div>
         {/* Row 2 */}
-        <LayoutElement>C</LayoutElement>
+        <div className="py-20 px-32">C</div>
       </div>
     </StateProvider>
   );
