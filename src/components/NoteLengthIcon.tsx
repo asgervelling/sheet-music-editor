@@ -1,5 +1,4 @@
 import { NoteLength } from "@/lib/music_theory"
-import Image from "next/image";
 import React from "react";
 import { IconWholeNote } from "./icons/IconWholeNote";
 import IconHalfNote from "./icons/IconHalfNote";
@@ -11,7 +10,7 @@ type NoteLengthSVGProps = {
   noteLength: NoteLength;
 };
 
-export default function NoteLengthSVG({ noteLength }: NoteLengthSVGProps) {
+export default function NoteLengthIcon({ noteLength }: NoteLengthSVGProps) {
   return (
     <div className="h-10 w-10 -translate-x-1">
       <Icon noteLength={noteLength} />

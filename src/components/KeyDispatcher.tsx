@@ -14,7 +14,8 @@ export default function KeyDispatcher() {
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
-      if (isPianoKey(event.key) && state.heldPianoKeys[event.key] !== true) {
+      const keyAlreadyHeld = state.heldPianoKeys[event.key] === true;
+      if (isPianoKey(event.key) && !keyAlreadyHeld) {
         dispatch({
           type: MessageType.PIANO_KEY_PRESSED,
           payload: { key: event.key },
@@ -30,8 +31,6 @@ export default function KeyDispatcher() {
         });
       }
       else if (isNoteLengthKey(event.key)) {
-        // Print current time in milliseconds
-        console.log(Date.now());
         dispatch({
           type: MessageType.SET_NOTE_LENGTH,
           payload: { noteLength: KeyToNoteLength[event.key] },
@@ -46,7 +45,7 @@ export default function KeyDispatcher() {
       window.removeEventListener("keydown", handleKeyPress);
       window.removeEventListener("keyup", handleKeyRelease);
     };
-  }, [dispatch]);
+  }, [dispatch, state.heldPianoKeys]);
 
   return null;
 }

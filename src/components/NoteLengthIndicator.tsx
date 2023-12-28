@@ -1,14 +1,14 @@
 "use client";
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { StateContext } from "@/app/context/StateContext";
 import { NoteLength, NoteLengthKeys } from "@/lib/music_theory";
-import NoteLengthSVG from "./NoteLengthSVG";
+import NoteLengthIcon from "./NoteLengthIcon";
 
 interface NoteLengthKeyProps {
   noteLength: NoteLength;
 }
 
-const NoteLengthKey: React.FC<NoteLengthKeyProps> = ({ noteLength }) => {
+const NoteLengthIndicator: React.FC<NoteLengthKeyProps> = ({ noteLength }) => {
   const { state } = useContext(StateContext)!;
   const isCurrentNote = state.currNoteLength === noteLength;
 
@@ -26,9 +26,9 @@ const NoteLengthKey: React.FC<NoteLengthKeyProps> = ({ noteLength }) => {
       >
         {NoteLengthKeys[noteLength]}
       </div>
-      <NoteLengthSVG noteLength={noteLength} />
+      <NoteLengthIcon noteLength={noteLength} />
     </div>
   );
 };
 
-export default NoteLengthKey;
+export default NoteLengthIndicator;

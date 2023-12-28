@@ -30,13 +30,14 @@ const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case MessageType.PIANO_KEY_PRESSED:
       console.log(MessageType.PIANO_KEY_PRESSED, action.payload.key!);
-      return {
+      const s = {
         ...state,
         heldPianoKeys: {
           ...state.heldPianoKeys,
           [action.payload.key!]: true,
         },
       };
+      return s;
     case MessageType.PIANO_KEY_RELEASED:
       console.log(MessageType.PIANO_KEY_RELEASED, action.payload.key!);
       const { [action.payload.key!]: _, ...rest } = state.heldPianoKeys;
