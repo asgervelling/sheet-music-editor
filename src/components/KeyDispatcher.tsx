@@ -31,9 +31,6 @@ export default function KeyDispatcher() {
       else if (event.key === "Enter") {
         dispatch({ type: Message.COMMIT });
       }
-      else {
-        console.log("Unknown key pressed:", event.key);
-      }
     };
 
     window.addEventListener("keydown", handleKeyPress);

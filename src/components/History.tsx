@@ -18,11 +18,12 @@ export default function History() {
         {state.history.map((musicEvent, i) => (
           <div
             key={i}
-            className="flex items-center justify-center w-16
-                       pt-2 ps-2 rounded-md
+            className="flex items-center
+                       p-2 rounded-md
                        border border-[var(--color-primary)]"
           >
-            <HistoryEntry musicEvent={musicEvent} />
+            [{musicEvent.map(note => note.name).join(", ")}]
+            {/* <HistoryEntry musicEvent={musicEvent} /> */}
           </div>
         ))}
       </div>
@@ -33,10 +34,9 @@ export default function History() {
 function HistoryEntry({ musicEvent }: { musicEvent: MusicalEvent }) {
   return (
     <>
-      {musicEvent.map((musicEvent, i) => (
+      {musicEvent.map((note, i) => (
         <div key={i}>
-          <span>{musicEvent.name}</span>
-          <NoteLengthIcon noteLength={musicEvent.length} />
+          {note.name}
         </div>
       ))}
     </>

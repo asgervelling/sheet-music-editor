@@ -84,7 +84,8 @@ const reducer = (state: State, action: Action): State => {
       // We don't distinguish between single notes, chords and pauses
       // as they are all events that can be drawn on the staff.
       const musicalEvent = createMusicalEvent(state);
-      return commit(state, musicalEvent);
+      const s = commit(state, musicalEvent);
+      return resetPianoKeys(s);
 
     case Message.UNDO:
       console.log("Undo");
@@ -115,11 +116,19 @@ function createMusicalEvent(state: State): MusicalEvent {
   }));
 }
 
+function resetPianoKeys(state: State): State {
+  return {
+    ...state,
+    pianoNotes: initpianoNotes(),
+  };
+}
+
 /**
  * Create a new state where the musical event
  * is added to the history.
  */
 function commit(state: State, musicalEvent: MusicalEvent): State {
+  // Also reset keys
   return {
     ...state,
     history: [...state.history, musicalEvent],
