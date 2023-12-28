@@ -1,6 +1,7 @@
 import { StateProvider } from "./context/StateContext";
 import PianoSVG from "@/components/PianoSVG";
 import NoteLengthControls from "@/components/NoteLengthControls";
+import Staff from "@/components/Staff";
 
 export default function Home() {
   return (
@@ -16,7 +17,9 @@ export default function Home() {
           <PianoSVG />
         </div>
         {/* Row 2 */}
-        <div className="py-20 px-32">C</div>
+        <div className="py-20 px-32 col-span-2">
+          <Staff />
+        </div>
       </div>
     </StateProvider>
   );
