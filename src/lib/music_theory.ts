@@ -21,7 +21,6 @@ export enum NoteLength {
   Quarter,
   Eighth,
   Sixteenth,
-  ThirtySecond,
 }
 
 export type Note = {

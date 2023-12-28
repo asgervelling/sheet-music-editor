@@ -21,8 +21,6 @@ export default function NoteLengthControls() {
           return NoteLength.Eighth;
         case "5":
           return NoteLength.Sixteenth;
-        case "6":
-          return NoteLength.ThirtySecond; 
         default:
           throw new Error("Invalid key");
       }
@@ -51,7 +49,6 @@ export default function NoteLengthControls() {
       <NoteLengthKey noteLength={NoteLength.Quarter} />
       <NoteLengthKey noteLength={NoteLength.Eighth} />
       <NoteLengthKey noteLength={NoteLength.Sixteenth} />
-      <NoteLengthKey noteLength={NoteLength.ThirtySecond} />
     </div>
   );
 };
