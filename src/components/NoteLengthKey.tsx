@@ -2,6 +2,7 @@
 import React, { useContext, useEffect } from 'react';
 import { StateContext } from '@/app/context/StateContext';
 import { NoteLength } from '@/lib/music_theory';
+import NoteLengthSVG from './NoteLengthSVG';
 
 interface NoteLengthKeyProps {
   noteLength: NoteLength;
@@ -41,8 +42,8 @@ const NoteLengthKey: React.FC<NoteLengthKeyProps> = ({ noteLength }) => {
 
   return (
     <div
-      style={{ backgroundColor: isCurrentNote ? 'yellow' : 'white', padding: '10px', margin: '5px' }}
-      className="h-10 w-10 text-center"
+      style={{ backgroundColor: isCurrentNote ? 'yellow' : 'white' }}
+      className="h-10 w-10 flex items-center justify-center"
     >
       {noteLength.toString()}
     </div>

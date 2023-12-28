@@ -12,7 +12,7 @@ export default function Home() {
           {/* <UndoRedoControls />
           <ArrowKeyControls /> */}
         </div>
-        <div className="py-20 px-32 ">
+        <div className="py-20 px-40 flex items-center justify-center">
           <PianoSVG />
         </div>
         {/* Row 2 */}

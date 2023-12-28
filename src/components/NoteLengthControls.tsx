@@ -45,7 +45,7 @@ export default function NoteLengthControls() {
   }, [dispatch]);
 
   return (
-    <div className="grid grid-flow-col justify-start">
+    <div className="grid grid-flow-col justify-start gap-1">
       <NoteLengthKey noteLength={NoteLength.Whole} />
       <NoteLengthKey noteLength={NoteLength.Half} />
       <NoteLengthKey noteLength={NoteLength.Quarter} />
