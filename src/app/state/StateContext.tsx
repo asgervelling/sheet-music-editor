@@ -4,14 +4,13 @@ import {
   Note,
   NoteLength,
   NoteName,
-  PianoKeys,
 } from "@/app/state/music_theory";
 import React, { createContext, useReducer, ReactNode, Dispatch } from "react";
 import { Message } from "./messages";
 
 type State = {
   currNoteLength: NoteLength;
-  activeNotes: Note[]
+  activeNotes: Set<NoteName>;
   history: MusicalEvent[];
   undoStack: MusicalEvent[];
 };
@@ -25,7 +24,7 @@ type Action =
 
 const initialState: State = {
   currNoteLength: NoteLength.Quarter,
-  activeNotes: [],
+  activeNotes: new Set(),
   history: [],
   undoStack: [],
 };
@@ -48,16 +47,23 @@ const reducer = (state: State, action: Action): State => {
     case Message.TOGGLE_PIANO_KEY:
       // If the piano key is on, turn it off, and vice versa
       const noteName = action.payload.noteName;
-      const active = noteName in state.activeNotes;
-      let activeNotes = [...state.activeNotes];
-      if (active) {
-        activeNotes = activeNotes.filter((note) => note.name !== noteName);
+      const alreadyActive = state.activeNotes.has(noteName);
+
+      let updatedActiveNotes = new Set(state.activeNotes); // create a new set based on the current activeNotes
+
+      if (alreadyActive) {
+        // If the note is already in the set, remove it
+        updatedActiveNotes.delete(noteName);
       } else {
-        activeNotes.push({ name: noteName, length: state.currNoteLength });
+        // If the note is not in the set, add it
+        updatedActiveNotes.add(noteName);
       }
+
+      console.log(updatedActiveNotes);
+
       return {
         ...state,
-        activeNotes: activeNotes,
+        activeNotes: updatedActiveNotes,
       };
 
     case Message.COMMIT:
@@ -83,23 +89,35 @@ const reducer = (state: State, action: Action): State => {
  */
 function createMusicalEvent(state: State): MusicalEvent {
   // Either a Pause
-  if (state.activeNotes.length === 0) {
+  if (state.activeNotes.size === 0) {
     return [{ name: NoteName.PAUSE, length: state.currNoteLength }];
   }
 
   // Or a Note[], which may be a single onte or a chord
-  return [...state.activeNotes];
-  // return state.activeNotes.map(([key, _]) => ({
-  //   name: key as NoteName,
-  //   length: state.currNoteLength,
-  // }));
+  return Array.from(state.activeNotes).map((noteName) => ({
+    name: noteName,
+    length: state.currNoteLength,
+  }));
 }
 
 function resetPianoKeys(state: State): State {
   return {
     ...state,
-    activeNotes: [],
+    activeNotes: new Set(),
   };
+}
+
+/**
+ * Create a new history from a history and a musical event.
+ */
+function updateHistory(
+  history: MusicalEvent[],
+  event: MusicalEvent
+): MusicalEvent[] {
+  if (event.length === 0) {
+    return history;
+  }
+  return [...history, event];
 }
 
 /**
@@ -110,7 +128,7 @@ function commit(state: State, musicalEvent: MusicalEvent): State {
   // Also reset keys
   return {
     ...state,
-    history: [...state.history, musicalEvent],
+    history: updateHistory(state.history, musicalEvent),
   };
 }
 
