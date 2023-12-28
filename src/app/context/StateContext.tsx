@@ -29,6 +29,7 @@ const initialState: State = {
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case MessageType.KEY_PRESSED:
+      console.log(MessageType.KEY_PRESSED, action.payload.key!);
       return {
         ...state,
         pressedKeys: {
@@ -37,13 +38,14 @@ const reducer = (state: State, action: Action): State => {
         },
       };
     case MessageType.KEY_RELEASED:
+      console.log(MessageType.KEY_RELEASED, action.payload.key!);
       const { [action.payload.key!]: _, ...rest } = state.pressedKeys;
       return {
         ...state,
         pressedKeys: rest,
       };
     case MessageType.SET_NOTE_LENGTH:
-      console.log("Current note length: ", action.payload.noteLength!);
+      console.log(MessageType.SET_NOTE_LENGTH, action.payload.noteLength!);
       return {
         ...state,
         currNoteLength: action.payload.noteLength!,
