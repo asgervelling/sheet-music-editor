@@ -15,19 +15,19 @@ type State = {
   undoStack: MusicalEvent[];
 };
 
-type Action =
-  | { type: Message.SET_NOTE_LENGTH; payload: { noteLength: NoteLength } }
-  | { type: Message.TOGGLE_PIANO_KEY; payload: { noteName: NoteName } }
-  | { type: Message.COMMIT }
-  | { type: Message.UNDO }
-  | { type: Message.REDO };
-
 const initialState: State = {
   currNoteLength: NoteLength.Quarter,
   activeNotes: new Set(),
   history: [],
   undoStack: [],
 };
+
+type Action =
+  | { type: Message.SET_NOTE_LENGTH; payload: { noteLength: NoteLength } }
+  | { type: Message.TOGGLE_PIANO_KEY; payload: { noteName: NoteName } }
+  | { type: Message.COMMIT }
+  | { type: Message.UNDO }
+  | { type: Message.REDO };
 
 /**
  * Reducer for the state.

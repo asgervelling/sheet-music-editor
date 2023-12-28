@@ -19,7 +19,7 @@ export default function History() {
           <div
             key={i}
             className="flex items-center
-                       p-2 rounded-md
+                       p-2
                        border border-[var(--color-primary)]"
           >
             <NoteLengthIcon noteLength={musicEvent[0].length} />
@@ -28,18 +28,6 @@ export default function History() {
           </div>
         ))}
       </div>
-    </>
-  );
-}
-
-function HistoryEntry({ musicEvent }: { musicEvent: MusicalEvent }) {
-  return (
-    <>
-      {musicEvent.map((note, i) => (
-        <div key={i}>
-          {note.name}
-        </div>
-      ))}
     </>
   );
 }
