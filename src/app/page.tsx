@@ -3,7 +3,7 @@ import Piano from "@/components/Piano";
 import NoteLengthControls from "@/components/NoteLengthControls";
 import KeyDispatcher from "@/components/KeyDispatcher";
 import History from "@/components/History";
-import EnterButton from "@/components/EnterButton";
+import EnterIndicator from "@/components/EnterIndicator";
 
 export default function Home() {
   return (
@@ -17,7 +17,7 @@ export default function Home() {
           <Piano />
           <div className="w-full pt-4">
             <div className="flex justify-end">
-              <EnterButton />
+              <EnterIndicator />
             </div>
           </div>
         </div>

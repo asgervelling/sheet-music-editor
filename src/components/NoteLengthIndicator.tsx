@@ -20,13 +20,15 @@ const NoteLengthIndicator: React.FC<NoteLengthKeyProps> = ({ noteLength }) => {
 
   return (
     <div>
-      <div
-        style={style}
-        className="h-10 w-10 flex items-center justify-center mb-2"
-      >
-        {NoteLengthKeys[noteLength]}
+      <div>
+        <div
+          style={style}
+          className="h-10 w-10 flex items-center justify-center mb-2"
+        >
+          {NoteLengthKeys[noteLength]}
+        </div>
+        <NoteLengthIcon noteLength={noteLength} />
       </div>
-      <NoteLengthIcon noteLength={noteLength} />
     </div>
   );
 };

@@ -1,7 +1,6 @@
 "use client";
 import {
   MusicalEvent,
-  Note,
   NoteLength,
   NoteName,
 } from "@/app/state/music_theory";
@@ -47,6 +46,15 @@ const reducer = (state: State, action: Action): State => {
     case Message.TOGGLE_PIANO_KEY:
       // If the piano key is on, turn it off, and vice versa
       const noteName = action.payload.noteName;
+      console.log(Message.TOGGLE_PIANO_KEY, noteName);
+      if (state.activeNotes.has(noteName)) {
+        return {
+          ...state,
+          activeNotes: new Set(
+            Array.from(state.activeNotes).filter((n) => n !== noteName)
+          ),
+        };
+      }
       return {
         ...state,
         activeNotes: new Set(Array.from(state.activeNotes).concat(noteName)),
@@ -80,10 +88,13 @@ function createMusicalEvent(state: State): MusicalEvent {
   }
 
   // Or a Note[], which may be a single onte or a chord
-  return Array.from(state.activeNotes).map((noteName) => ({
-    name: noteName,
-    length: state.currNoteLength,
-  }));
+  const compareFn = (a: NoteName, b: NoteName) => a.localeCompare(b);
+  return Array.from(state.activeNotes)
+    .sort(compareFn)
+    .map((noteName) => ({
+      name: noteName,
+      length: state.currNoteLength,
+    }));
 }
 
 function resetPianoKeys(state: State): State {
@@ -111,7 +122,6 @@ function updateHistory(
  * is added to the history.
  */
 function commit(state: State, musicalEvent: MusicalEvent): State {
-  // Also reset keys
   return {
     ...state,
     history: updateHistory(state.history, musicalEvent),
@@ -120,12 +130,12 @@ function commit(state: State, musicalEvent: MusicalEvent): State {
 
 type StateContextProps = {
   children: ReactNode;
-}
+};
 
 type StateContextValue = {
   state: State;
   dispatch: Dispatch<Action>;
-}
+};
 
 const StateContext = createContext<StateContextValue | undefined>(undefined);
 
