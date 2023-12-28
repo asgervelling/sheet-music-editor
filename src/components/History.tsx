@@ -17,7 +17,9 @@ export default function History() {
         {state.history.map((note, i) => (
           <div
             key={i}
-            className="flex items-center w-16 bg-red-300 pt-2 ps-2 justify-center rounded-md"
+            className="flex items-center justify-center w-16
+                       pt-2 ps-2 rounded-md
+                       border border-[var(--color-primary)]"
           >
             <span>{note.name}</span>
             <NoteLengthIcon noteLength={note.length} />
