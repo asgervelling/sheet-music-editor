@@ -1,10 +1,10 @@
 import { NoteLength } from "@/lib/music_theory"
 import React from "react";
-import { IconWholeNote } from "./icons/IconWholeNote";
-import IconHalfNote from "./icons/IconHalfNote";
-import IconQuarterNote from "./icons/IconQuarterNote";
-import Icon8thNote from "./icons/Icon8thNote";
-import Icon16thNote from "./icons/Icon16thNote";
+import { WholeNoteIcon } from "./WholeNoteIcon";
+import HalfNoteIcon from "./HalfNoteIcon";
+import QuarterNoteIcon from "./QuarterNoteIcon";
+import EighthNoteIcon from "./EighthNoteIcon";
+import SixteenthNoteIcon from "./SixteenthNoteIcon";
 
 type NoteLengthSVGProps = {
   noteLength: NoteLength;
@@ -21,15 +21,15 @@ export default function NoteLengthIcon({ noteLength }: NoteLengthSVGProps) {
 function Icon({ noteLength }: NoteLengthSVGProps) {
   switch (noteLength) {
     case NoteLength.Whole:
-      return IconWholeNote();
+      return WholeNoteIcon();
     case NoteLength.Half:
-      return IconHalfNote();
+      return HalfNoteIcon();
     case NoteLength.Quarter:
-      return IconQuarterNote();
+      return QuarterNoteIcon();
     case NoteLength.Eighth:
-      return Icon8thNote();
+      return EighthNoteIcon();
     case NoteLength.Sixteenth:
-      return Icon16thNote();
+      return SixteenthNoteIcon();
     default:
       return <>Error</>;
   }

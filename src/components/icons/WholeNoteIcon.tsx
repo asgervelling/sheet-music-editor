@@ -1,6 +1,6 @@
 import { ICON_SIZE } from "./icon";
 
-export function IconWholeNote() {
+export function WholeNoteIcon() {
   return (
     <svg
       width={ICON_SIZE}
