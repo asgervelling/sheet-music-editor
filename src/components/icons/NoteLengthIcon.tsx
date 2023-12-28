@@ -31,6 +31,7 @@ function Icon({ noteLength }: NoteLengthSVGProps) {
     case NoteLength.Sixteenth:
       return SixteenthNoteIcon();
     default:
+      console.error("Unknown note length:", noteLength);
       return <>Error</>;
   }
 }

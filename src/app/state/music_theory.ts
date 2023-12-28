@@ -11,6 +11,7 @@ export enum NoteName {
   A = "A",
   Bb = "B♭",
   B = "B",
+  PAUSE = "PAUSE",
 }
 
 /**
@@ -26,15 +27,17 @@ export enum NoteLength {
 }
 
 /**
- * A note (or pause) with a length
+ * A note with a name and a length
  */
 export type Note = {
-  name: NoteName | "Pause";
+  name: NoteName;
   length: NoteLength;
 };
 
 /**
- * A single note, a chord or a pause
+ * A chord or a pause.
+ * A single note or pause is a list of length 1.
+ * A chord is a list of notes.
  */
 export type MusicalEvent = Note[];
 
@@ -58,6 +61,7 @@ export const PianoKeys: Record<NoteName, string> = {
   [NoteName.A]: "h",
   [NoteName.Bb]: "u",
   [NoteName.B]: "j",
+  [NoteName.PAUSE]: "p",
 };
 
 export const NoteLengthKeys: Record<NoteLength, string> = {

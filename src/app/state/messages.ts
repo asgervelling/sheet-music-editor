@@ -22,11 +22,11 @@ export enum Message {
 SET_NOTE_LENGTH NoteLength.Whole ->
   s.currNoteLength = NoteLength.Whole
 
-TOGGLE_PIANO_KEY "a" -> s.activePianoKeys = ["a"]
-TOGGLE_PIANO_KEY "g" -> s.activePianoKeys = ["a", "g"]
-TOGGLE_PIANO_KEY "a" -> s.activePianoKeys = ["g"]
-TOGGLE_PIANO_KEY "d" -> s.activePianoKeys = ["g", "d"]
-TOGGLE_PIANO_KEY "d" -> s.activePianoKeys = ["g", "d", "a"]
+TOGGLE_PIANO_KEY "a" -> s.pianoNotes = ["a"]
+TOGGLE_PIANO_KEY "g" -> s.pianoNotes = ["a", "g"]
+TOGGLE_PIANO_KEY "a" -> s.pianoNotes = ["g"]
+TOGGLE_PIANO_KEY "d" -> s.pianoNotes = ["g", "d"]
+TOGGLE_PIANO_KEY "d" -> s.pianoNotes = ["g", "d", "a"]
 
 COMMIT -> s.history = [
   [{ "G", Whole }, { "E", Whole }, { "C", Whole }],  // 1st chord
@@ -42,8 +42,8 @@ TOGGLE_INPUT_MODE -> s.inputMode = InputMode.Pauses
 COMMIT -> s.history = [ [{ "Break", Whole }] ]
 
 TOGGLE_INPUT_MODE -> s.inputMode = InputMode.Notes
-TOGGLE_PIANO_KEY "d" -> s.activePianoKeys = ["d"]
+TOGGLE_PIANO_KEY "d" -> s.pianoNotes = ["d"]
 COMMIT -> s.history = [ [{ "E", Whole }] ]
-       -> s.activePianoKeys = [] 
+       -> s.pianoNotes = [] 
        
 */

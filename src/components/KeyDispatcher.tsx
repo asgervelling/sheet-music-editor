@@ -2,7 +2,7 @@
 import { useContext, useEffect } from "react";
 import { StateContext } from "@/app/state/StateContext";
 import { Message } from "@/app/state/messages";
-import { KeyToNoteLength, NoteLengthKeys, PianoKeys } from "@/app/state/music_theory";
+import { KeyToNote, KeyToNoteLength, NoteLengthKeys, PianoKeys } from "@/app/state/music_theory";
 
 /**
  * Listens for keyboard input and dispatches actions to the state
@@ -14,19 +14,25 @@ export default function KeyDispatcher() {
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
-      console.log("Handle key press", event.key);
-      // const keyAlreadyHeld = state.heldPianoKeys[event.key] === true;
       if (isPianoKey(event.key)) {
         dispatch({
           type: Message.TOGGLE_PIANO_KEY,
-          payload: { key: event.key },
+          payload: { noteName: KeyToNote[event.key] },
         });
       }
+      
       else if (isNoteLengthKey(event.key)) {
         dispatch({
           type: Message.SET_NOTE_LENGTH,
           payload: { noteLength: KeyToNoteLength[event.key] },
         });
+      }
+
+      else if (event.key === "Enter") {
+        dispatch({ type: Message.COMMIT });
+      }
+      else {
+        console.log("Unknown key pressed:", event.key);
       }
     };
 

@@ -1,7 +1,9 @@
 "use client";
 import {
   MusicalEvent,
+  Note,
   NoteLength,
+  NoteName,
   PianoKeys,
 } from "@/app/state/music_theory";
 import React, { createContext, useReducer, ReactNode, Dispatch } from "react";
@@ -10,7 +12,7 @@ import { InputMode } from "./keyboard";
 
 type State = {
   currNoteLength: NoteLength;
-  activePianoKeys: Record<string, boolean>;
+  pianoNotes: Record<NoteName, boolean>; // Whether the piano key is active
   inputMode: InputMode;
   history: MusicalEvent[];
   undoStack: MusicalEvent[];
@@ -18,7 +20,7 @@ type State = {
 
 type Action =
   | { type: Message.SET_NOTE_LENGTH; payload: { noteLength: NoteLength } }
-  | { type: Message.TOGGLE_PIANO_KEY; payload: { key: string } }
+  | { type: Message.TOGGLE_PIANO_KEY; payload: { noteName: NoteName } }
   | { type: Message.TOGGLE_INPUT_MODE }
   | { type: Message.COMMIT }
   | { type: Message.UNDO }
@@ -26,18 +28,18 @@ type Action =
 
 const initialState: State = {
   currNoteLength: NoteLength.Quarter,
-  activePianoKeys: initActivePianoKeys(),
+  pianoNotes: initpianoNotes(),
   inputMode: InputMode.Notes,
   history: [],
   undoStack: [],
 };
 
-function initActivePianoKeys(): Record<string, boolean> {
-  const activePianoKeys: Record<string, boolean> = {};
+function initpianoNotes(): Record<string, boolean> {
+  const pianoNotes: Record<string, boolean> = {};
   Object.values(PianoKeys).forEach((key) => {
-    activePianoKeys[key] = false;
+    pianoNotes[key] = false;
   });
-  return activePianoKeys;
+  return pianoNotes;
 }
 
 /**
@@ -57,31 +59,15 @@ const reducer = (state: State, action: Action): State => {
 
     case Message.TOGGLE_PIANO_KEY:
       // If the piano key is on, turn it off, and vice versa
-      const key = action.payload.key;
-      const active = state.activePianoKeys[key];
-      const newActivePianoKeys = { ...state.activePianoKeys, [key]: !active };
+      const noteName = action.payload.noteName;
+      const active = state.pianoNotes[noteName];
       return {
         ...state,
-        activePianoKeys: newActivePianoKeys,
+        pianoNotes: {
+          ...state.pianoNotes,
+          [noteName]: !active,
+        },
       };
-    // const key = action.payload.key!;
-    // const keyAlreadyHeld = state.heldPianoKeys[key] === true;
-
-    // // Update state with the new key being held
-    // if (!keyAlreadyHeld) {
-    //   console.log(Message.PIANO_KEY_PRESSED, key);
-
-    //   const noteName: NoteName = KeyToNote[key];
-    //   const note: Note = { name: noteName, length: state.currNoteLength };
-
-    //   return {
-    //     ...state,
-    //     heldPianoKeys: {
-    //       ...state.heldPianoKeys,
-    //       [key]: true,
-    //     },
-    //     history: [...state.history, note],
-    //   };
 
     case Message.TOGGLE_INPUT_MODE:
       // Toggle between inputting notes and inputting pauses
@@ -97,7 +83,8 @@ const reducer = (state: State, action: Action): State => {
       // Commit the current musical event to the history.
       // We don't distinguish between single notes, chords and pauses
       // as they are all events that can be drawn on the staff.
-      console.log("Commit");
+      const musicalEvent = createMusicalEvent(state);
+      return commit(state, musicalEvent);
 
     case Message.UNDO:
       console.log("Undo");
@@ -113,9 +100,19 @@ const reducer = (state: State, action: Action): State => {
  * Create a musical event from the state.
  */
 function createMusicalEvent(state: State): MusicalEvent {
+  // Either a Pause
   if (state.inputMode === InputMode.Pauses) {
-    
+    return [{ name: NoteName.PAUSE, length: state.currNoteLength }]
   }
+
+  // Or a Note[]
+  const activeNotes = Object.entries(state.pianoNotes).filter(
+    ([_, active]) => active
+  );
+  return activeNotes.map(([key, _]) => ({
+    name: key as NoteName,
+    length: state.currNoteLength,
+  }));
 }
 
 /**
