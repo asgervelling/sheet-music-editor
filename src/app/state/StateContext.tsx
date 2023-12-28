@@ -8,12 +8,10 @@ import {
 } from "@/app/state/music_theory";
 import React, { createContext, useReducer, ReactNode, Dispatch } from "react";
 import { Message } from "./messages";
-import { InputMode } from "./keyboard";
 
 type State = {
   currNoteLength: NoteLength;
-  pianoNotes: Record<NoteName, boolean>; // Whether the piano key is active
-  inputMode: InputMode;
+  activeNotes: Note[]
   history: MusicalEvent[];
   undoStack: MusicalEvent[];
 };
@@ -21,26 +19,16 @@ type State = {
 type Action =
   | { type: Message.SET_NOTE_LENGTH; payload: { noteLength: NoteLength } }
   | { type: Message.TOGGLE_PIANO_KEY; payload: { noteName: NoteName } }
-  | { type: Message.TOGGLE_INPUT_MODE }
   | { type: Message.COMMIT }
   | { type: Message.UNDO }
   | { type: Message.REDO };
 
 const initialState: State = {
   currNoteLength: NoteLength.Quarter,
-  pianoNotes: initpianoNotes(),
-  inputMode: InputMode.Notes,
+  activeNotes: [],
   history: [],
   undoStack: [],
 };
-
-function initpianoNotes(): Record<string, boolean> {
-  const pianoNotes: Record<string, boolean> = {};
-  Object.values(PianoKeys).forEach((key) => {
-    pianoNotes[key] = false;
-  });
-  return pianoNotes;
-}
 
 /**
  * Reducer for the state.
@@ -60,23 +48,16 @@ const reducer = (state: State, action: Action): State => {
     case Message.TOGGLE_PIANO_KEY:
       // If the piano key is on, turn it off, and vice versa
       const noteName = action.payload.noteName;
-      const active = state.pianoNotes[noteName];
+      const active = noteName in state.activeNotes;
+      let activeNotes = [...state.activeNotes];
+      if (active) {
+        activeNotes = activeNotes.filter((note) => note.name !== noteName);
+      } else {
+        activeNotes.push({ name: noteName, length: state.currNoteLength });
+      }
       return {
         ...state,
-        pianoNotes: {
-          ...state.pianoNotes,
-          [noteName]: !active,
-        },
-      };
-
-    case Message.TOGGLE_INPUT_MODE:
-      // Toggle between inputting notes and inputting pauses
-      return {
-        ...state,
-        inputMode:
-          state.inputMode === InputMode.Notes
-            ? InputMode.Pauses
-            : InputMode.Notes,
+        activeNotes: activeNotes,
       };
 
     case Message.COMMIT:
@@ -102,24 +83,22 @@ const reducer = (state: State, action: Action): State => {
  */
 function createMusicalEvent(state: State): MusicalEvent {
   // Either a Pause
-  if (state.inputMode === InputMode.Pauses) {
-    return [{ name: NoteName.PAUSE, length: state.currNoteLength }]
+  if (state.activeNotes.length === 0) {
+    return [{ name: NoteName.PAUSE, length: state.currNoteLength }];
   }
 
-  // Or a Note[]
-  const activeNotes = Object.entries(state.pianoNotes).filter(
-    ([_, active]) => active
-  );
-  return activeNotes.map(([key, _]) => ({
-    name: key as NoteName,
-    length: state.currNoteLength,
-  }));
+  // Or a Note[], which may be a single onte or a chord
+  return [...state.activeNotes];
+  // return state.activeNotes.map(([key, _]) => ({
+  //   name: key as NoteName,
+  //   length: state.currNoteLength,
+  // }));
 }
 
 function resetPianoKeys(state: State): State {
   return {
     ...state,
-    pianoNotes: initpianoNotes(),
+    activeNotes: [],
   };
 }
 
