@@ -22,14 +22,14 @@ const initialState: State = {
 };
 
 /**
- * KEY_PRESSED: For holding down keys \
- * KEY_RELEASED: For releasing keys \
- * SET_NOTE_LENGTH: For setting the current note length
+ * Reducer for the state.
+ * Create a new state based on the action type
+ * and payload, as well as the previous state.
  */
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
-    case MessageType.KEY_PRESSED:
-      console.log(MessageType.KEY_PRESSED, action.payload.key!);
+    case MessageType.PIANO_KEY_PRESSED:
+      console.log(MessageType.PIANO_KEY_PRESSED, action.payload.key!);
       return {
         ...state,
         pressedKeys: {
@@ -37,8 +37,8 @@ const reducer = (state: State, action: Action): State => {
           [action.payload.key!]: true,
         },
       };
-    case MessageType.KEY_RELEASED:
-      console.log(MessageType.KEY_RELEASED, action.payload.key!);
+    case MessageType.PIANO_KEY_RELEASED:
+      console.log(MessageType.PIANO_KEY_RELEASED, action.payload.key!);
       const { [action.payload.key!]: _, ...rest } = state.pressedKeys;
       return {
         ...state,
@@ -50,6 +50,7 @@ const reducer = (state: State, action: Action): State => {
         ...state,
         currNoteLength: action.payload.noteLength!,
       };
+
     default:
       return state;
   }

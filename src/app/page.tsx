@@ -1,22 +1,20 @@
 import { StateProvider } from "./context/StateContext";
-import PianoSVG from "@/components/PianoSVG";
+import Piano from "@/components/Piano";
 import NoteLengthControls from "@/components/NoteLengthControls";
 import Staff from "@/components/Staff";
+import KeyDispatcher from "@/components/KeyDispatcher";
 
 export default function Home() {
   return (
     <StateProvider>
+      <KeyDispatcher />
       <div className="grid grid-cols-2 grid-rows-2 h-screen">
-        {/* Row 1 */}
         <div className="py-20 px-32">
           <NoteLengthControls />
-          {/* <UndoRedoControls />
-          <ArrowKeyControls /> */}
         </div>
         <div className="py-20 px-40 flex items-center justify-center">
-          <PianoSVG />
+          <Piano />
         </div>
-        {/* Row 2 */}
         <div className="py-20 px-32 col-span-2">
           <Staff />
         </div>
