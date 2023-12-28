@@ -1,6 +1,6 @@
 "use client";
 import NoteLengthIndicator from "./NoteLengthIndicator";
-import { NoteLength } from "@/lib/music_theory";
+import { NoteLength } from "@/app/state/music_theory";
 
 export default function NoteLengthControls() {
   return (

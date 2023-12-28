@@ -1,7 +1,7 @@
 "use client";
 import React, { useContext } from "react";
-import { StateContext } from "@/app/context/StateContext";
-import { NoteLength, NoteLengthKeys } from "@/lib/music_theory";
+import { StateContext } from "@/app/state/StateContext";
+import { NoteLength, NoteLengthKeys } from "@/app/state/music_theory";
 import NoteLengthIcon from "./icons/NoteLengthIcon";
 
 interface NoteLengthKeyProps {

@@ -1,6 +1,6 @@
 "use client";
 import { useContext } from "react";
-import { StateContext } from "@/app/context/StateContext";
+import { StateContext } from "@/app/state/StateContext";
 import NoteLengthIcon from "./icons/NoteLengthIcon";
 
 /**

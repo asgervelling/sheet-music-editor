@@ -1,4 +1,4 @@
-import { NoteLength } from "@/lib/music_theory"
+import { NoteLength } from "@/app/state/music_theory"
 import React from "react";
 import { WholeNoteIcon } from "./WholeNoteIcon";
 import HalfNoteIcon from "./HalfNoteIcon";

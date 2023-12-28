@@ -1,4 +1,4 @@
-import { StateProvider } from "./context/StateContext";
+import { StateProvider } from "./state/StateContext";
 import Piano from "@/components/Piano";
 import NoteLengthControls from "@/components/NoteLengthControls";
 import Staff from "@/components/Staff";

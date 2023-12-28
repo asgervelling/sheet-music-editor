@@ -13,6 +13,10 @@ export enum NoteName {
   B = "B",
 }
 
+/**
+ * The length of a note,
+ * from whole to sixteenth
+ */
 export enum NoteLength {
   Whole = "Whole",
   Half = "Half",
@@ -21,10 +25,25 @@ export enum NoteLength {
   Sixteenth = "Sixteenth",
 }
 
+/**
+ * A note (or pause) with a length
+ */
 export type Note = {
-  name: NoteName;
+  name: NoteName | "Pause";
   length: NoteLength;
 };
+
+/**
+ * A single note, a chord or a pause
+ */
+export type MusicalEvent = Note[];
+
+/**
+ * Any note or chord that is entered on the piano
+ * can be committed by pressing the Enter key.
+ * It will be added to the end of the history.
+ */
+export const CommitKey = "Enter";
 
 export const PianoKeys: Record<NoteName, string> = {
   [NoteName.C]: "a",

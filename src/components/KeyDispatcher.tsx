@@ -1,8 +1,8 @@
 "use client";
 import { useContext, useEffect } from "react";
-import { StateContext } from "@/app/context/StateContext";
-import { MessageType } from "@/app/context/messages";
-import { KeyToNoteLength, NoteLengthKeys, PianoKeys } from "@/lib/music_theory";
+import { StateContext } from "@/app/state/StateContext";
+import { Message } from "@/app/state/messages";
+import { KeyToNoteLength, NoteLengthKeys, PianoKeys } from "@/app/state/music_theory";
 
 /**
  * Listens for keyboard input and dispatches actions to the state
@@ -18,35 +18,24 @@ export default function KeyDispatcher() {
       // const keyAlreadyHeld = state.heldPianoKeys[event.key] === true;
       if (isPianoKey(event.key)) {
         dispatch({
-          type: MessageType.PIANO_KEY_PRESSED,
+          type: Message.TOGGLE_PIANO_KEY,
           payload: { key: event.key },
-        });
-      }
-    };
-
-    const handleKeyRelease = (event: KeyboardEvent) => {
-      if (isPianoKey(event.key)) {
-        dispatch({ 
-          type: MessageType.PIANO_KEY_RELEASED,
-          payload: { key: event.key }
         });
       }
       else if (isNoteLengthKey(event.key)) {
         dispatch({
-          type: MessageType.SET_NOTE_LENGTH,
+          type: Message.SET_NOTE_LENGTH,
           payload: { noteLength: KeyToNoteLength[event.key] },
         });
       }
     };
 
     window.addEventListener("keydown", handleKeyPress);
-    window.addEventListener("keyup", handleKeyRelease);
 
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
-      window.removeEventListener("keyup", handleKeyRelease);
     };
-  }, [dispatch, state.heldPianoKeys]);
+  }, [dispatch]);
 
   return null;
 }
