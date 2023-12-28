@@ -38,11 +38,17 @@ const NoteLengthKey: React.FC<NoteLengthKeyProps> = ({ noteLength }) => {
     };
   }, [dispatch]);
 
+  const style = {
+    backgroundColor: isCurrentNote ? "var(--color-primary)" : "var(--color-bg)",
+    color: isCurrentNote ? "var(--color-bg)" : "var(--color-primary)",
+    border: isCurrentNote ? "none" : "1px solid var(--color-primary)",
+  };
+
   return (
     <div>
       <div
-        style={{ backgroundColor: isCurrentNote ? "yellow" : "white" }}
-        className="h-10 w-10 flex items-center justify-center"
+        style={style}
+        className="h-10 w-10 flex items-center justify-center mb-2"
       >
         {noteLength.toString()}
       </div>

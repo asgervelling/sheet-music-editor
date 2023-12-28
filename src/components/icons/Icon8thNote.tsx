@@ -1,8 +1,10 @@
+import { ICON_SIZE } from "./icon";
+
 export default function Icon8thNote() {
   return (
     <svg
-      width="86"
-      height="180"
+      width={ICON_SIZE}
+      height={ICON_SIZE}
       viewBox="0 0 86 180"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

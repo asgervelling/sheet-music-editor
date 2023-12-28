@@ -13,7 +13,7 @@ type NoteLengthSVGProps = {
 
 export default function NoteLengthSVG({ noteLength }: NoteLengthSVGProps) {
   return (
-    <div className="h-10 w-10 text-center">
+    <div className="h-10 w-10 -translate-x-1">
       <Icon noteLength={noteLength} />
     </div>
   );

@@ -7,7 +7,7 @@ export default function Home() {
     <StateProvider>
       <div className="grid grid-cols-2 grid-rows-2 h-screen">
         {/* Row 1 */}
-        <div className="py-20 px-32 bg-blue-300">
+        <div className="py-20 px-32">
           <NoteLengthControls />
           {/* <UndoRedoControls />
           <ArrowKeyControls /> */}
