@@ -18,7 +18,7 @@ export const WhitePianoKey = ({ i }: PianoKeyProps) => {
 
   const noteNames: NoteName[] = Object.values(NoteName);
   const noteName = noteNames[i];
-  const isActive = state.pressedKeys[PianoKeys[noteName]] || false;
+  const isActive = state.heldPianoKeys[PianoKeys[noteName]] || false;
   const x = mapping(i) * 4 + 0;
   const y = 0;
   const w = 4;
@@ -49,7 +49,7 @@ export const BlackPianoKey = ({ i }: PianoKeyProps) => {
 
   const noteNames: NoteName[] = Object.values(NoteName);
   const noteName = noteNames[i];
-  const isActive = state.pressedKeys[PianoKeys[noteName]] || false;
+  const isActive = state.heldPianoKeys[PianoKeys[noteName]] || false;
   const offset = mapping(i) < 2 ? 3 : 7;
   const x = mapping(i) * 4 + offset;
   const y = 0;

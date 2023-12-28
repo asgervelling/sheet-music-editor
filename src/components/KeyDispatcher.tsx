@@ -10,20 +10,14 @@ import { KeyToNoteLength, NoteLengthKeys, PianoKeys } from "@/lib/music_theory";
  * No other components should be listening for keyboard input.
  */
 export default function KeyDispatcher() {
-  const { dispatch } = useContext(StateContext)!;
+  const { state, dispatch } = useContext(StateContext)!;
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
-      if (isPianoKey(event.key)) {
+      if (isPianoKey(event.key) && state.heldPianoKeys[event.key] !== true) {
         dispatch({
           type: MessageType.PIANO_KEY_PRESSED,
           payload: { key: event.key },
-        });
-      }
-      else if (isNoteLengthKey(event.key)) {
-        dispatch({
-          type: MessageType.SET_NOTE_LENGTH,
-          payload: { noteLength: KeyToNoteLength[event.key] },
         });
       }
     };
@@ -33,6 +27,14 @@ export default function KeyDispatcher() {
         dispatch({ 
           type: MessageType.PIANO_KEY_RELEASED,
           payload: { key: event.key }
+        });
+      }
+      else if (isNoteLengthKey(event.key)) {
+        // Print current time in milliseconds
+        console.log(Date.now());
+        dispatch({
+          type: MessageType.SET_NOTE_LENGTH,
+          payload: { noteLength: KeyToNoteLength[event.key] },
         });
       }
     };

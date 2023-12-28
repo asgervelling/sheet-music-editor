@@ -4,7 +4,7 @@ import React, { createContext, useReducer, ReactNode, Dispatch } from 'react';
 import { MessageType } from './messages';
 
 interface State {
-  pressedKeys: Record<string, boolean>;
+  heldPianoKeys: Record<string, boolean>;
   currNoteLength: NoteLength;
 }
 
@@ -17,7 +17,7 @@ interface Action {
 }
 
 const initialState: State = {
-  pressedKeys: {},
+  heldPianoKeys: {},
   currNoteLength: NoteLength.Quarter,
 };
 
@@ -32,17 +32,17 @@ const reducer = (state: State, action: Action): State => {
       console.log(MessageType.PIANO_KEY_PRESSED, action.payload.key!);
       return {
         ...state,
-        pressedKeys: {
-          ...state.pressedKeys,
+        heldPianoKeys: {
+          ...state.heldPianoKeys,
           [action.payload.key!]: true,
         },
       };
     case MessageType.PIANO_KEY_RELEASED:
       console.log(MessageType.PIANO_KEY_RELEASED, action.payload.key!);
-      const { [action.payload.key!]: _, ...rest } = state.pressedKeys;
+      const { [action.payload.key!]: _, ...rest } = state.heldPianoKeys;
       return {
         ...state,
-        pressedKeys: rest,
+        heldPianoKeys: rest,
       };
     case MessageType.SET_NOTE_LENGTH:
       console.log(MessageType.SET_NOTE_LENGTH, action.payload.noteLength!);
