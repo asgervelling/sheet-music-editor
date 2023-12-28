@@ -5,6 +5,7 @@
 :root {
   --color-primary: #111;
   --color-bg: #FFFACC;
+  --color-highlight: #CE7B91;
 }
 
 svg {

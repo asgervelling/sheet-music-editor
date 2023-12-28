@@ -3,8 +3,6 @@ import React, { useContext } from "react";
 import { NoteName, PianoKeys } from "@/lib/music_theory";
 import { StateContext } from "@/app/context/StateContext";
 
-const ACTIVE_COLOR = "#CE7B91";
-
 type PianoKeyProps = {
   i: number;
 };
@@ -14,7 +12,7 @@ export const WhitePianoKey = ({ i }: PianoKeyProps) => {
     const codomain = [0, 2, 4, 5, 7, 9, 11];
     return codomain.indexOf(i);
   };
-  const { state, dispatch } = useContext(StateContext)!;
+  const { state } = useContext(StateContext)!;
 
   const noteNames: NoteName[] = Object.values(NoteName);
   const noteName = noteNames[i];
@@ -24,7 +22,7 @@ export const WhitePianoKey = ({ i }: PianoKeyProps) => {
   const w = 4;
   const h = 11;
 
-  const fill = isActive ? ACTIVE_COLOR : "white";
+  const fill = isActive ? "var(--color-highlight)" : "white";
   return (
     <g key={i} fill={fill}>
       <rect
@@ -45,7 +43,7 @@ export const BlackPianoKey = ({ i }: PianoKeyProps) => {
     const codomain = [1, 3, 6, 8, 10];
     return codomain.indexOf(i);
   };
-  const { state, dispatch } = useContext(StateContext)!;
+  const { state } = useContext(StateContext)!;
 
   const noteNames: NoteName[] = Object.values(NoteName);
   const noteName = noteNames[i];
@@ -57,13 +55,13 @@ export const BlackPianoKey = ({ i }: PianoKeyProps) => {
   const h = 7;
 
   return (
-    <g key={i} fill={isActive ? ACTIVE_COLOR : "black"}>
+    <g key={i} fill={isActive ? "var(--color-highlight)" : "black"}>
       <rect
         x={x}
         y={y}
         width={w}
         height={h}
-        fill={isActive ? ACTIVE_COLOR : "black"}
+        fill={isActive ? "var(--color-highlight)" : "black"}
         z={1}
       />
     </g>
