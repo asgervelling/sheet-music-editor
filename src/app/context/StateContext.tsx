@@ -1,5 +1,5 @@
 "use client";
-import { KeyToNote, Note, NoteLength, NoteName } from '@/lib/music_theory';
+import { KeyToNote, Note, Note, NoteLength, NoteName } from '@/lib/music_theory';
 import React, { createContext, useReducer, ReactNode, Dispatch } from 'react';
 import { MessageType } from './messages';
 
