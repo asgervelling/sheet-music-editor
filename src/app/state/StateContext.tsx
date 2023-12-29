@@ -10,6 +10,7 @@ import { Message } from "./messages";
 type State = {
   currNoteLength: NoteLength;
   activeNotes: Set<NoteName>;
+  ctrlKeyHeld: boolean;
   history: MusicalEvent[];
   undoStack: MusicalEvent[];
 };
@@ -17,6 +18,7 @@ type State = {
 const initialState: State = {
   currNoteLength: NoteLength.Quarter,
   activeNotes: new Set(),
+  ctrlKeyHeld: false,
   history: [],
   undoStack: [],
 };
@@ -25,6 +27,8 @@ type Action =
   | { type: Message.SET_NOTE_LENGTH; payload: { noteLength: NoteLength } }
   | { type: Message.TOGGLE_PIANO_KEY; payload: { noteName: NoteName } }
   | { type: Message.COMMIT }
+  | { type: Message.CTRL_KEY_DOWN }
+  | { type: Message.CTRL_KEY_UP }
   | { type: Message.UNDO }
   | { type: Message.REDO };
 
@@ -68,10 +72,24 @@ const reducer = (state: State, action: Action): State => {
       const s = commit(state, musicalEvent);
       return resetPianoKeys(s);
 
+    case Message.CTRL_KEY_DOWN:
+      return {
+        ...state,
+        ctrlKeyHeld: true,
+      };
+
+    case Message.CTRL_KEY_UP:
+      return {
+        ...state,
+        ctrlKeyHeld: false,
+      };
+
     case Message.UNDO:
       console.log("Undo");
+      return state;
     case Message.REDO:
       console.log("Redo");
+      return state;
 
     default:
       return state;

@@ -10,8 +10,10 @@
 export enum Message {
   SET_NOTE_LENGTH = "SET_NOTE_LENGTH",
   TOGGLE_PIANO_KEY = "TOGGLE_PIANO_KEY",
-  // TOGGLE_PEDAL = "TOGGLE_PEDAL" // worry about this one later,
+  // TOGGLE_PEDAL = "TOGGLE_PEDAL" 
   COMMIT = "COMMIT",
+  CTRL_KEY_DOWN = "CTRL_KEY_DOWN",
+  CTRL_KEY_UP = "CTRL_KEY_UP",
   UNDO = "UNDO",
   REDO = "REDO",
 }

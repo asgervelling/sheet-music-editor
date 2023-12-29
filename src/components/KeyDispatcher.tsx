@@ -10,7 +10,7 @@ import { KeyToNote, KeyToNoteLength, NoteLengthKeys, PianoKeys } from "@/app/sta
  * No other components should be listening for keyboard input.
  */
 export default function KeyDispatcher() {
-  const { state, dispatch } = useContext(StateContext)!;
+  const { dispatch } = useContext(StateContext)!;
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -20,23 +20,32 @@ export default function KeyDispatcher() {
           payload: { noteName: KeyToNote[event.key] },
         });
       }
-      
       else if (isNoteLengthKey(event.key)) {
         dispatch({
           type: Message.SET_NOTE_LENGTH,
           payload: { noteLength: KeyToNoteLength[event.key] },
         });
       }
-
       else if (event.key === "Enter") {
         dispatch({ type: Message.COMMIT });
       }
+      else if (event.key === "Control") {
+        dispatch({ type: Message.CTRL_KEY_DOWN })
+      }
     };
 
+    const handleKeyRelease = (event: KeyboardEvent) => {
+      if (event.key === "Control") {
+        dispatch({ type: Message.CTRL_KEY_UP })
+      }
+    }
+
     window.addEventListener("keydown", handleKeyPress);
+    window.addEventListener("keyup", handleKeyRelease);
 
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
+      window.removeEventListener("keyup", handleKeyRelease);
     };
   }, [dispatch]);
 
