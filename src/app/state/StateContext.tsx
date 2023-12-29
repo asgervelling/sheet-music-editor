@@ -72,17 +72,17 @@ const reducer = (state: State, action: Action): State => {
       const s = commit(state, musicalEvent);
       return resetPianoKeys(s);
 
-    case Message.CTRL_KEY_DOWN:
-      return {
-        ...state,
-        ctrlKeyHeld: true,
-      };
+    // case Message.CTRL_KEY_DOWN:
+    //   return {
+    //     ...state,
+    //     ctrlKeyHeld: true,
+    //   };
 
-    case Message.CTRL_KEY_UP:
-      return {
-        ...state,
-        ctrlKeyHeld: false,
-      };
+    // case Message.CTRL_KEY_UP:
+    //   return {
+    //     ...state,
+    //     ctrlKeyHeld: false,
+    //   };
 
     case Message.UNDO:
       console.log("Undo");
