@@ -4,13 +4,14 @@ import { State } from "../state";
 /**
  * Create a new state where the musical event
  * is added to the history.
- * Reset the active notes.
+ * Reset the active notes and the undo stack.
  */
 export default function commit(state: State): State {
   const event = createMusicalEvent(state);
   return {
     ...state,
     activeNotes: [],
+    undoStack: [],
     history: [...state.history, event],
   };
 }

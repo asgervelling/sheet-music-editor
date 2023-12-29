@@ -15,6 +15,11 @@ export enum NoteName {
 }
 
 /**
+ * Maybe turn the above into a type without pause,
+ * and then let pause be an empty MusicalEvent (an empty Note[])
+ */
+
+/**
  * The length of a note,
  * from whole to sixteenth
  */

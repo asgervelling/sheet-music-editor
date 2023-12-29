@@ -3,6 +3,7 @@ import React, { useContext } from "react";
 import { NoteName, PianoKeys } from "@/app/state/music_theory";
 import { StateContext } from "@/app/state/StateContext";
 
+
 type PianoKeyProps = {
   i: number;
 };
