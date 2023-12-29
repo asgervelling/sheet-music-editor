@@ -19,7 +19,31 @@ const initialState: State = {
   keysBeingHeld: [],
 };
 
+type ActionWithoutPayload = {
+  type: Message;
+};
+
+type ActionWithPayload<P> = {
+  type: Message;
+  payload: P;
+};
+
+type SetNoteLengthAction = ActionWithPayload<NoteLength>;
+type ToggleActiveNoteAction = ActionWithPayload<NoteName>;
+type CommitAction = ActionWithoutPayload;
+type KeyPressAction = ActionWithPayload<string>;
+type KeyReleaseAction = ActionWithPayload<string>;
+
 type Action =
+  | SetNoteLengthAction
+  | ToggleActiveNoteAction
+  | CommitAction
+  | KeyPressAction
+  | KeyReleaseAction;
+
+type Reducer = (state: State, action: Action) => State;
+
+type Action2 =
   | { type: Message.SET_NOTE_LENGTH; payload: { noteLength: NoteLength } }
   | { type: Message.TOGGLE_ACTIVE_NOTE; payload: { noteName: NoteName } }
   | { type: Message.COMMIT }
