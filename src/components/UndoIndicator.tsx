@@ -1,10 +1,13 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import MultiKeyDispatcher from "./MultiKeyDispatcher";
+import { StateContext } from "@/app/state/StateContext";
+import { Message } from "@/app/state/messages";
 
 export default function UndoIndicator() {
+  const { dispatch } = useContext(StateContext)!;
   const [blinkTime, setBlinkTime] = useState(0);
-
+  
   useEffect(() => {
     if (blinkTime > 0) {
       const interval = setInterval(() => {
@@ -12,7 +15,7 @@ export default function UndoIndicator() {
       }, 100);
       return () => clearInterval(interval);
     }
-  }, [blinkTime]);
+  }, [dispatch, blinkTime]);
 
   const active = blinkTime > 0;
 
@@ -26,7 +29,7 @@ export default function UndoIndicator() {
       <MultiKeyDispatcher
         keyCombination={["Control", "z"]}
         onPress={() => {
-          console.log("Undo it");
+          dispatch({ type: Message.UNDO});
           setBlinkTime(101);
         }}
       />
