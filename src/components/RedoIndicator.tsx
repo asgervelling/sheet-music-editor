@@ -5,16 +5,16 @@ import { Message } from "@/app/state/messages";
 import CommandControls from "./CommandControls";
 
 /**
- * An indicator and dispatcher for the undo command.
+ * An indicator and dispatcher for the redo command.
  */
-export default function UndoIndicator() {
+export default function RedoIndicator() {
   const { dispatch } = useContext(StateContext)!;
-  
+
   return (
-    <CommandControls 
-      keyCombination={["Control", "z"]}
-      onPress={() => dispatch({ type: Message.UNDO })}
-      commandName="Undo"
+    <CommandControls
+      keyCombination={["Control", "x"]}
+      onPress={() => dispatch({ type: Message.REDO })}
+      commandName="Redo"
     />
-  )
-};
+  );
+}

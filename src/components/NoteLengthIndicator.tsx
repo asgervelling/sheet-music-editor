@@ -19,7 +19,7 @@ const NoteLengthIndicator: React.FC<NoteLengthKeyProps> = ({ noteLength }) => {
   };
 
   return (
-    <div>
+    <div className="border border-green-500">
       <div>
         <div
           style={style}
