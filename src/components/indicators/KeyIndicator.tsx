@@ -1,7 +1,7 @@
 "use client";
 
 import { StateContext } from "@/app/state/StateContext";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 
 type KeyIndicatorProps = {
   keyCode: string;
@@ -30,8 +30,8 @@ export default function KeyIndicator({ keyCode, label }: KeyIndicatorProps) {
   return (
     <>
       <div
-        className="border border-[var(--color-primary)]
-          p-2 select-none"
+        className="min-w-10 h-10 flex items-center p-2 justify-center
+          border border-[var(--color-primary)] select-none"
         style={style}
       >
         {label}

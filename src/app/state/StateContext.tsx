@@ -68,7 +68,6 @@ const reducer = (state: State, action: Action): State => {
 
     case Message.KEY_PRESS:
       const pressedKey = action.payload.key;
-      console.log("Key press", pressedKey);
       return {
         ...state,
         keysBeingHeld: [...state.keysBeingHeld, pressedKey],
@@ -76,34 +75,10 @@ const reducer = (state: State, action: Action): State => {
 
     case Message.KEY_RELEASE:
       const releasedKey = action.payload.key;
-      console.log("Key release", releasedKey);
       return {
         ...state,
         keysBeingHeld: state.keysBeingHeld.filter((k) => k !== releasedKey),
       };
-
-    // case Message.UNDO:
-    //   console.log("Undoing ");
-    //   if (state.history.length === 0) {
-    //     return { ...state };
-    //   }
-    //   const lastEvent = state.history[state.history.length - 1];
-    //   const undoStack = [...state.undoStack, lastEvent];
-    //   const history = state.history.slice(0, state.history.length - 1);
-    //   return { ...state, history, undoStack };
-      
-    // case Message.REDO:
-    //   console.log("Redo");
-    //   if (state.undoStack.length === 0) {
-    //     return { ...state };
-    //   }
-    //   const nextEvent = state.undoStack[state.undoStack.length - 1];
-    //   const newHistory = [...state.history, nextEvent];
-    //   const newUndoStack = state.undoStack.slice(
-    //     0,
-    //     state.undoStack.length - 1
-    //   );
-    //   return { ...state, history: newHistory, undoStack: newUndoStack };
 
     default:
       return state;

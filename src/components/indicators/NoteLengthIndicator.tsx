@@ -2,7 +2,7 @@
 import React, { useContext } from "react";
 import { StateContext } from "@/app/state/StateContext";
 import { NoteLength, NoteLengthKeys } from "@/app/state/music_theory";
-import NoteLengthIcon from "./icons/NoteLengthIcon";
+import NoteLengthIcon from "../icons/NoteLengthIcon";
 
 interface NoteLengthKeyProps {
   noteLength: NoteLength;

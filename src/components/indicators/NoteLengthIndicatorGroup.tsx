@@ -1,8 +1,7 @@
-"use client";
 import NoteLengthIndicator from "./NoteLengthIndicator";
 import { NoteLength } from "@/app/state/music_theory";
 
-export default function NoteLengthControls() {
+export default function NoteLengthIndicatorGroup() {
   return (
     <div className="grid grid-flow-col justify-start gap-1">
       <NoteLengthIndicator noteLength={NoteLength.Whole} />

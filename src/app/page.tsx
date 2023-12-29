@@ -1,12 +1,11 @@
 import { StateProvider } from "./state/StateContext";
 import Piano from "@/components/Piano";
-import NoteLengthControls from "@/components/NoteLengthControls";
+import NoteLengthIndicatorGroup from "@/components/indicators/NoteLengthIndicatorGroup";
 import KeyDispatcher from "@/components/KeyDispatcher";
 import History from "@/components/History";
-import EnterIndicator from "@/components/EnterIndicator";
-import UndoIndicator from "@/components/UndoIndicator";
-import RedoIndicator from "@/components/RedoIndicator";
-import KeyIndicator from "@/components/KeyIndicator";
+import EnterKeyIndicator from "@/components/indicators/EnterKeyIndicator";
+import UndoIndicatorGroup from "@/components/indicators/UndoIndicatorGroup";
+import RedoIndicatorGroup from "@/components/indicators/RedoIndicatorGroup";
 
 export default function Home() {
   return (
@@ -16,11 +15,10 @@ export default function Home() {
       <div className="grid grid-cols-2 grid-rows-2 h-screen">
         {/* Top left quarter */}
         <div className="py-20 px-32">
-          <NoteLengthControls />
+          <NoteLengthIndicatorGroup />
           <div className="grid gap-y-2">
-            <KeyIndicator keyCode="Control" label="Ctrl" />
-            {/* <UndoIndicator />
-            <RedoIndicator /> */}
+            <UndoIndicatorGroup />
+            <RedoIndicatorGroup />
           </div>
         </div>
         {/* Top right quarter */}
@@ -28,7 +26,7 @@ export default function Home() {
           <Piano />
           <div className="w-full pt-4">
             <div className="flex justify-end">
-              <EnterIndicator />
+              <EnterKeyIndicator />
             </div>
           </div>
         </div>

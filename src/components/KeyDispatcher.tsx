@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { StateContext } from "@/app/state/StateContext";
 import { Message } from "@/app/state/messages";
 import { KeyToNote, KeyToNoteLength, NoteLengthKeys, PianoKeys } from "@/app/state/music_theory";
@@ -14,6 +14,14 @@ export default function KeyDispatcher() {
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
+      // First, dispatch that a key was pressed
+      // and is currently being held down.
+      dispatch({
+        type: Message.KEY_PRESS,
+        payload: { key: event.key },
+      });
+
+      // Then, dispatch the appropriate action
       if (event.key === "Enter") {
         dispatch({ type: Message.COMMIT });
       }
@@ -27,12 +35,6 @@ export default function KeyDispatcher() {
         dispatch({
           type: Message.SET_NOTE_LENGTH,
           payload: { noteLength: KeyToNoteLength[event.key] },
-        });
-      }
-      else {
-        dispatch({
-          type: Message.KEY_PRESS,
-          payload: { key: event.key },
         });
       }
     };

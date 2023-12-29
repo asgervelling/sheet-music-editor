@@ -1,5 +1,4 @@
-"use client";
-import { WhitePianoKey, BlackPianoKey } from "./SVGPianoKey";
+import { WhitePianoKey, BlackPianoKey } from "./PianoKey";
 
 const Piano = () => {
   return (
