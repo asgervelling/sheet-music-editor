@@ -29,7 +29,13 @@ function createMusicalEvent(state: State): MusicalEvent {
  * Create a sorted note array from the state's active notes.
  */
 function createNotesFromNames(state: State): Note[] {
-  const notes = [...state.activeNotes].sort().map((name) => ({
+  const compareFn = (a: NoteName, b: NoteName) => {
+    const noteNames = Object.values(NoteName);
+    const aIndex = noteNames.indexOf(a);
+    const bIndex = noteNames.indexOf(b);
+    return aIndex - bIndex;
+  }
+  const notes = [...state.activeNotes].sort(compareFn).map((name) => ({
     name: name,
     length: state.currNoteLength,
   }));
