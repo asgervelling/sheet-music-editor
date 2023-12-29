@@ -19,25 +19,25 @@ export default function UndoIndicator() {
   const style = {
     backgroundColor: active ? "var(--color-primary)" : "var(--color-bg)",
     color: active ? "var(--color-bg)" : "var(--color-primary)",
-    border: active ? "none" : "1px solid var(--color-primary)",
   };
 
   return (
-    <>
+    <div>
       <MultiKeyDispatcher
         keyCombination={["Control", "z"]}
         onPress={() => {
           console.log("Undo it");
-          setBlinkTime(1);
+          setBlinkTime(101);
         }}
       />
       <div
-        style={style} 
-        className="transition-all duration-100
-          border border-[var(--color-primary)] p-2 select-none"
+        className="transition-all duration-200 flex"
       >
-        Undo
+        <div className="border border-[var(--color-primary)] p-2 select-none" style={style}>Ctrl</div>
+        <div className="p-2 select-none">+</div>
+        <div className="border border-[var(--color-primary)] p-2 select-none" style={style}>Z</div>
+        <div className="ps-4 py-2 select-none">Undo</div>
       </div>
-    </>
+    </div>
   );
 };
