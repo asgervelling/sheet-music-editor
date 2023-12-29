@@ -9,16 +9,14 @@ import { Message } from "./messages";
 
 type State = {
   currNoteLength: NoteLength;
-  activeNotes: Set<NoteName>;
-  ctrlKeyHeld: boolean;
+  activeNotes: NoteName[];
   history: MusicalEvent[];
   undoStack: MusicalEvent[];
 };
 
 const initialState: State = {
   currNoteLength: NoteLength.Quarter,
-  activeNotes: new Set(),
-  ctrlKeyHeld: false,
+  activeNotes: [],
   history: [],
   undoStack: [],
 };
@@ -27,8 +25,6 @@ type Action =
   | { type: Message.SET_NOTE_LENGTH; payload: { noteLength: NoteLength } }
   | { type: Message.TOGGLE_PIANO_KEY; payload: { noteName: NoteName } }
   | { type: Message.COMMIT }
-  | { type: Message.CTRL_KEY_DOWN }
-  | { type: Message.CTRL_KEY_UP }
   | { type: Message.UNDO }
   | { type: Message.REDO };
 
@@ -49,19 +45,17 @@ const reducer = (state: State, action: Action): State => {
     case Message.TOGGLE_PIANO_KEY:
       // If the piano key is on, turn it off, and vice versa
       const noteName = action.payload.noteName;
-      if (state.activeNotes.has(noteName)) {
+      if (state.activeNotes.includes(noteName)) {
         // Remove the note from the active notes
         return {
           ...state,
-          activeNotes: new Set(
-            Array.from(state.activeNotes).filter((n) => n !== noteName)
-          ),
+          activeNotes: [...state.activeNotes].filter((n) => n !== noteName),
         };
       }
       // Add the note to the active notes
       return {
         ...state,
-        activeNotes: new Set(Array.from(state.activeNotes).concat(noteName)),
+        activeNotes: [...state.activeNotes, noteName],
       };
 
     case Message.COMMIT:
@@ -72,17 +66,6 @@ const reducer = (state: State, action: Action): State => {
       const s = commit(state, musicalEvent);
       return resetPianoKeys(s);
 
-    // case Message.CTRL_KEY_DOWN:
-    //   return {
-    //     ...state,
-    //     ctrlKeyHeld: true,
-    //   };
-
-    // case Message.CTRL_KEY_UP:
-    //   return {
-    //     ...state,
-    //     ctrlKeyHeld: false,
-    //   };
 
     case Message.UNDO:
       console.log("Undo");
@@ -101,7 +84,7 @@ const reducer = (state: State, action: Action): State => {
  */
 function createMusicalEvent(state: State): MusicalEvent {
   // Either a Pause
-  if (state.activeNotes.size === 0) {
+  if (state.activeNotes.length === 0) {
     return [{ name: NoteName.PAUSE, length: state.currNoteLength }];
   }
 
@@ -118,7 +101,7 @@ function createMusicalEvent(state: State): MusicalEvent {
 function resetPianoKeys(state: State): State {
   return {
     ...state,
-    activeNotes: new Set(),
+    activeNotes: [],
   };
 }
 

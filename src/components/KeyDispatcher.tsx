@@ -11,18 +11,11 @@ import { KeyToNote, KeyToNoteLength, NoteLengthKeys, PianoKeys } from "@/app/sta
  */
 export default function KeyDispatcher() {
   const { dispatch } = useContext(StateContext)!;
-  const [ctrlHeld, setCtrlHeld] = useState(false);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === "Enter") {
         dispatch({ type: Message.COMMIT });
-      }
-      else if (event.key === "z" && ctrlHeld) {
-        dispatch({ type: Message.UNDO });
-      }
-      else if (event.key === "y" && ctrlHeld) {
-        dispatch({ type: Message.REDO });
       }
       else if (isPianoKey(event.key)) {
         dispatch({
@@ -38,28 +31,12 @@ export default function KeyDispatcher() {
       }
     };
 
-    const handleCtrlPress = (event: KeyboardEvent) => {
-      if (event.key === "Control") {
-        setCtrlHeld(true);
-      }
-    }
-
-    const handleCtrlRelease = (event: KeyboardEvent) => {
-      if (event.key === "Control") {
-        setCtrlHeld(false);
-      }
-    }
-
     window.addEventListener("keydown", handleKeyPress);
-    window.addEventListener("keyup", handleCtrlRelease);
-    window.addEventListener("keydown", handleCtrlPress);
 
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
-      window.removeEventListener("keyup", handleCtrlRelease);
-      window.removeEventListener("keydown", handleCtrlPress);
     };
-  }, [dispatch, ctrlHeld]);
+  }, [dispatch]);
 
   return null;
 }

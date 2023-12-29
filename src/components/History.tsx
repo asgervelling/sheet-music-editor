@@ -13,7 +13,7 @@ export default function History() {
 
   return (
     <>
-      <h1>History (Simple implementation: No chords)</h1>
+      <h1>History</h1>
       <div className="flex flex-wrap items-center gap-4">
         {state.history.map((musicEvent: MusicalEvent, i) => (
           <div

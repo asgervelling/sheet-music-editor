@@ -4,7 +4,8 @@ import NoteLengthControls from "@/components/NoteLengthControls";
 import KeyDispatcher from "@/components/KeyDispatcher";
 import History from "@/components/History";
 import EnterIndicator from "@/components/EnterIndicator";
-import CtrlKeyIndicator from "@/components/CtrlKeyIndicator";
+import UndoIndicator from "@/components/UndoIndicator";
+// import CtrlKeyIndicator from "@/components/CtrlKeyIndicator";
 
 export default function Home() {
   return (
@@ -13,7 +14,8 @@ export default function Home() {
       <div className="grid grid-cols-2 grid-rows-2 h-screen">
         <div className="py-20 px-32">
           <NoteLengthControls />
-          <CtrlKeyIndicator />
+          <UndoIndicator />
+          {/* <CtrlKeyIndicator /> */}
         </div>
         <div className="py-18 px-40 flex flex-col items-center justify-center">
           <Piano />
