@@ -12,7 +12,7 @@ export default function History() {
 
   return (
     <>
-      <h1>History</h1>
+      <h1 className="text-2xl">History</h1>
       <div className="flex flex-wrap items-center gap-4">
         {state.history.map((e, i) => (
           <div
