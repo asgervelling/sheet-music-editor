@@ -19,31 +19,7 @@ const initialState: State = {
   keysBeingHeld: [],
 };
 
-type ActionWithoutPayload = {
-  type: Message;
-};
-
-type ActionWithPayload<P> = {
-  type: Message;
-  payload: P;
-};
-
-type SetNoteLengthAction = ActionWithPayload<NoteLength>;
-type ToggleActiveNoteAction = ActionWithPayload<NoteName>;
-type CommitAction = ActionWithoutPayload;
-type KeyPressAction = ActionWithPayload<string>;
-type KeyReleaseAction = ActionWithPayload<string>;
-
 type Action =
-  | SetNoteLengthAction
-  | ToggleActiveNoteAction
-  | CommitAction
-  | KeyPressAction
-  | KeyReleaseAction;
-
-type Reducer = (state: State, action: Action) => State;
-
-type Action2 =
   | { type: Message.SET_NOTE_LENGTH; payload: { noteLength: NoteLength } }
   | { type: Message.TOGGLE_ACTIVE_NOTE; payload: { noteName: NoteName } }
   | { type: Message.COMMIT }
@@ -92,20 +68,17 @@ const reducer = (state: State, action: Action): State => {
 
     case Message.KEY_PRESS:
       const pressedKey = action.payload.key;
-      const isUndo =
-        pressedKey === "z" && state.keysBeingHeld.includes("Control");
-      const isRedo =
-        pressedKey === "y" && state.keysBeingHeld.includes("Control");
+
+      const ctrlKeyHeld = state.keysBeingHeld.includes("Control");
+      const isUndo = pressedKey === "z" && ctrlKeyHeld;
+      const isRedo = pressedKey === "x" && ctrlKeyHeld;
+      
       const newState = {
         ...state,
         keysBeingHeld: [...state.keysBeingHeld, pressedKey],
       };
-      if (isUndo) {
-        return undo(newState);
-      }
-      if (isRedo) {
-        return redo(newState);
-      }
+      if (isUndo) return undo(newState);
+      if (isRedo) return redo(newState);
       return newState;
 
     case Message.KEY_RELEASE:
