@@ -14,9 +14,9 @@ export default function Home() {
       {/* 2x2 grid */}
       <div className="grid grid-cols-2 grid-rows-2 h-screen">
         {/* Top left quarter */}
-        <div className="py-20 px-32 border border-red-500">
+        <div className="py-20 px-32">
           <NoteLengthControls />
-          <div className="border border-blue-500 grid gap-y-2">
+          <div className="grid gap-y-2">
             <UndoIndicator />
             <RedoIndicator />
           </div>
