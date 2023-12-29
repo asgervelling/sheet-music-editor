@@ -6,6 +6,7 @@ import History from "@/components/History";
 import EnterIndicator from "@/components/EnterIndicator";
 import UndoIndicator from "@/components/UndoIndicator";
 import RedoIndicator from "@/components/RedoIndicator";
+import KeyIndicator from "@/components/KeyIndicator";
 
 export default function Home() {
   return (
@@ -17,8 +18,9 @@ export default function Home() {
         <div className="py-20 px-32">
           <NoteLengthControls />
           <div className="grid gap-y-2">
-            <UndoIndicator />
-            <RedoIndicator />
+            <KeyIndicator keyCode="Control" label="Ctrl" />
+            {/* <UndoIndicator />
+            <RedoIndicator /> */}
           </div>
         </div>
         {/* Top right quarter */}

@@ -7,7 +7,7 @@ type MultiKeyDispatcherProps = {
 };
 
 /**
- * Can fire events when a combination of keys is pressed.
+ * Calls a function when a combination of keys is pressed.
  */
 export default function MultiKeyDispatcher({
   keyCombination,

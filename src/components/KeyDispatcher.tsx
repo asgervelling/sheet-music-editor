@@ -19,7 +19,7 @@ export default function KeyDispatcher() {
       }
       else if (isPianoKey(event.key)) {
         dispatch({
-          type: Message.TOGGLE_PIANO_KEY,
+          type: Message.TOGGLE_ACTIVE_NOTE,
           payload: { noteName: KeyToNote[event.key] },
         });
       }
@@ -29,12 +29,27 @@ export default function KeyDispatcher() {
           payload: { noteLength: KeyToNoteLength[event.key] },
         });
       }
+      else {
+        dispatch({
+          type: Message.KEY_PRESS,
+          payload: { key: event.key },
+        });
+      }
     };
 
+    const handleKeyRelease = (event: KeyboardEvent) => {
+      dispatch({
+        type: Message.KEY_RELEASE,
+        payload: { key: event.key },
+      });
+    }
+
     window.addEventListener("keydown", handleKeyPress);
+    window.addEventListener("keyup", handleKeyRelease);
 
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
+      window.removeEventListener("keyup", handleKeyRelease);
     };
   }, [dispatch]);
 

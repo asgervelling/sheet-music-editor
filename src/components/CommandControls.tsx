@@ -20,6 +20,7 @@ export default function CommandControls({
   useEffect(() => {
     if (blinkTime > 0) {
       const interval = setInterval(() => {
+        console.log("interval", blinkTime);
         setBlinkTime(blinkTime - 100);
       }, 100);
       return () => clearInterval(interval);
@@ -40,18 +41,19 @@ export default function CommandControls({
       <MultiKeyDispatcher
         keyCombination={keyCombination}
         onPress={() => {
+          setBlinkTime(1000);
+          console.log("blink time set", blinkTime);
           onPress();
-          setBlinkTime(101);
         }}
       />
-      <div className="transition-all duration-200 flex gap-x-2">
-        {keyCombination.map((key, i) => (
+      <div className="transition-all flex gap-x-2">
+        {labels.map((key, i) => (
           <div
             key={i}
             className="border border-[var(--color-primary)] p-2 select-none"
             style={style}
           >
-            {labels[i]}
+            {key}
           </div>
         ))}
         <div className="ps-4 py-2 select-none">{commandName}</div>

@@ -8,6 +8,7 @@ type State = {
   activeNotes: NoteName[];
   history: MusicalEvent[];
   undoStack: MusicalEvent[];
+  keysBeingHeld: string[];
 };
 
 const initialState: State = {
@@ -15,12 +16,15 @@ const initialState: State = {
   activeNotes: [],
   history: [],
   undoStack: [],
+  keysBeingHeld: [],
 };
 
 type Action =
   | { type: Message.SET_NOTE_LENGTH; payload: { noteLength: NoteLength } }
-  | { type: Message.TOGGLE_PIANO_KEY; payload: { noteName: NoteName } }
+  | { type: Message.TOGGLE_ACTIVE_NOTE; payload: { noteName: NoteName } }
   | { type: Message.COMMIT }
+  | { type: Message.KEY_PRESS; payload: { key: string } }
+  | { type: Message.KEY_RELEASE; payload: { key: string } }
   | { type: Message.UNDO }
   | { type: Message.REDO };
 
@@ -38,7 +42,7 @@ const reducer = (state: State, action: Action): State => {
         currNoteLength: action.payload.noteLength!,
       };
 
-    case Message.TOGGLE_PIANO_KEY:
+    case Message.TOGGLE_ACTIVE_NOTE:
       // If the piano key is on, turn it off, and vice versa
       const noteName = action.payload.noteName;
       if (state.activeNotes.includes(noteName)) {
@@ -62,28 +66,44 @@ const reducer = (state: State, action: Action): State => {
       const s = commit(state, musicalEvent);
       return resetPianoKeys(s);
 
-    case Message.UNDO:
-      console.log("Undoing ");
-      if (state.history.length === 0) {
-        return { ...state };
-      }
-      const lastEvent = state.history[state.history.length - 1];
-      const undoStack = [...state.undoStack, lastEvent];
-      const history = state.history.slice(0, state.history.length - 1);
-      return { ...state, history, undoStack };
+    case Message.KEY_PRESS:
+      const pressedKey = action.payload.key;
+      console.log("Key press", pressedKey);
+      return {
+        ...state,
+        keysBeingHeld: [...state.keysBeingHeld, pressedKey],
+      };
+
+    case Message.KEY_RELEASE:
+      const releasedKey = action.payload.key;
+      console.log("Key release", releasedKey);
+      return {
+        ...state,
+        keysBeingHeld: state.keysBeingHeld.filter((k) => k !== releasedKey),
+      };
+
+    // case Message.UNDO:
+    //   console.log("Undoing ");
+    //   if (state.history.length === 0) {
+    //     return { ...state };
+    //   }
+    //   const lastEvent = state.history[state.history.length - 1];
+    //   const undoStack = [...state.undoStack, lastEvent];
+    //   const history = state.history.slice(0, state.history.length - 1);
+    //   return { ...state, history, undoStack };
       
-    case Message.REDO:
-      console.log("Redo");
-      if (state.undoStack.length === 0) {
-        return { ...state };
-      }
-      const nextEvent = state.undoStack[state.undoStack.length - 1];
-      const newHistory = [...state.history, nextEvent];
-      const newUndoStack = state.undoStack.slice(
-        0,
-        state.undoStack.length - 1
-      );
-      return { ...state, history: newHistory, undoStack: newUndoStack };
+    // case Message.REDO:
+    //   console.log("Redo");
+    //   if (state.undoStack.length === 0) {
+    //     return { ...state };
+    //   }
+    //   const nextEvent = state.undoStack[state.undoStack.length - 1];
+    //   const newHistory = [...state.history, nextEvent];
+    //   const newUndoStack = state.undoStack.slice(
+    //     0,
+    //     state.undoStack.length - 1
+    //   );
+    //   return { ...state, history: newHistory, undoStack: newUndoStack };
 
     default:
       return state;
