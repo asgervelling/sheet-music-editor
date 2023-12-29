@@ -68,10 +68,21 @@ const reducer = (state: State, action: Action): State => {
 
     case Message.KEY_PRESS:
       const pressedKey = action.payload.key;
-      return {
+      const isUndo =
+        pressedKey === "z" && state.keysBeingHeld.includes("Control");
+      const isRedo =
+        pressedKey === "y" && state.keysBeingHeld.includes("Control");
+      const newState = {
         ...state,
         keysBeingHeld: [...state.keysBeingHeld, pressedKey],
       };
+      if (isUndo) {
+        return undo(newState);
+      }
+      if (isRedo) {
+        return redo(newState);
+      }
+      return newState;
 
     case Message.KEY_RELEASE:
       const releasedKey = action.payload.key;
@@ -84,6 +95,32 @@ const reducer = (state: State, action: Action): State => {
       return state;
   }
 };
+
+function undo(state: State): State {
+  if (state.history.length === 0) {
+    return state;
+  }
+
+  const lastEvent = state.history[state.history.length - 1];
+  return {
+    ...state,
+    history: state.history.slice(0, state.history.length - 1),
+    undoStack: [...state.undoStack, lastEvent],
+  };
+}
+
+function redo(state: State): State {
+  if (state.undoStack.length === 0) {
+    return state;
+  }
+
+  const lastEvent = state.undoStack[state.undoStack.length - 1];
+  return {
+    ...state,
+    history: [...state.history, lastEvent],
+    undoStack: state.undoStack.slice(0, state.undoStack.length - 1),
+  };
+}
 
 /**
  * Create a musical event from the state.
