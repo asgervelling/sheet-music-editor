@@ -8,6 +8,4 @@ export enum Message {
   COMMIT = "COMMIT",
   KEY_PRESS = "KEY_PRESS",
   KEY_RELEASE = "KEY_RELEASE",
-  UNDO = "UNDO",
-  REDO = "REDO",
 }
