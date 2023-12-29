@@ -12,6 +12,7 @@ import { KeyToNote, KeyToNoteLength, NoteLengthKeys, PianoKeys } from "@/app/sta
 export default function KeyDispatcher() {
   const { dispatch } = useContext(StateContext)!;
 
+  
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       // First, dispatch that a key was pressed

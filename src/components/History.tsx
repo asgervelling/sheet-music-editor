@@ -2,7 +2,6 @@
 import { useContext } from "react";
 import { StateContext } from "@/app/state/StateContext";
 import NoteLengthIcon from "./icons/NoteLengthIcon";
-import { MusicalEvent } from "@/app/state/music_theory";
 
 /**
  * A visual representation of state.history,
@@ -15,16 +14,14 @@ export default function History() {
     <>
       <h1>History</h1>
       <div className="flex flex-wrap items-center gap-4">
-        {state.history.map((musicEvent: MusicalEvent, i) => (
+        {state.history.map((e, i) => (
           <div
             key={i}
-            className="flex items-center
-                       p-2
-                       border border-[var(--color-primary)]"
+            className="border border-black p-2
+                      flex items-center gap-2"
           >
-            <NoteLengthIcon noteLength={musicEvent[0].length} />
-            [{musicEvent.map(note => note.name).join(", ")}]
-            {/* <HistoryEntry musicEvent={musicEvent} /> */}
+            <NoteLengthIcon noteLength={e[0].length} />
+            [{e.map((note) => note.name).join(", ")}]
           </div>
         ))}
       </div>
