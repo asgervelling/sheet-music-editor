@@ -8,9 +8,6 @@ import { State } from "../state";
  */
 export default function commit(state: State): State {
   const event = createMusicalEvent(state);
-  console.log("commit", event);
-  console.log(state.history.concat(event))
-  console.log([...state.history, event])
   return {
     ...state,
     activeNotes: [],

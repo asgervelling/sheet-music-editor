@@ -21,9 +21,7 @@ export default function reducer(state: State, action: Action): State {
       return toggleActiveNote(state, action.payload.noteName);
 
     case Message.COMMIT:
-      const s = commit(state);
-      console.log("after commit", s);
-      return s;
+      return commit(state);
 
     case Message.KEY_PRESS:
       return keyPress(state, action.payload.key);
