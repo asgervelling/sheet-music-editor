@@ -53,6 +53,43 @@ export type Bar = {
   events: MusicalEvent[];
 };
 
+function toNumber(duration: Duration): number {
+  switch (duration) {
+    case Duration.Whole:
+      return 1;
+    case Duration.Half:
+      return 2;
+    case Duration.Quarter:
+      return 4;
+    case Duration.Eighth:
+      return 8;
+    case Duration.Sixteenth:
+      return 16;
+  }
+}
+
+function parseTimeSignature(sig: string): [number, number] {
+  const [top, bottom] = sig.split("/");
+  return [parseInt(top), parseInt(bottom)];
+}
+
+/**
+ * A bar is valid if the sum of the durations
+ * of its musical events is equal to the
+ * time signature.
+ */
+export function validateBar(bar: Bar): boolean {
+  const { timeSignature, events } = bar;
+  const [beatsPerBar, beatLength] = parseTimeSignature(timeSignature);
+  const totalBeats: number = events
+    .map(e => e.duration)
+    .reduce((acc, curr) => acc + toNumber(curr), 0);
+  
+  return (
+    totalBeats === beatsPerBar * beatLength
+  );
+}
+
 /**
  * Any note or chord that is entered on the piano
  * can be committed by pressing the Enter key.
