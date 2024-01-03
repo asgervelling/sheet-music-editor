@@ -45,21 +45,25 @@ export type Bar = {
   events: MusicalEvent[];
 };
 
-function toNumber(duration: Duration): number {
+function toFraction(duration: Duration): number {
   switch (duration) {
     case Duration.Whole:
       return 1;
     case Duration.Half:
-      return 2;
+      return 1 / 2;
     case Duration.Quarter:
-      return 4;
+      return 1 / 4;
     case Duration.Eighth:
-      return 8;
+      return 1 / 8;
     case Duration.Sixteenth:
-      return 16;
+      return 1 / 16;
   }
 }
 
+/**
+ * Parse the nominator and denominator
+ * of a time signature.
+ */
 function parseTimeSignature(sig: string): [number, number] {
   const [top, bottom] = sig.split("/");
   return [parseInt(top), parseInt(bottom)];
@@ -75,11 +79,9 @@ export function validateBar(bar: Bar): boolean {
   const [beatsPerBar, beatLength] = parseTimeSignature(timeSignature);
   const totalBeats: number = events
     .map(e => e.duration)
-    .reduce((acc, curr) => acc + toNumber(curr), 0);
-  
-  return (
-    totalBeats === beatsPerBar * beatLength
-  );
+    .reduce((acc, curr) => acc + toFraction(curr), 0);
+
+  return totalBeats === beatsPerBar / beatLength;
 }
 
 /**

@@ -29,10 +29,16 @@ describe("Music Theory Tests", () => {
     };
     expect(validateBar(barTooShort)).toBe(false);
 
-    const barOddTimeSignature: Bar = {
-      timeSignature: "16/4",
-      events: [e1, e1, e1, e1],
+    const waltz: Bar = {
+      timeSignature: "3/4",
+      events: [e2, e4],
     };
-    expect(validateBar(barOddTimeSignature)).toBe(false);
+    expect(validateBar(waltz)).toBe(true);
+
+    const barWeirdTimeSignature: Bar = {
+      timeSignature: "13/16",
+      events: [e2, e4, e16],
+    };
+    expect(validateBar(barWeirdTimeSignature)).toBe(true);
   });
 });
