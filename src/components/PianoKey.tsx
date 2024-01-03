@@ -1,6 +1,6 @@
 "use client";
 import React, { useContext } from "react";
-import { NoteName } from "@/app/state/music_theory";
+import { NoteName, PianoKeys } from "@/app/state/music_theory";
 import { StateContext } from "@/app/state/StateContext";
 
 type PianoKeyProps = {
@@ -19,17 +19,43 @@ export default function PianoKey({ noteName }: PianoKeyProps) {
   const highlightColor = "var(--color-highlight)";
   const keyColor = isWhiteKey(noteName) ? "white" : "black";
   const fill = isActive ? highlightColor : keyColor;
+  const letterColor = isActive
+    ? "black"
+    : isWhiteKey(noteName)
+      ? "black"
+      : "white";
+  const keyboardShortcut = PianoKeys[noteName];
+
+  const textAreaHeight = 2;
+  const textAreaWidth = w;
+  const textAreaX = x;
+  const textAreaY = h - textAreaHeight;
   
   return (
-    <rect
-      x={x}
-      y={y}
-      width={w}
-      height={h}
-      fill={fill}
-      stroke="var(--color-primary)"
-      strokeWidth="0.125"
-    />
+    <>
+      <rect
+        x={x}
+        y={y}
+        width={w}
+        height={h}
+        fill={fill}
+        stroke="var(--color-primary)"
+        strokeWidth="0.125"
+      />
+      <text
+        x={textAreaX + textAreaWidth / 2}
+        y={textAreaY + textAreaHeight / 2}
+        stroke="none"
+        fill={letterColor}
+        dominantBaseline="middle"
+        textAnchor="middle"
+        fontWeight="100"
+        fontSize="1"
+        fontFamily="'Inter', sans-serif"
+      >
+        {keyboardShortcut.toUpperCase()}
+      </text>
+    </>
   )
 }
 
