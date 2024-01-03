@@ -2,7 +2,7 @@
 import { useContext, useEffect } from "react";
 import { StateContext } from "@/app/state/StateContext";
 import { Message } from "@/app/state/messages";
-import { KeyToNote, KeyToNoteLength, NoteLengthKeys, PianoKeys } from "@/app/state/music_theory";
+import { KeyToNote, KeyToDuration, DurationKeys, PianoKeys } from "@/app/state/music_theory";
 
 /**
  * Listens for keyboard input and dispatches actions to the state
@@ -29,13 +29,13 @@ export default function KeyDispatcher() {
       else if (isPianoKey(event.key)) {
         dispatch({
           type: Message.TOGGLE_ACTIVE_NOTE,
-          payload: { noteName: KeyToNote[event.key] },
+          payload: { duration: KeyToNote[event.key] },
         });
       }
-      else if (isNoteLengthKey(event.key)) {
+      else if (isDurationKey(event.key)) {
         dispatch({
-          type: Message.SET_NOTE_LENGTH,
-          payload: { duration: KeyToNoteLength[event.key] },
+          type: Message.SET_DURATION,
+          payload: { duration: KeyToDuration[event.key] },
         });
       }
     };
@@ -63,6 +63,6 @@ function isPianoKey(key: string): boolean {
   return Object.values(PianoKeys).includes(key);
 }
 
-function isNoteLengthKey(key: string): boolean {
-  return Object.values(NoteLengthKeys).includes(key);
+function isDurationKey(key: string): boolean {
+  return Object.values(DurationKeys).includes(key);
 }

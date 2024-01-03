@@ -1,7 +1,7 @@
 "use client";
 import { useContext } from "react";
 import { StateContext } from "@/app/state/StateContext";
-import NoteLengthIcon from "./icons/NoteLengthIcon";
+import DurationIcon from "./icons/DurationIcon"
 
 /**
  * A visual representation of state.history,
@@ -20,7 +20,7 @@ export default function History() {
             className="border border-black p-2
                       flex items-center gap-2"
           >
-            <NoteLengthIcon duration={e.duration} />
+            <DurationIcon duration={e.duration} />
             [{e.notes.join(", ")}]
           </div>
         ))}

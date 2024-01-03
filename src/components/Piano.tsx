@@ -7,20 +7,20 @@ const Piano = () => {
       <g id="Keyboard">
         <g id="Octave" stroke="#111" strokeWidth="0.125">
           <g id="WhiteKeys">
-            <PianoKey noteName={Note.C} />
-            <PianoKey noteName={Note.D} />
-            <PianoKey noteName={Note.E} />
-            <PianoKey noteName={Note.F} />
-            <PianoKey noteName={Note.G} />
-            <PianoKey noteName={Note.A} />
-            <PianoKey noteName={Note.B} />
+            <PianoKey duration={Note.C} />
+            <PianoKey duration={Note.D} />
+            <PianoKey duration={Note.E} />
+            <PianoKey duration={Note.F} />
+            <PianoKey duration={Note.G} />
+            <PianoKey duration={Note.A} />
+            <PianoKey duration={Note.B} />
           </g>
           <g id="BlackKeys">
-            <PianoKey noteName={Note.Db} />
-            <PianoKey noteName={Note.Eb} />
-            <PianoKey noteName={Note.Gb} />
-            <PianoKey noteName={Note.Ab} />
-            <PianoKey noteName={Note.Bb} />
+            <PianoKey duration={Note.Db} />
+            <PianoKey duration={Note.Eb} />
+            <PianoKey duration={Note.Gb} />
+            <PianoKey duration={Note.Ab} />
+            <PianoKey duration={Note.Bb} />
           </g>
         </g>
       </g>

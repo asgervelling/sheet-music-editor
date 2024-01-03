@@ -1,7 +1,7 @@
 import { MusicalEvent, Duration, Note } from "./music_theory";
 
 export type State = {
-  currNoteLength: Duration;
+  currDuration: Duration;
   activeNotes: Note[];
   history: MusicalEvent[];
   undoStack: MusicalEvent[];

@@ -10,21 +10,21 @@ const BLACK_KEY_HEIGHT = 7;
 const HIGHLIGHT_COLOR = "var(--color-highlight)";
 
 type PianoKeyProps = {
-  noteName: Note;
+  duration: Note;
 };
 
 /**
  * A single piano key.
  * Can only be used within an SVG.
  */
-export default function PianoKey({ noteName }: PianoKeyProps) {
+export default function PianoKey({ duration }: PianoKeyProps) {
   const { state } = useContext(StateContext)!;
 
-  const isActive = state.activeNotes.includes(noteName);
-  const { bgColor, textColor } = colors(noteName, isActive);
-  const keyboardShortcut = PianoKeys[noteName];
+  const isActive = state.activeNotes.includes(duration);
+  const { bgColor, textColor } = colors(duration, isActive);
+  const keyboardShortcut = PianoKeys[duration];
 
-  const { x, y, w, h } = dimensions(noteName);
+  const { x, y, w, h } = dimensions(duration);
   const textAreaHeight = 2;
   const textAreaWidth = w;
   const textAreaX = x;
@@ -62,10 +62,10 @@ export default function PianoKey({ noteName }: PianoKeyProps) {
  * Get the { x, y, w, h }
  * of a piano key based on its note name.
  */
-function dimensions(noteName: Note) {
-  const x = xOffset(noteName);
+function dimensions(duration: Note) {
+  const x = xOffset(duration);
   const y = 0;
-  if (isWhiteKey(noteName)) {
+  if (isWhiteKey(duration)) {
     return { x, y, w: WHITE_KEY_WIDTH, h: WHITE_KEY_HEIGHT };
   }
   return { x, y, w: BLACK_KEY_WIDTH, h: BLACK_KEY_HEIGHT };
@@ -76,11 +76,11 @@ function dimensions(noteName: Note) {
  * of a piano key based on its note name
  * and whether it is active.
 //  */
-function colors(noteName: Note, isActive: boolean) {
+function colors(duration: Note, isActive: boolean) {
   const white = "white";
   const black = "black";
-  const baseBgColor = isWhiteKey(noteName) ? white : black;
-  const baseTextColor = isWhiteKey(noteName) ? black : white;
+  const baseBgColor = isWhiteKey(duration) ? white : black;
+  const baseTextColor = isWhiteKey(duration) ? black : white;
   const bgColor = isActive ? HIGHLIGHT_COLOR : baseBgColor;
   const textColor = isActive ? white : baseTextColor;
   return { bgColor, textColor };
@@ -89,13 +89,13 @@ function colors(noteName: Note, isActive: boolean) {
 /**
  * Find the x offset of a piano key based on its note name.
  */
-function xOffset(noteName: Note): number {
-  const i = indexOf(noteName);
+function xOffset(duration: Note): number {
+  const i = indexOf(duration);
   if (i < 5) {
-    if (isWhiteKey(noteName)) return 2 * i;
+    if (isWhiteKey(duration)) return 2 * i;
     else return 2 * i + 1;
   } else {
-    if (isWhiteKey(noteName)) return 2 * i + 2;
+    if (isWhiteKey(duration)) return 2 * i + 2;
     else return 2 * i + 3;
   }
 }
@@ -103,13 +103,13 @@ function xOffset(noteName: Note): number {
 /**
  * True if the Note is played with a white key
  * */
-function isWhiteKey(noteName: Note): boolean {
-  return noteName.length === 1;
+function isWhiteKey(duration: Note): boolean {
+  return duration.length === 1;
 }
 
 /**
  * Find the index of a note name in an octave.
  */
-function indexOf(noteName: Note): number {
-  return Object.values(Note).indexOf(noteName);
+function indexOf(duration: Note): number {
+  return Object.values(Note).indexOf(duration);
 }

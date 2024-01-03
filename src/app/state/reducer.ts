@@ -1,7 +1,7 @@
 import { Action } from "./actions";
 import { Message } from "./messages";
 import { State } from "./state";
-import setNoteLength from "./actions/setNoteLength";
+import setDuration from "./actions/setDuration";
 import toggleActiveNote from "./actions/toggleActiveNote";
 import commit from "./actions/commit";
 import keyPress from "./actions/keyPress";
@@ -14,11 +14,11 @@ import keyRelease from "./actions/keyRelease";
  */
 export default function reducer(state: State, action: Action): State {
   switch (action.type) {
-    case Message.SET_NOTE_LENGTH:
-      return setNoteLength(state, action.payload.duration);
+    case Message.SET_DURATION:
+      return setDuration(state, action.payload.duration);
 
     case Message.TOGGLE_ACTIVE_NOTE:
-      return toggleActiveNote(state, action.payload.noteName);
+      return toggleActiveNote(state, action.payload.note);
 
     case Message.COMMIT:
       return commit(state);

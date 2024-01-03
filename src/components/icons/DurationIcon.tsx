@@ -6,11 +6,11 @@ import QuarterNoteIcon from "./QuarterNoteIcon";
 import EighthNoteIcon from "./EighthNoteIcon";
 import SixteenthNoteIcon from "./SixteenthNoteIcon";
 
-type NoteLengthSVGProps = {
+type DurationSVGProps = {
   duration: Duration;
 };
 
-export default function NoteLengthIcon({ duration }: NoteLengthSVGProps) {
+export default function DurationIcon({ duration }: DurationSVGProps) {
   return (
     <div className="h-10 w-10 -translate-x-1">
       <Icon duration={duration} />
@@ -18,7 +18,7 @@ export default function NoteLengthIcon({ duration }: NoteLengthSVGProps) {
   );
 }
 
-function Icon({ duration }: NoteLengthSVGProps) {
+function Icon({ duration }: DurationSVGProps) {
   switch (duration) {
     case Duration.Whole:
       return WholeNoteIcon();

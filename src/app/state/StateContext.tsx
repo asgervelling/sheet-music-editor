@@ -7,7 +7,7 @@ import { Action } from "./actions";
 import reducer from "./reducer";
 
 const initialState: State = {
-  currNoteLength: Duration.Quarter,
+  currDuration: Duration.Quarter,
   activeNotes: [],
   history: [],
   undoStack: [],

@@ -35,7 +35,6 @@ export enum Duration {
 // };
 
 /**
- * A chord or a pause.
  * A single note or pause is a list of length 1.
  * A chord is a list of notes.
  */
@@ -77,7 +76,7 @@ export const PianoKeys: Record<Note, string> = {
   [Note.PAUSE]: "p",
 };
 
-export const NoteLengthKeys: Record<Duration, string> = {
+export const DurationKeys: Record<Duration, string> = {
   [Duration.Whole]: "1",
   [Duration.Half]: "2",
   [Duration.Quarter]: "3",
@@ -93,8 +92,8 @@ export const KeyToNote: Record<string, Note> = Object.entries(
   return acc;
 }, {} as Record<string, Note>);
 
-export const KeyToNoteLength: Record<string, Duration> = Object.entries(
-  NoteLengthKeys
+export const KeyToDuration: Record<string, Duration> = Object.entries(
+  DurationKeys
 ).reduce((acc, [duration, key]) => {
   acc[key] = duration as Duration;
   return acc;

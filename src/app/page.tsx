@@ -1,6 +1,6 @@
 import { StateProvider } from "./state/StateContext";
 import Piano from "@/components/Piano";
-import NoteLengthIndicatorGroup from "@/components/indicators/NoteLengthIndicatorGroup";
+import DurationIndicatorGroup from "@/components/indicators/DurationIndicatorGroup";
 import KeyDispatcher from "@/components/KeyDispatcher";
 import History from "@/components/History";
 import EnterKeyIndicator from "@/components/indicators/EnterKeyIndicator";
@@ -17,7 +17,7 @@ export default function Home() {
       <div className="grid grid-cols-2 grid-rows-2 h-screen">
         {/* Top left quarter */}
         <div className="py-20 px-32">
-          <NoteLengthIndicatorGroup />
+          <DurationIndicatorGroup />
           <div className="grid gap-y-2">
             <UndoIndicatorGroup />
             <RedoIndicatorGroup />
