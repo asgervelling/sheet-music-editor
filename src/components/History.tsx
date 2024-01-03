@@ -20,8 +20,8 @@ export default function History() {
             className="border border-black p-2
                       flex items-center gap-2"
           >
-            <NoteLengthIcon noteLength={e[0].length} />
-            [{e.map((note) => note.name).join(", ")}]
+            <NoteLengthIcon duration={e.duration} />
+            [{e.notes.join(", ")}]
           </div>
         ))}
       </div>

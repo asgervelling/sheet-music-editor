@@ -1,16 +1,16 @@
 "use client";
 import React, { useContext } from "react";
 import { StateContext } from "@/app/state/StateContext";
-import { NoteLength, NoteLengthKeys } from "@/app/state/music_theory";
+import { Duration, NoteLengthKeys } from "@/app/state/music_theory";
 import NoteLengthIcon from "../icons/NoteLengthIcon";
 
 interface NoteLengthKeyProps {
-  noteLength: NoteLength;
+  duration: Duration;
 }
 
-const NoteLengthIndicator: React.FC<NoteLengthKeyProps> = ({ noteLength }) => {
+const NoteLengthIndicator: React.FC<NoteLengthKeyProps> = ({ duration }) => {
   const { state } = useContext(StateContext)!;
-  const isCurrentNote = state.currNoteLength === noteLength;
+  const isCurrentNote = state.currNoteLength === duration;
 
   const style = {
     backgroundColor: isCurrentNote ? "var(--color-primary)" : "var(--color-bg)",
@@ -24,9 +24,9 @@ const NoteLengthIndicator: React.FC<NoteLengthKeyProps> = ({ noteLength }) => {
         style={style}
         className="h-10 w-10 flex items-center justify-center mb-2"
       >
-        {NoteLengthKeys[noteLength]}
+        {NoteLengthKeys[duration]}
       </div>
-      <NoteLengthIcon noteLength={noteLength} />
+      <NoteLengthIcon duration={duration} />
     </div>
   );
 };

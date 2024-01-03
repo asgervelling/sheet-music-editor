@@ -1,8 +1,8 @@
-import { MusicalEvent, NoteLength, NoteName } from "./music_theory";
+import { MusicalEvent, Duration, Note } from "./music_theory";
 
 export type State = {
-  currNoteLength: NoteLength;
-  activeNotes: NoteName[];
+  currNoteLength: Duration;
+  activeNotes: Note[];
   history: MusicalEvent[];
   undoStack: MusicalEvent[];
   keysBeingHeld: string[];

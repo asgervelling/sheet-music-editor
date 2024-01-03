@@ -1,4 +1,4 @@
-import { NoteLength } from "@/app/state/music_theory"
+import { Duration } from "@/app/state/music_theory"
 import React from "react";
 import { WholeNoteIcon } from "./WholeNoteIcon";
 import HalfNoteIcon from "./HalfNoteIcon";
@@ -7,31 +7,31 @@ import EighthNoteIcon from "./EighthNoteIcon";
 import SixteenthNoteIcon from "./SixteenthNoteIcon";
 
 type NoteLengthSVGProps = {
-  noteLength: NoteLength;
+  duration: Duration;
 };
 
-export default function NoteLengthIcon({ noteLength }: NoteLengthSVGProps) {
+export default function NoteLengthIcon({ duration }: NoteLengthSVGProps) {
   return (
     <div className="h-10 w-10 -translate-x-1">
-      <Icon noteLength={noteLength} />
+      <Icon duration={duration} />
     </div>
   );
 }
 
-function Icon({ noteLength }: NoteLengthSVGProps) {
-  switch (noteLength) {
-    case NoteLength.Whole:
+function Icon({ duration }: NoteLengthSVGProps) {
+  switch (duration) {
+    case Duration.Whole:
       return WholeNoteIcon();
-    case NoteLength.Half:
+    case Duration.Half:
       return HalfNoteIcon();
-    case NoteLength.Quarter:
+    case Duration.Quarter:
       return QuarterNoteIcon();
-    case NoteLength.Eighth:
+    case Duration.Eighth:
       return EighthNoteIcon();
-    case NoteLength.Sixteenth:
+    case Duration.Sixteenth:
       return SixteenthNoteIcon();
     default:
-      console.error("Unknown note length:", noteLength);
+      console.error("Unknown note length:", duration);
       return <>Error</>;
   }
 }

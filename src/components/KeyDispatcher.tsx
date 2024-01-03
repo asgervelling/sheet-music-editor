@@ -35,7 +35,7 @@ export default function KeyDispatcher() {
       else if (isNoteLengthKey(event.key)) {
         dispatch({
           type: Message.SET_NOTE_LENGTH,
-          payload: { noteLength: KeyToNoteLength[event.key] },
+          payload: { duration: KeyToNoteLength[event.key] },
         });
       }
     };

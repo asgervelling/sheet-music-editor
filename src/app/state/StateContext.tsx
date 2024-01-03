@@ -1,13 +1,13 @@
 "use client";
 import React, { createContext, useReducer, ReactNode, Dispatch } from "react";
 
-import { NoteLength } from "@/app/state/music_theory";
+import { Duration } from "@/app/state/music_theory";
 import { State } from "./state";
 import { Action } from "./actions";
 import reducer from "./reducer";
 
 const initialState: State = {
-  currNoteLength: NoteLength.Quarter,
+  currNoteLength: Duration.Quarter,
   activeNotes: [],
   history: [],
   undoStack: [],

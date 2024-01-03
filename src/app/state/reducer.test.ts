@@ -10,12 +10,12 @@ import {
   Action,
 } from "./actions";
 import { State } from "./state";
-import { NoteLength, NoteName } from "./music_theory";
+import { Duration, Note } from "./music_theory";
 import { Message } from "./messages";
 
 function createState(): State {
   return {
-    currNoteLength: NoteLength.Quarter,
+    currNoteLength: Duration.Quarter,
     activeNotes: [],
     history: [],
     undoStack: [],
@@ -28,11 +28,11 @@ describe("Reducer Tests", () => {
     const initialState = createState();
     const action: Action = {
       type: Message.SET_NOTE_LENGTH,
-      payload: { noteLength: NoteLength.Eighth },
+      payload: { duration: Duration.Eighth },
     };
     const s0 = reducer(initialState, action);
 
-    expect(s0.currNoteLength).toBe(NoteLength.Eighth);
+    expect(s0.currNoteLength).toBe(Duration.Eighth);
   });
 
   it("should handle TOGGLE_ACTIVE_NOTE action", () => {
@@ -40,29 +40,29 @@ describe("Reducer Tests", () => {
 
     // Toggle on some notes
     const actions: Action[] = [
-      { type: Message.TOGGLE_ACTIVE_NOTE, payload: { noteName: NoteName.Ab } },
-      { type: Message.TOGGLE_ACTIVE_NOTE, payload: { noteName: NoteName.F } },
-      { type: Message.TOGGLE_ACTIVE_NOTE, payload: { noteName: NoteName.Db } },
+      { type: Message.TOGGLE_ACTIVE_NOTE, payload: { noteName: Note.Ab } },
+      { type: Message.TOGGLE_ACTIVE_NOTE, payload: { noteName: Note.F } },
+      { type: Message.TOGGLE_ACTIVE_NOTE, payload: { noteName: Note.Db } },
     ];
     const s0 = actions.reduce(reducer, initialState);
-    expect(s0.activeNotes).toEqual([NoteName.Ab, NoteName.F, NoteName.Db]);
+    expect(s0.activeNotes).toEqual([Note.Ab, Note.F, Note.Db]);
 
     // Toggle off a note
     const action: Action = {
       type: Message.TOGGLE_ACTIVE_NOTE,
-      payload: { noteName: NoteName.F },
+      payload: { noteName: Note.F },
     };
     const s1 = reducer(s0, action);
-    expect(s1.activeNotes).toEqual([NoteName.Ab, NoteName.Db]);
+    expect(s1.activeNotes).toEqual([Note.Ab, Note.Db]);
   });
 
   it("should handle COMMIT action", () => {
     // Create a state with some active notes and an undo stack
     const s0: State = {
-      currNoteLength: NoteLength.Quarter,
-      activeNotes: [NoteName.Ab, NoteName.F, NoteName.Db],
+      currNoteLength: Duration.Quarter,
+      activeNotes: [Note.Ab, Note.F, Note.Db],
       history: [],
-      undoStack: [[{ name: NoteName.C, length: NoteLength.Whole }]],
+      undoStack: [[{ name: Note.C, length: Duration.Whole }]],
       keysBeingHeld: [],
     };
 
@@ -73,9 +73,9 @@ describe("Reducer Tests", () => {
     expect(s1.activeNotes).toEqual([]);
     expect(s1.history).toEqual([
       [
-        { name: NoteName.Db, length: NoteLength.Quarter },
-        { name: NoteName.F, length: NoteLength.Quarter },
-        { name: NoteName.Ab, length: NoteLength.Quarter },
+        { name: Note.Db, length: Duration.Quarter },
+        { name: Note.F, length: Duration.Quarter },
+        { name: Note.Ab, length: Duration.Quarter },
       ],
     ]);
     expect(s1.undoStack).toEqual([]);
@@ -84,8 +84,8 @@ describe("Reducer Tests", () => {
   it("should handle KEY_PRESS action", () => {
     // Create a state with some active notes
     const s0: State = {
-      currNoteLength: NoteLength.Quarter,
-      activeNotes: [NoteName.Ab, NoteName.F, NoteName.Db],
+      currNoteLength: Duration.Quarter,
+      activeNotes: [Note.Ab, Note.F, Note.Db],
       history: [],
       undoStack: [],
       keysBeingHeld: [],
@@ -103,8 +103,8 @@ describe("Reducer Tests", () => {
   it("should do an undo operation when the undo key combination is pressed", () => {
     // Create a state with some active notes and a history
     const initialHistory = [
-      [{ name: NoteName.Db, length: NoteLength.Quarter }],
-      [{ name: NoteName.F, length: NoteLength.Quarter }],
+      [{ name: Note.Db, length: Duration.Quarter }],
+      [{ name: Note.F, length: Duration.Quarter }],
     ];
     const s0: State = {
       ...createState(),
@@ -122,7 +122,7 @@ describe("Reducer Tests", () => {
     ];
     const s2 = keyCombination.reduce(reducer, s0);
     expect(s2.history).toEqual([
-      [{ name: NoteName.Db, length: NoteLength.Quarter }],
+      [{ name: Note.Db, length: Duration.Quarter }],
     ]);
 
     // Undoing while there is no history should not do anything
@@ -138,7 +138,7 @@ describe("Reducer Tests", () => {
     Redo operation
     */
     const initialUndoStack = [
-      [{ name: NoteName.Db, length: NoteLength.Quarter }],
+      [{ name: Note.Db, length: Duration.Quarter }],
     ];
     const s0: State = {
       ...createState(),
@@ -172,8 +172,8 @@ describe("Reducer Tests", () => {
   it("should handle KEY_RELEASE action", () => {
     // Create a state with some active notes
     const s0: State = {
-      currNoteLength: NoteLength.Quarter,
-      activeNotes: [NoteName.Ab, NoteName.F, NoteName.Db],
+      currNoteLength: Duration.Quarter,
+      activeNotes: [Note.Ab, Note.F, Note.Db],
       history: [],
       undoStack: [],
       keysBeingHeld: ["a", "b", "c"],

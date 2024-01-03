@@ -1,6 +1,6 @@
 "use client";
 import React, { useContext } from "react";
-import { NoteName, PianoKeys } from "@/app/state/music_theory";
+import { Note, PianoKeys } from "@/app/state/music_theory";
 import { StateContext } from "@/app/state/StateContext";
 
 const WHITE_KEY_WIDTH = 4;
@@ -10,7 +10,7 @@ const BLACK_KEY_HEIGHT = 7;
 const HIGHLIGHT_COLOR = "var(--color-highlight)";
 
 type PianoKeyProps = {
-  noteName: NoteName;
+  noteName: Note;
 };
 
 /**
@@ -62,7 +62,7 @@ export default function PianoKey({ noteName }: PianoKeyProps) {
  * Get the { x, y, w, h }
  * of a piano key based on its note name.
  */
-function dimensions(noteName: NoteName) {
+function dimensions(noteName: Note) {
   const x = xOffset(noteName);
   const y = 0;
   if (isWhiteKey(noteName)) {
@@ -76,7 +76,7 @@ function dimensions(noteName: NoteName) {
  * of a piano key based on its note name
  * and whether it is active.
 //  */
-function colors(noteName: NoteName, isActive: boolean) {
+function colors(noteName: Note, isActive: boolean) {
   const white = "white";
   const black = "black";
   const baseBgColor = isWhiteKey(noteName) ? white : black;
@@ -89,7 +89,7 @@ function colors(noteName: NoteName, isActive: boolean) {
 /**
  * Find the x offset of a piano key based on its note name.
  */
-function xOffset(noteName: NoteName): number {
+function xOffset(noteName: Note): number {
   const i = indexOf(noteName);
   if (i < 5) {
     if (isWhiteKey(noteName)) return 2 * i;
@@ -101,15 +101,15 @@ function xOffset(noteName: NoteName): number {
 }
 
 /**
- * True if the NoteName is played with a white key
+ * True if the Note is played with a white key
  * */
-function isWhiteKey(noteName: NoteName): boolean {
+function isWhiteKey(noteName: Note): boolean {
   return noteName.length === 1;
 }
 
 /**
  * Find the index of a note name in an octave.
  */
-function indexOf(noteName: NoteName): number {
-  return Object.values(NoteName).indexOf(noteName);
+function indexOf(noteName: Note): number {
+  return Object.values(Note).indexOf(noteName);
 }

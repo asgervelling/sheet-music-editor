@@ -7,15 +7,31 @@
  */
 import { StaveNote } from "vexflow";
 
-import { Note } from "./state/music_theory";
+import { MusicalEvent, Note } from "./state/music_theory";
+
+/**
+ * Convert a Note to the format used by VexFlow
+ */
+export function toVexFlowName(note: Note) {
+  const octave = "4";
+  if (note === Note.PAUSE) {
+    return `b/${octave}`;
+  } 
+  else {
+    const name = note.replace("♭", "b");
+    return `${name}/${octave}`;
+  }
+}
 
 /**
  * Convert a note to a VexFlow StaveNote
  */
-export function noteToStaveNote(note: Note) {
-  return new StaveNote({
+export function toStaveNote(e: MusicalEvent) {
+  const keys = e.notes.map(toVexFlowName);
+  const note = new StaveNote({
     clef: "treble",
-    keys: [note.name],
-    duration: note.length,
+    keys: keys,
+    duration: e.duration,
   });
+  return note;
 }

@@ -1,14 +1,14 @@
 import NoteLengthIndicator from "./NoteLengthIndicator";
-import { NoteLength } from "@/app/state/music_theory";
+import { Duration } from "@/app/state/music_theory";
 
 export default function NoteLengthIndicatorGroup() {
   return (
     <div className="grid grid-flow-col justify-start gap-1">
-      <NoteLengthIndicator noteLength={NoteLength.Whole} />
-      <NoteLengthIndicator noteLength={NoteLength.Half} />
-      <NoteLengthIndicator noteLength={NoteLength.Quarter} />
-      <NoteLengthIndicator noteLength={NoteLength.Eighth} />
-      <NoteLengthIndicator noteLength={NoteLength.Sixteenth} />
+      <NoteLengthIndicator duration={Duration.Whole} />
+      <NoteLengthIndicator duration={Duration.Half} />
+      <NoteLengthIndicator duration={Duration.Quarter} />
+      <NoteLengthIndicator duration={Duration.Eighth} />
+      <NoteLengthIndicator duration={Duration.Sixteenth} />
     </div>
   );
 };

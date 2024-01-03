@@ -15,7 +15,7 @@ import keyRelease from "./actions/keyRelease";
 export default function reducer(state: State, action: Action): State {
   switch (action.type) {
     case Message.SET_NOTE_LENGTH:
-      return setNoteLength(state, action.payload.noteLength);
+      return setNoteLength(state, action.payload.duration);
 
     case Message.TOGGLE_ACTIVE_NOTE:
       return toggleActiveNote(state, action.payload.noteName);
