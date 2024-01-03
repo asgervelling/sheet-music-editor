@@ -33,7 +33,7 @@ export enum Duration {
 export type MusicalEvent = {
   notes: Note[];
   duration: Duration;
-}
+};
 
 /**
  * A bar is a list of musical events
@@ -44,6 +44,21 @@ export type Bar = {
   timeSignature: string;
   events: MusicalEvent[];
 };
+
+/**
+ * A bar is valid if the sum of the durations
+ * of its musical events is equal to the
+ * time signature.
+ */
+export function validateBar(bar: Bar): boolean {
+  const { timeSignature, events } = bar;
+  const [beatsPerBar, beatLength] = parseTimeSignature(timeSignature);
+  const totalBeats: number = events
+    .map((e) => e.duration)
+    .reduce((acc, curr) => acc + toFraction(curr), 0);
+
+  return totalBeats === beatsPerBar / beatLength;
+}
 
 function toFraction(duration: Duration): number {
   switch (duration) {
@@ -67,21 +82,6 @@ function toFraction(duration: Duration): number {
 function parseTimeSignature(sig: string): [number, number] {
   const [top, bottom] = sig.split("/");
   return [parseInt(top), parseInt(bottom)];
-}
-
-/**
- * A bar is valid if the sum of the durations
- * of its musical events is equal to the
- * time signature.
- */
-export function validateBar(bar: Bar): boolean {
-  const { timeSignature, events } = bar;
-  const [beatsPerBar, beatLength] = parseTimeSignature(timeSignature);
-  const totalBeats: number = events
-    .map(e => e.duration)
-    .reduce((acc, curr) => acc + toFraction(curr), 0);
-
-  return totalBeats === beatsPerBar / beatLength;
 }
 
 /**
@@ -116,12 +116,13 @@ export const DurationKeys: Record<Duration, string> = {
 };
 
 // Opposite of PianoKeys
-export const KeyToNote: Record<string, Note> = Object.entries(
-  PianoKeys
-).reduce((acc, [note, key]) => {
-  acc[key] = note as Note;
-  return acc;
-}, {} as Record<string, Note>);
+export const KeyToNote: Record<string, Note> = Object.entries(PianoKeys).reduce(
+  (acc, [note, key]) => {
+    acc[key] = note as Note;
+    return acc;
+  },
+  {} as Record<string, Note>
+);
 
 export const KeyToDuration: Record<string, Duration> = Object.entries(
   DurationKeys

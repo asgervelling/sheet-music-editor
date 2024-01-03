@@ -7,7 +7,6 @@ import commit from "./actions/commit";
 import keyPress from "./actions/keyPress";
 import keyRelease from "./actions/keyRelease";
 
-
 /**
  * Create a new state based on the previous
  * state and and an action.
@@ -28,8 +27,5 @@ export default function reducer(state: State, action: Action): State {
 
     case Message.KEY_RELEASE:
       return keyRelease(state, action.payload.key);
-
-    default:
-      return state;
   }
 }
