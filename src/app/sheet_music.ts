@@ -10,9 +10,9 @@ import { StaveNote } from "vexflow";
 import { MusicalEvent, Note } from "./state/music_theory";
 
 /**
- * Convert a Note to the format used by VexFlow
+ * Convert a Note to the note name format used by VexFlow.
  */
-export function toVexFlowName(note: Note) {
+export function toVexFlowName(note: Note): string {
   const octave = "4";
   if (note === Note.PAUSE) {
     return `b/${octave}`;
@@ -24,9 +24,9 @@ export function toVexFlowName(note: Note) {
 }
 
 /**
- * Convert a note to a VexFlow StaveNote
+ * Convert a MusicalEvent to a VexFlow StaveNote.
  */
-export function toStaveNote(e: MusicalEvent) {
+export function toStaveNote(e: MusicalEvent): StaveNote {
   const keys = e.notes.map(toVexFlowName);
   const note = new StaveNote({
     clef: "treble",

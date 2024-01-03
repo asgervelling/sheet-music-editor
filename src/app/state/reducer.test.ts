@@ -1,9 +1,7 @@
 import { describe, it, expect } from "@jest/globals";
 
 import reducer from "./reducer";
-import {
-  Action,
-} from "./actions";
+import { Action } from "./actions";
 import { State } from "./state";
 import { Duration, Note } from "./music_theory";
 import { Message } from "./messages";
@@ -72,7 +70,6 @@ describe("Reducer Tests", () => {
     // and clear the undo stack
     const s1 = reducer(s0, { type: Message.COMMIT });
     expect(s1.activeNotes).toEqual([]);
-    console.log("s1.history", s1.history);
     expect(s1.history).toEqual([
       {
         notes: [Note.C],
@@ -143,7 +140,6 @@ describe("Reducer Tests", () => {
     /*
     Redo operation
     */
-    // const initialUndoStack = [[{ name: Note.Db, length: Duration.Quarter }]];
     const initialUndoStack: MusicalEvent[] = [
       {
         notes: [Note.Db],
@@ -166,10 +162,7 @@ describe("Reducer Tests", () => {
       { type: Message.KEY_PRESS, payload: { key: "x" } },
     ];
 
-    console.log("s0", s0);
-
     const s2 = keyCombination.reduce(reducer, s0);
-    console.log("s2", s2);
     expect(s2.undoStack).toEqual([]);
     expect(s2.history).toEqual(initialUndoStack);
 
