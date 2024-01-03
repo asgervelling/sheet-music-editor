@@ -27,14 +27,6 @@ export enum Duration {
 }
 
 /**
- * A note with a name and a length
- */
-// export type Note = {
-//   name: Note;
-//   length: Duration;
-// };
-
-/**
  * A single note or pause is a list of length 1.
  * A chord is a list of notes.
  */

@@ -5,44 +5,34 @@ import { validateBar } from "./music_theory";
 
 describe("Music Theory Tests", () => {
   it("should validate a bar", () => {
+    // Define some musical events
+    const e1 = { notes: [Note.C], duration: Duration.Whole };
+    const e2 = { notes: [Note.C], duration: Duration.Half };
+    const e4 = { notes: [Note.C], duration: Duration.Quarter };
+    const e16 = { notes: [Note.C], duration: Duration.Sixteenth };
+
     const validBar: Bar = {
       timeSignature: "4/4",
-      events: [
-        {
-          notes: [Note.C],
-          duration: Duration.Quarter,
-        },
-        {
-          notes: [Note.C],
-          duration: Duration.Quarter,
-        },
-        {
-          notes: [Note.C],
-          duration: Duration.Quarter,
-        },
-        {
-          notes: [Note.C],
-          duration: Duration.Quarter,
-        },
-      ],
+      events: [e4, e4, e4, e4],
     };
-
     expect(validateBar(validBar)).toBe(true);
 
-    const invalidBar: Bar = {
+    const barTooLong: Bar = {
       timeSignature: "4/4",
-      events: [
-        {
-          notes: [Note.C],
-          duration: Duration.Whole,
-        },
-        {
-          notes: [Note.C],
-          duration: Duration.Sixteenth,
-        },
-      ],
+      events: [e1, e16],
     };
+    expect(validateBar(barTooLong)).toBe(false);
 
-    expect(validateBar(invalidBar)).toBe(false);
+    const barTooShort: Bar = {
+      timeSignature: "4/4",
+      events: [e2],
+    };
+    expect(validateBar(barTooShort)).toBe(false);
+
+    const barOddTimeSignature: Bar = {
+      timeSignature: "16/4",
+      events: [e1, e1, e1, e1],
+    };
+    expect(validateBar(barOddTimeSignature)).toBe(false);
   });
 });
