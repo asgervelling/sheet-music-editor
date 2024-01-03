@@ -2,18 +2,12 @@ import { describe, it, expect } from "@jest/globals";
 
 import reducer from "./reducer";
 import {
-  setDuration,
-  toggleActiveNote,
-  commit,
-  keyPress,
-  keyRelease,
   Action,
 } from "./actions";
 import { State } from "./state";
 import { Duration, Note } from "./music_theory";
 import { Message } from "./messages";
 import { MusicalEvent } from "./music_theory";
-import { toStaveNote } from "../sheet_music";
 
 function createState(): State {
   return {
@@ -89,14 +83,6 @@ describe("Reducer Tests", () => {
         duration: Duration.Quarter,
       },
     ]);
-    // expect(s1.history).toEqual([
-    //   [
-    //     { name: Note.Db, length: Duration.Quarter },
-    //     { name: Note.F, length: Duration.Quarter },
-    //     { name: Note.Ab, length: Duration.Quarter },
-    //   ],
-    // ]);
-    // expect(s1.undoStack).toEqual([]);
   });
 
   it("should handle KEY_PRESS action", () => {
@@ -126,10 +112,6 @@ describe("Reducer Tests", () => {
         duration: Duration.Quarter,
       },
     ];
-    // const initialHistory = [
-    //   [{ name: Note.Db, length: Duration.Quarter }],
-    //   [{ name: Note.F, length: Duration.Quarter }],
-    // ];
     const s0: State = {
       ...createState(),
       history: initialHistory,
