@@ -13,6 +13,10 @@ type PianoKeyProps = {
   noteName: NoteName;
 };
 
+/**
+ * A single piano key.
+ * Can only be used within an SVG.
+ */
 export default function PianoKey({ noteName }: PianoKeyProps) {
   const { state } = useContext(StateContext)!;
 

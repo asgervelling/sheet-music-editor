@@ -19,11 +19,11 @@ export enum NoteName {
  * from whole to sixteenth
  */
 export enum NoteLength {
-  Whole = "Whole",
-  Half = "Half",
-  Quarter = "Quarter",
-  Eighth = "Eighth",
-  Sixteenth = "Sixteenth",
+  Whole = "w",
+  Half = "h",
+  Quarter = "q",
+  Eighth = "8",
+  Sixteenth = "16",
 }
 
 /**
