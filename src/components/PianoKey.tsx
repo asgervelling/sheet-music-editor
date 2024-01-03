@@ -1,70 +1,60 @@
 "use client";
 import React, { useContext } from "react";
-import { NoteName, PianoKeys } from "@/app/state/music_theory";
+import { NoteName } from "@/app/state/music_theory";
 import { StateContext } from "@/app/state/StateContext";
 
-
 type PianoKeyProps = {
-  i: number;
+  noteName: NoteName;
 };
 
-export const WhitePianoKey = ({ i }: PianoKeyProps) => {
-  const mapping = (i: number) => {
-    const codomain = [0, 2, 4, 5, 7, 9, 11];
-    return codomain.indexOf(i);
-  };
+export default function PianoKey({ noteName }: PianoKeyProps) {
   const { state } = useContext(StateContext)!;
 
-  const noteNames: NoteName[] = Object.values(NoteName);
-  const noteName = noteNames[i];
-  const isActive = state.activeNotes.includes(noteName);
-  const x = mapping(i) * 4 + 0;
+  const x = xOffset(noteName);
   const y = 0;
-  const w = 4;
-  const h = 11;
-
-  const fill = isActive ? "var(--color-highlight)" : "white";
-  return (
-    <g key={i} fill={fill}>
-      <rect
-        x={x}
-        y={y}
-        width={w}
-        height={h}
-        fill={fill}
-        stroke="var(--color-primary)"
-        strokeWidth="0.125"
-      />
-    </g>
-  );
-};
-
-export const BlackPianoKey = ({ i }: PianoKeyProps) => {
-  const mapping = (i: number) => {
-    const codomain = [1, 3, 6, 8, 10];
-    return codomain.indexOf(i);
-  };
-  const { state } = useContext(StateContext)!;
-
-  const noteNames: NoteName[] = Object.values(NoteName);
-  const noteName = noteNames[i];
+  const w = isWhiteKey(noteName) ? 4 : 2;
+  const h = isWhiteKey(noteName) ? 11 : 7;
+  
   const isActive = state.activeNotes.includes(noteName);
-  const offset = mapping(i) < 2 ? 3 : 7;
-  const x = mapping(i) * 4 + offset;
-  const y = 0;
-  const w = 2;
-  const h = 7;
-
+  const highlightColor = "var(--color-highlight)";
+  const keyColor = isWhiteKey(noteName) ? "white" : "black";
+  const fill = isActive ? highlightColor : keyColor;
+  
   return (
-    <g key={i} fill={isActive ? "var(--color-highlight)" : "black"}>
-      <rect
-        x={x}
-        y={y}
-        width={w}
-        height={h}
-        fill={isActive ? "var(--color-highlight)" : "black"}
-        z={1}
-      />
-    </g>
-  );
-};
+    <rect
+      x={x}
+      y={y}
+      width={w}
+      height={h}
+      fill={fill}
+      stroke="var(--color-primary)"
+      strokeWidth="0.125"
+    />
+  )
+}
+
+/**
+ * Find the x offset of a piano key based on its note name.
+ */
+function xOffset(noteName: NoteName): number {
+  const i = indexOf(noteName);
+  if (i < 5) {
+    if (isWhiteKey(noteName)) return 2 * i;
+    else return 2 * i + 1;
+  }
+  else {
+    if (isWhiteKey(noteName)) return 2 * i + 2;
+    else return 2 * i + 3;
+  }
+}
+
+/**
+ * True if the NoteName is played with a white key
+ * */
+function isWhiteKey(noteName: NoteName): boolean {
+  return noteName.length === 1;
+}
+
+function indexOf(noteName: NoteName): number {
+  return Object.values(NoteName).indexOf(noteName);
+}

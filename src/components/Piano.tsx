@@ -1,4 +1,5 @@
-import { WhitePianoKey, BlackPianoKey } from "./PianoKey";
+import { NoteName } from "@/app/state/music_theory";
+import PianoKey from "./PianoKey";
 
 const Piano = () => {
   return (
@@ -7,20 +8,20 @@ const Piano = () => {
         <g id="Keyboard">
           <g id="Octave" stroke="#111" strokeWidth="0.125">
             <g id="WhiteKeys">
-              <WhitePianoKey i={0} />
-              <WhitePianoKey i={2} />
-              <WhitePianoKey i={4} />
-              <WhitePianoKey i={5} />
-              <WhitePianoKey i={7} />
-              <WhitePianoKey i={9} />
-              <WhitePianoKey i={11} />
+              <PianoKey noteName={NoteName.C} />
+              <PianoKey noteName={NoteName.D} />
+              <PianoKey noteName={NoteName.E} />
+              <PianoKey noteName={NoteName.F} />
+              <PianoKey noteName={NoteName.G} />
+              <PianoKey noteName={NoteName.A} />
+              <PianoKey noteName={NoteName.B} />
             </g>
             <g id="BlackKeys">
-              <BlackPianoKey i={1} />
-              <BlackPianoKey i={3} />
-              <BlackPianoKey i={6} />
-              <BlackPianoKey i={8} />
-              <BlackPianoKey i={10} />
+              <PianoKey noteName={NoteName.Db} />
+              <PianoKey noteName={NoteName.Eb} />
+              <PianoKey noteName={NoteName.Gb} />
+              <PianoKey noteName={NoteName.Ab} />
+              <PianoKey noteName={NoteName.Bb} />
             </g>
           </g>
         </g>
