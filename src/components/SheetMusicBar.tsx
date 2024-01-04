@@ -6,37 +6,62 @@ import { Formatter, StaveNote, Vex, Voice } from "vexflow";
 
 const { Renderer, Stave } = Vex.Flow;
 
+// export default function SheetMusicBar({ timeSignature, events }: Bar) {
+//   useEffect(() => {
+//     const renderer = new Renderer("output", Renderer.Backends.SVG);
+
+//     const parentDiv = document.getElementById("sheet-music-container");
+//     const parentWidth = parentDiv ? parentDiv.offsetWidth : 500;
+
+//     const notes = events.map(toStaveNote);
+//   });
+
+//   return (
+//     <div id="sheet-music-container" style={{ width: "100%" }}>
+//       <div id="output"></div>
+//     </div>
+//   );
+// }
+
 export default function SheetMusicBar({ timeSignature, events }: Bar) {
   useEffect(() => {
     // Create an SVG renderer and attach it to the DIV element named "output".
     const renderer = new Renderer("output", Renderer.Backends.SVG);
 
     // Configure the rendering context.
-    renderer.resize(500, 500);
+    const parentDiv = document.getElementById("sheet-music-container");
+    const parentWidth = parentDiv ? parentDiv.offsetWidth : 500;
+
+    // Set the size of the canvas
+    renderer.resize(parentWidth, 200);
     const context = renderer.getContext();
 
     // Create a stave at position 10, 40 of width 400 on the canvas.
-    const stave = new Stave(10, 40, 400);
-
-    // Add a clef and time signature.
-    stave.addClef("treble").addTimeSignature("4/4");
-
-    // // Connect it to the rendering context and draw!
+    const stave = new Stave(10, 40, 200);
+    // stave.addClef("treble").addTimeSignature("4/4");
     stave.setContext(context).draw();
 
-    // Create the notes
-    const notes = events.map((e) => toStaveNote(e));
-    
+    const notes = events.map(toStaveNote);
+
     // Create a voice in 4/4 and add above notes
     const voice = new Voice({ num_beats: 4, beat_value: 4 });
     voice.addTickables(notes);
 
-    // Format and justify the notes to 400 pixels.
-    new Formatter().joinVoices([voice]).format([voice], 350);
+    try {
+      // Format and justify the notes to the adjusted width.
+      const minWidth = 2 * new Formatter().preCalculateMinTotalWidth([voice]);
+      new Formatter().joinVoices([voice]).formatToStave([voice], stave);
 
-    // Render voice
-    voice.draw(context, stave);
-
+      // Render voice
+      voice.draw(context, stave);
+  
+    }
+    catch (e) {
+      const errorDiv: HTMLElement | null = document.getElementById("error");
+      if (errorDiv) {
+        errorDiv.innerText = e.message;
+      }
+    }
     // Return a cleanup function
     return () => {
       // Remove the element from the DOM
@@ -45,11 +70,16 @@ export default function SheetMusicBar({ timeSignature, events }: Bar) {
         div.innerHTML = "";
       }
     };
-  }, []);
+
+  }, [events, timeSignature]);
 
   return (
-    <div
-      id="output"
-    ></div>
+    <div>
+      <div id="error"></div>
+      <div id="sheet-music-container" style={{ width: "100%" }}>
+        <div id="output"></div>
+      </div>
+    </div>
   );
 }
+

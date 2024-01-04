@@ -36,11 +36,12 @@ export default function Home() {
         {/* Bottom half */}
         <div className="py-20 px-32 col-span-2">
           <History />
+          
           <SheetMusicBar
             timeSignature="4/4"
             events={[
               {
-                notes: [Note.C, Note.E, Note.G],
+                notes: [Note.D, Note.E, Note.G],
                 duration: Duration.Quarter,
               },
               {
@@ -51,10 +52,10 @@ export default function Home() {
                 notes: [Note.C, Note.E, Note.G],
                 duration: Duration.Quarter,
               },
-              {
-                notes: [Note.C, Note.E, Note.G],
-                duration: Duration.Quarter,
-              },
+              // {
+              //   notes: [Note.C, Note.E, Note.G],
+              //   duration: Duration.Quarter,
+              // },
             ]}
           />
         </div>
