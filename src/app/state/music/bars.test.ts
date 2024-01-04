@@ -1,7 +1,6 @@
 import { describe, it, expect } from "@jest/globals";
 
-import { Bar, Note, Duration } from "./music_theory";
-import { validateBar } from "./music_theory";
+import { Bar, Note, Duration, validateBar } from ".";
 
 describe("Music Theory Tests", () => {
   it("should validate a bar", () => {

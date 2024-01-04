@@ -12,6 +12,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "strictNullChecks": true,
+    "useUnknownInCatchVariables": false,
     "jsx": "preserve",
     "incremental": true,
     "plugins": [

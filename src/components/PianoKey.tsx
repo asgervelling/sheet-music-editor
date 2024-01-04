@@ -1,6 +1,6 @@
 "use client";
 import React, { useContext } from "react";
-import { Note, PianoKeys } from "@/app/state/music_theory";
+import { Note, NoteToKey } from "@/app/state/music";
 import { StateContext } from "@/app/state/StateContext";
 
 const WHITE_KEY_WIDTH = 4;
@@ -22,7 +22,7 @@ export default function PianoKey({ duration }: PianoKeyProps) {
 
   const isActive = state.activeNotes.includes(duration);
   const { bgColor, textColor } = colors(duration, isActive);
-  const keyboardShortcut = PianoKeys[duration];
+  const keyboardShortcut = NoteToKey[duration];
 
   const { x, y, w, h } = dimensions(duration);
   const textAreaHeight = 2;

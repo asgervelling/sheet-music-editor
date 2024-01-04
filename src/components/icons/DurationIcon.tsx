@@ -1,4 +1,4 @@
-import { Duration } from "@/app/state/music_theory"
+import { Duration } from "@/app/state/music"
 import React from "react";
 import { WholeNoteIcon } from "./WholeNoteIcon";
 import HalfNoteIcon from "./HalfNoteIcon";

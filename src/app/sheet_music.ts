@@ -7,7 +7,7 @@
  */
 import { StaveNote } from "vexflow";
 
-import { MusicalEvent, Note } from "./state/music_theory";
+import { MusicalEvent, Note } from "./state/music";
 
 /**
  * Convert a Note to the note name format used by VexFlow.

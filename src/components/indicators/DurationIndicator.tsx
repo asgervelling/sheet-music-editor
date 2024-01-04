@@ -1,7 +1,7 @@
 "use client";
 import React, { useContext } from "react";
 import { StateContext } from "@/app/state/StateContext";
-import { Duration, DurationKeys } from "@/app/state/music_theory";
+import { Duration, DurationToKey } from "@/app/state/music";
 import DurationIcon from "../icons/DurationIcon";
 
 interface DurationKeyProps {
@@ -24,7 +24,7 @@ const DurationIndicator: React.FC<DurationKeyProps> = ({ duration }) => {
         style={style}
         className="h-10 w-10 flex items-center justify-center mb-2"
       >
-        {DurationKeys[duration]}
+        {DurationToKey[duration]}
       </div>
       <DurationIcon duration={duration} />
     </div>

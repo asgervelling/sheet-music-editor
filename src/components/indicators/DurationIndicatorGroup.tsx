@@ -1,5 +1,5 @@
 import DurationIndicator from "./DurationIndicator";
-import { Duration } from "@/app/state/music_theory";
+import { Duration } from "@/app/state/music";
 
 export default function DurationIndicatorGroup() {
   return (

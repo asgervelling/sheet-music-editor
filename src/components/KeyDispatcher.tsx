@@ -2,7 +2,7 @@
 import { useContext, useEffect } from "react";
 import { StateContext } from "@/app/state/StateContext";
 import { Message } from "@/app/state/messages";
-import { KeyToNote, KeyToDuration, DurationKeys, PianoKeys } from "@/app/state/music_theory";
+import { KeyToNote, KeyToDuration, DurationToKey, NoteToKey } from "@/app/state/music";
 
 /**
  * Listens for keyboard input and dispatches actions to the state
@@ -60,9 +60,9 @@ export default function KeyDispatcher() {
 }
 
 function isPianoKey(key: string): boolean {
-  return Object.values(PianoKeys).includes(key);
+  return Object.values(NoteToKey).includes(key);
 }
 
 function isDurationKey(key: string): boolean {
-  return Object.values(DurationKeys).includes(key);
+  return Object.values(DurationToKey).includes(key);
 }

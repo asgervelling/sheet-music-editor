@@ -1,7 +1,7 @@
 "use client";
 import React, { createContext, useReducer, ReactNode, Dispatch } from "react";
 
-import { Duration } from "@/app/state/music_theory";
+import { Duration } from "@/app/state/music";
 import { State } from "./state";
 import { Action } from "./actions";
 import reducer from "./reducer";

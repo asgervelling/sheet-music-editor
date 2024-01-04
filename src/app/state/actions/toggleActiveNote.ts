@@ -1,4 +1,4 @@
-import { Note } from "../music_theory";
+import { Note } from "../music";
 import { State } from "../state";
 
 /**

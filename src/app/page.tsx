@@ -8,7 +8,7 @@ import EnterKeyIndicator from "@/components/indicators/EnterKeyIndicator";
 import UndoIndicatorGroup from "@/components/indicators/UndoIndicatorGroup";
 import RedoIndicatorGroup from "@/components/indicators/RedoIndicatorGroup";
 import SheetMusicBar from "@/components/SheetMusicBar";
-import { Duration, Note, MusicalEvent } from "./state/music_theory";
+import { Duration, Note, MusicalEvent } from "./state/music";
 
 export default function Home() {
   return (
@@ -52,11 +52,12 @@ export default function Home() {
                 notes: [Note.C, Note.E, Note.G],
                 duration: Duration.Quarter,
               },
-              // {
-              //   notes: [Note.C, Note.E, Note.G],
-              //   duration: Duration.Quarter,
-              // },
+              {
+                notes: [Note.C, Note.E, Note.G],
+                duration: Duration.Quarter,
+              },
             ]}
+            pos={0}
           />
         </div>
       </div>
