@@ -57,7 +57,6 @@ export default function Home() {
                 duration: Duration.Quarter,
               },
             ]}
-            pos={0}
           />
         </div>
       </div>

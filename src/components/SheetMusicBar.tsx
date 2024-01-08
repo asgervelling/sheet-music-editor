@@ -1,100 +1,79 @@
-"import client";
+import React, { useEffect, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import { toStaveNote } from "@/app/sheet_music";
-import { Bar, parseTimeSignature } from "@/app/state/music";
-import { useEffect } from "react"
-import { Formatter, RenderContext, StaveNote, Vex, Voice } from "vexflow";
+import { Bar } from "@/app/state/music";
+import { Formatter, Stave, Voice, Vex } from "vexflow";
 
-const { Renderer, Stave } = Vex.Flow;
+const { Renderer } = Vex.Flow;
 
-const STAVE_WIDTH = 200
+const STAVE_WIDTH = 200;
 const STAVE_HEIGHT = 40;
 
-/**
- * Create a rendering context with a canvas
- * that is full width and height of the element
- * identified by containerId. \
- * outputId is the element in which the renderer should render.
- */
-function createRenderContext(containerId: string, outputId: string) {
-  // Create an SVG renderer and attach it to the DIV element named "output".
-  const renderer = new Renderer(outputId, Renderer.Backends.SVG);
+enum DIV_ID {
+  CONTAINER = "sheet-music-container",
+  OUTPUT = "output",
+  ERROR = "error",
+}
 
-  // Configure the rendering context.
-  const parentDiv = document.getElementById(containerId);
+function createRenderContext() {
+  const renderer = new Renderer(DIV_ID.OUTPUT, Renderer.Backends.SVG);
+  const parentDiv = document.getElementById(DIV_ID.CONTAINER);
   const parentWidth = parentDiv ? parentDiv.offsetWidth : 500;
   const parentHeight = parentDiv ? parentDiv.offsetHeight : 200;
-
-  // Set the size of the canvas
   renderer.resize(parentWidth, parentHeight);
-  
   return renderer.getContext();
 }
 
-/**
- * Create a musical Stave,
- * a VexFlow type.
- */
-function createStave(pos: number) {
-  const stave = new Stave(pos, 40, STAVE_WIDTH);
-  // stave.addClef("treble").addTimeSignature("4/4");
+function createStave() {
+  const [x, y] = [0, STAVE_HEIGHT];
+  const stave = new Stave(x, y, STAVE_WIDTH);
   return stave;
 }
 
 function displayError(e: any): void {
-  const errorDiv = document.getElementById("error");
+  const errorDiv = document.getElementById(DIV_ID.ERROR);
   if (errorDiv) {
     errorDiv.innerHTML = e.message;
   }
 }
 
-export default function SheetMusicBar({ timeSignature, events, pos }: Bar & { pos: number }) {
-  useEffect(() => {
-    const context = createRenderContext("sheet-music-container", "output");
+function SheetMusicBar({ timeSignature, events }: Bar) {
+  const containerRef = useRef(null);
 
-    const stave = createStave(pos);
+  useEffect(() => {
+    const context = createRenderContext();
+    const stave = createStave();
     const notes = events.map(toStaveNote);
-    
-    // Create a voice in 4/4 and add above notes
     const voice = new Voice({ num_beats: 4, beat_value: 4 });
     voice.addTickables(notes);
 
-
     try {
-      // Format and justify the notes to fit the stave
       new Formatter().joinVoices([voice]).formatToStave([voice], stave);
 
-      // Draw
       stave.setContext(context).draw();
       voice.draw(context, stave);
-    }
-    catch (e) {
+    } catch (e) {
       displayError(e);
     }
-    
-    // Return a cleanup function for useEffect to call when the component is unmounted
-    return createCleanupFn(["output", "error"]);
-  }, [events, timeSignature]);
+
+    return () => {
+      [DIV_ID.OUTPUT, DIV_ID.ERROR].forEach((id) => {
+        const div: HTMLElement | null = document.getElementById(id);
+        if (div) {
+          div.innerHTML = "";
+        }
+      });
+    };
+  }, [containerRef.current]);
 
   return (
     <div>
-      <div id="error"></div>
-      <div id="sheet-music-container">
-        <div id="output"></div>
+      <div id={DIV_ID.ERROR}></div>
+      <div id={DIV_ID.CONTAINER} ref={containerRef}>
+        <div id={DIV_ID.OUTPUT}></div>
       </div>
     </div>
   );
 }
 
-/**
- * Remove the innerHTML of the elements specified.
- */
-function createCleanupFn(elementIds: string[]): () => void {
-  return () => {
-    elementIds.forEach((id) => {
-      const div: HTMLElement | null = document.getElementById(id);
-      if (div) {
-        div.innerHTML = "";
-      }
-    });
-  }
-}
+export default SheetMusicBar;
