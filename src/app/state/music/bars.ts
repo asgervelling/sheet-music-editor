@@ -1,4 +1,5 @@
 import { Bar, Duration, MusicalEvent, Note } from ".";
+import { toFraction } from "./durations";
 
 /**
  * A bar is valid if the sum of the durations
@@ -15,21 +16,6 @@ export function validateBar(bar: Bar): boolean {
   return totalBeats === beatsPerBar / beatLength;
 }
 
-export function toFraction(duration: Duration): number {
-  switch (duration) {
-    case Duration.Whole:
-      return 1;
-    case Duration.Half:
-      return 1 / 2;
-    case Duration.Quarter:
-      return 1 / 4;
-    case Duration.Eighth:
-      return 1 / 8;
-    case Duration.Sixteenth:
-      return 1 / 16;
-  }
-}
-
 /**
  * Parse the nominator and denominator
  * of a time signature.
@@ -38,7 +24,6 @@ export function parseTimeSignature(sig: string): [number, number] {
   const [top, bottom] = sig.split("/");
   return [parseInt(top), parseInt(bottom)];
 }
-
 
 /**
  * Create a full (valid) bar from the given events
