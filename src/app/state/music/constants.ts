@@ -48,12 +48,7 @@ export const NoteToKey: Record<Note, string> = {
 /**
  * Mapping from keyboard key to Note.
  */
-export const KeyToNote: Record<string, Note> = Object.entries(
-  NoteToKey
-).reduce((acc, [note, key]) => {
-  acc[key] = note as Note;
-  return acc;
-}, {} as Record<string, Note>);
+export const KeyToNote = flipRecord(NoteToKey);
 
 /**
  * Mapping from Duration to keyboard key.
@@ -69,12 +64,7 @@ export const DurationToKey: Record<Duration, string> = {
 /**
  * Mapping from keyboard key to Duration.
  */
-export const KeyToDuration: Record<string, Duration> = Object.entries(
-  DurationToKey
-).reduce((acc, [duration, key]) => {
-  acc[key] = duration as Duration;
-  return acc;
-}, {} as Record<string, Duration>);
+export const KeyToDuration = flipRecord(DurationToKey);
 
 type ObjectKey = string | number | symbol;
 
