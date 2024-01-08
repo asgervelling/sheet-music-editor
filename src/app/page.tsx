@@ -1,15 +1,15 @@
 "use client";
-import { StateProvider } from "./state/StateContext";
-import Piano from "@/components/Piano";
-import DurationIndicatorGroup from "@/components/indicators/DurationIndicatorGroup";
-import KeyDispatcher from "@/components/KeyDispatcher";
-import History from "@/components/History";
-import EnterKeyIndicator from "@/components/indicators/EnterKeyIndicator";
-import UndoIndicatorGroup from "@/components/indicators/UndoIndicatorGroup";
-import RedoIndicatorGroup from "@/components/indicators/RedoIndicatorGroup";
-import { Duration, Note, MusicalEvent } from "./state/music";
-import SheetMusicCanvas, { SheetMusicBar } from "@/components/SheetMusicCanvas";
-import SheetMusic, { Canvas } from "@/components/SheetMusic";
+import History from '@/components/History';
+import DurationIndicatorGroup from '@/components/indicators/DurationIndicatorGroup';
+import EnterKeyIndicator from '@/components/indicators/EnterKeyIndicator';
+import RedoIndicatorGroup from '@/components/indicators/RedoIndicatorGroup';
+import UndoIndicatorGroup from '@/components/indicators/UndoIndicatorGroup';
+import KeyDispatcher from '@/components/KeyDispatcher';
+import Piano from '@/components/Piano';
+import { SheetMusicSystem } from '@/components/scores';
+
+import { Duration, Note } from './state/music';
+import { StateProvider } from './state/StateContext';
 
 export default function Home() {
   return (
@@ -37,51 +37,40 @@ export default function Home() {
         {/* Bottom half */}
         <div className="py-20 px-32 col-span-2">
           <History />
-          {/* <Canvas /> */}
-          <SheetMusic
-            timeSignature="4/4"
-            events={[
+          <SheetMusicSystem
+            bars={[
               {
-                notes: [Note.D, Note.E, Note.G],
-                duration: Duration.Quarter,
+                timeSignature: "4/4",
+                events: [
+                  {
+                    notes: [Note.C, Note.E],
+                    duration: Duration.Whole,
+                  },
+                ],
               },
               {
-                notes: [Note.C],
-                duration: Duration.Quarter,
-              },
-              {
-                notes: [Note.C, Note.E, Note.G],
-                duration: Duration.Quarter,
-              },
-              {
-                notes: [Note.C, Note.E, Note.G],
-                duration: Duration.Quarter,
+                timeSignature: "4/4",
+                events: [
+                  {
+                    notes: [Note.D],
+                    duration: Duration.Quarter,
+                  },
+                  {
+                    notes: [Note.C],
+                    duration: Duration.Quarter,
+                  },
+                  {
+                    notes: [Note.E, Note.G],
+                    duration: Duration.Quarter,
+                  },
+                  {
+                    notes: [Note.G],
+                    duration: Duration.Quarter,
+                  },
+                ],
               },
             ]}
           />
-          {/* <SheetMusicCanvas>
-            <SheetMusicBar
-              timeSignature="4/4"
-              events={[
-                {
-                  notes: [Note.D, Note.E, Note.G],
-                  duration: Duration.Quarter,
-                },
-                {
-                  notes: [Note.C],
-                  duration: Duration.Quarter,
-                },
-                {
-                  notes: [Note.C, Note.E, Note.G],
-                  duration: Duration.Quarter,
-                },
-                {
-                  notes: [Note.C, Note.E, Note.G],
-                  duration: Duration.Quarter,
-                },
-              ]}
-            />
-          </SheetMusicCanvas> */}
         </div>
       </div>
     </StateProvider>
