@@ -7,9 +7,9 @@ import History from "@/components/History";
 import EnterKeyIndicator from "@/components/indicators/EnterKeyIndicator";
 import UndoIndicatorGroup from "@/components/indicators/UndoIndicatorGroup";
 import RedoIndicatorGroup from "@/components/indicators/RedoIndicatorGroup";
-import SheetMusicBar from "@/components/SheetMusicBar";
 import { Duration, Note, MusicalEvent } from "./state/music";
-import SheetMusicCanvas from "@/components/SheetMusicCanvas";
+import SheetMusicCanvas, { SheetMusicBar } from "@/components/SheetMusicCanvas";
+import SheetMusic from "@/components/SheetMusic";
 
 export default function Home() {
   return (
@@ -37,7 +37,28 @@ export default function Home() {
         {/* Bottom half */}
         <div className="py-20 px-32 col-span-2">
           <History />
-          <SheetMusicCanvas>
+          <SheetMusic
+            timeSignature="4/4"
+            events={[
+              {
+                notes: [Note.D, Note.E, Note.G],
+                duration: Duration.Quarter,
+              },
+              {
+                notes: [Note.C],
+                duration: Duration.Quarter,
+              },
+              {
+                notes: [Note.C, Note.E, Note.G],
+                duration: Duration.Quarter,
+              },
+              {
+                notes: [Note.C, Note.E, Note.G],
+                duration: Duration.Quarter,
+              },
+            ]}
+          />
+          {/* <SheetMusicCanvas>
             <SheetMusicBar
               timeSignature="4/4"
               events={[
@@ -59,7 +80,7 @@ export default function Home() {
                 },
               ]}
             />
-          </SheetMusicCanvas>
+          </SheetMusicCanvas> */}
         </div>
       </div>
     </StateProvider>
