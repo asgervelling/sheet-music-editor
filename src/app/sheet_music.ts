@@ -1,6 +1,6 @@
 /**
  * @fileoverview
- * This file contains the code for the sheet music display.
+ * This module contains the code for the sheet music display.
  * It uses the VexFlow library to render the sheet music.
  * It includes functions to convert the our own types
  * to VexFlow graphics.

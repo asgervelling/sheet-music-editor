@@ -1,3 +1,11 @@
+/**
+ * @fileoverview
+ * Our sheet music system are rendered with VexFlow,
+ * a sheet music library.
+ * Since it adds elements to the DOM as a side effect,
+ * we will limit the number of re-renders by React
+ * and let this component use VexFlow instead.
+ */
 "use client";
 import { toStaveNote } from "@/app/sheet_music";
 import { Bar, MusicalEvent } from "@/app/state/music";
@@ -38,6 +46,7 @@ export default function SheetMusicSystem({ bars }: SheetMusicSystemProps) {
       draw(context, stave, voice);
     })
 
+    // Return a cleanup function
     return () => {
       [DIV_ID.OUTPUT, DIV_ID.ERROR].forEach((id) => {
         const div: HTMLElement | null = document.getElementById(id);
