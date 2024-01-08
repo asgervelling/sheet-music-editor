@@ -9,6 +9,7 @@ import UndoIndicatorGroup from "@/components/indicators/UndoIndicatorGroup";
 import RedoIndicatorGroup from "@/components/indicators/RedoIndicatorGroup";
 import SheetMusicBar from "@/components/SheetMusicBar";
 import { Duration, Note, MusicalEvent } from "./state/music";
+import SheetMusicCanvas from "@/components/SheetMusicCanvas";
 
 export default function Home() {
   return (
@@ -36,28 +37,29 @@ export default function Home() {
         {/* Bottom half */}
         <div className="py-20 px-32 col-span-2">
           <History />
-          
-          <SheetMusicBar
-            timeSignature="4/4"
-            events={[
-              {
-                notes: [Note.D, Note.E, Note.G],
-                duration: Duration.Quarter,
-              },
-              {
-                notes: [Note.C],
-                duration: Duration.Quarter,
-              },
-              {
-                notes: [Note.C, Note.E, Note.G],
-                duration: Duration.Quarter,
-              },
-              {
-                notes: [Note.C, Note.E, Note.G],
-                duration: Duration.Quarter,
-              },
-            ]}
-          />
+          <SheetMusicCanvas>
+            <SheetMusicBar
+              timeSignature="4/4"
+              events={[
+                {
+                  notes: [Note.D, Note.E, Note.G],
+                  duration: Duration.Quarter,
+                },
+                {
+                  notes: [Note.C],
+                  duration: Duration.Quarter,
+                },
+                {
+                  notes: [Note.C, Note.E, Note.G],
+                  duration: Duration.Quarter,
+                },
+                {
+                  notes: [Note.C, Note.E, Note.G],
+                  duration: Duration.Quarter,
+                },
+              ]}
+            />
+          </SheetMusicCanvas>
         </div>
       </div>
     </StateProvider>
