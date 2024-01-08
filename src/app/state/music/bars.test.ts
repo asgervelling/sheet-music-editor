@@ -1,8 +1,9 @@
 import { describe, it, expect } from "@jest/globals";
 
 import { Bar, Note, Duration, validateBar } from ".";
+import { toFullBar } from "./bars";
 
-describe("Music Theory Tests", () => {
+describe("validateBar", () => {
   it("should validate a bar", () => {
     // Define some musical events
     const e1 = { notes: [Note.C], duration: Duration.Whole };
@@ -39,5 +40,20 @@ describe("Music Theory Tests", () => {
       events: [e2, e4, e16],
     };
     expect(validateBar(barWeirdTimeSignature)).toBe(true);
+  });
+});
+
+describe("toFullBar", () => {
+  it("should fill a bar with pauses", () => {
+    const e4 = { notes: [Note.C], duration: Duration.Quarter };
+    const e16 = { notes: [Note.C], duration: Duration.Sixteenth };
+    const bar: Bar = {
+      timeSignature: "4/4",
+      events: [e4, e16],
+    };
+    const fullBar = toFullBar(bar);
+    expect(fullBar.events[2].notes[0]).toBe(Note.PAUSE);
+    expect(fullBar.events[2].duration).toBe(Duration.Sixteenth);
+    expect(fullBar.events.length).toBe(13);
   });
 });

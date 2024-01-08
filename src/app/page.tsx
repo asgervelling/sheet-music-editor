@@ -1,17 +1,51 @@
 "use client";
-import History from '@/components/History';
-import DurationIndicatorGroup from '@/components/indicators/DurationIndicatorGroup';
-import EnterKeyIndicator from '@/components/indicators/EnterKeyIndicator';
-import RedoIndicatorGroup from '@/components/indicators/RedoIndicatorGroup';
-import UndoIndicatorGroup from '@/components/indicators/UndoIndicatorGroup';
-import KeyDispatcher from '@/components/KeyDispatcher';
-import Piano from '@/components/Piano';
-import { SheetMusicSystem } from '@/components/scores';
+import History from "@/components/History";
+import DurationIndicatorGroup from "@/components/indicators/DurationIndicatorGroup";
+import EnterKeyIndicator from "@/components/indicators/EnterKeyIndicator";
+import RedoIndicatorGroup from "@/components/indicators/RedoIndicatorGroup";
+import UndoIndicatorGroup from "@/components/indicators/UndoIndicatorGroup";
+import KeyDispatcher from "@/components/KeyDispatcher";
+import Piano from "@/components/Piano";
+import { SheetMusicSystem } from "@/components/scores";
 
-import { Duration, Note } from './state/music';
-import { StateProvider } from './state/StateContext';
+import { Bar, Duration, Note } from "./state/music";
+import { StateProvider } from "./state/StateContext";
+import { toFullBar } from "./state/music/bars";
 
 export default function Home() {
+  const bars = [
+    {
+      timeSignature: "4/4",
+      events: [
+        {
+          notes: [Note.C, Note.E],
+          duration: Duration.Whole,
+        },
+      ],
+    },
+    {
+      timeSignature: "4/4",
+      events: [
+        {
+          notes: [Note.D],
+          duration: Duration.Quarter,
+        },
+        {
+          notes: [Note.C],
+          duration: Duration.Quarter,
+        },
+        {
+          notes: [Note.E, Note.G],
+          duration: Duration.Quarter,
+        },
+        {
+          notes: [Note.G],
+          duration: Duration.Quarter,
+        },
+      ],
+    },
+  ];
+  
   return (
     <StateProvider>
       <KeyDispatcher />
@@ -38,38 +72,7 @@ export default function Home() {
         <div className="py-20 px-32 col-span-2">
           <History />
           <SheetMusicSystem
-            bars={[
-              {
-                timeSignature: "4/4",
-                events: [
-                  {
-                    notes: [Note.C, Note.E],
-                    duration: Duration.Whole,
-                  },
-                ],
-              },
-              {
-                timeSignature: "4/4",
-                events: [
-                  {
-                    notes: [Note.D],
-                    duration: Duration.Quarter,
-                  },
-                  {
-                    notes: [Note.C],
-                    duration: Duration.Quarter,
-                  },
-                  {
-                    notes: [Note.E, Note.G],
-                    duration: Duration.Quarter,
-                  },
-                  {
-                    notes: [Note.G],
-                    duration: Duration.Quarter,
-                  },
-                ],
-              },
-            ]}
+            bars={bars}
           />
         </div>
       </div>
