@@ -2,57 +2,73 @@
 import { toStaveNote } from "@/app/sheet_music";
 import { Bar, parseTimeSignature } from "@/app/state/music";
 import { useEffect } from "react"
-import { Formatter, StaveNote, Vex, Voice } from "vexflow";
+import { Formatter, RenderContext, StaveNote, Vex, Voice } from "vexflow";
 
 const { Renderer, Stave } = Vex.Flow;
 
+const STAVE_WIDTH = 200
+const STAVE_HEIGHT = 40;
+
+/**
+ * Create a rendering context with a canvas
+ * that is full width and height of the element
+ * identified by containerId. \
+ * outputId is the element in which the renderer should render.
+ */
+function createRenderContext(containerId: string, outputId: string) {
+  // Create an SVG renderer and attach it to the DIV element named "output".
+  const renderer = new Renderer(outputId, Renderer.Backends.SVG);
+
+  // Configure the rendering context.
+  const parentDiv = document.getElementById(containerId);
+  const parentWidth = parentDiv ? parentDiv.offsetWidth : 500;
+  const parentHeight = parentDiv ? parentDiv.offsetHeight : 200;
+
+  // Set the size of the canvas
+  renderer.resize(parentWidth, parentHeight);
+  
+  return renderer.getContext();
+}
+
+/**
+ * Create a musical Stave,
+ * a VexFlow type.
+ */
+function createStave(pos: number) {
+  const stave = new Stave(pos, 40, STAVE_WIDTH);
+  // stave.addClef("treble").addTimeSignature("4/4");
+  return stave;
+}
+
+function displayError(e: any): void {
+  const errorDiv = document.getElementById("error");
+  if (errorDiv) {
+    errorDiv.innerHTML = e.message;
+  }
+}
+
 export default function SheetMusicBar({ timeSignature, events, pos }: Bar & { pos: number }) {
   useEffect(() => {
-    // Create an SVG renderer and attach it to the DIV element named "output".
-    const renderer = new Renderer("output", Renderer.Backends.SVG);
+    const context = createRenderContext("sheet-music-container", "output");
 
-    // Configure the rendering context.
-    const parentDiv = document.getElementById("sheet-music-container");
-    const parentWidth = parentDiv ? parentDiv.offsetWidth : 500;
-
-    // Set the size of the canvas
-    renderer.resize(parentWidth, 200);
-    const context = renderer.getContext();
-
-    // Create a stave at position (0, 40) of width 200 on the canvas.
-    const stave = new Stave(pos, 40, 200);
-    // stave.addClef("treble").addTimeSignature("4/4");
-    stave.setContext(context).draw();
-
+    const stave = createStave(pos);
     const notes = events.map(toStaveNote);
-
+    
     // Create a voice in 4/4 and add above notes
     const voice = new Voice({ num_beats: 4, beat_value: 4 });
     voice.addTickables(notes);
 
+
     try {
-      // Format and justify the notes to the adjusted width.
-      // const minWidth = 2 * new Formatter().preCalculateMinTotalWidth([voice]);
+      // Format and justify the notes to fit the stave
       new Formatter().joinVoices([voice]).formatToStave([voice], stave);
 
-      // Render voice
+      // Draw
+      stave.setContext(context).draw();
       voice.draw(context, stave);
-
-      // Delete me: Trying to add a second stave
-      const stave2 = new Stave(pos + 200, 40, 200);
-      stave2.setContext(context).draw();
-
-      // const voice2 = new Voice({ num_beats: 4, beat_value: 4 });
-      // voice2.addTickables(notes);
-      // new Formatter().joinVoices([voice2]).formatToStave([voice2], stave2);
-      // voice2.draw(context, stave2);
-
     }
     catch (e) {
-      const errorDiv: HTMLElement | null = document.getElementById("error");
-      if (errorDiv) {
-        errorDiv.innerHTML = e.message;
-      }
+      displayError(e);
     }
     
     // Return a cleanup function for useEffect to call when the component is unmounted
@@ -69,6 +85,9 @@ export default function SheetMusicBar({ timeSignature, events, pos }: Bar & { po
   );
 }
 
+/**
+ * Remove the innerHTML of the elements specified.
+ */
 function createCleanupFn(elementIds: string[]): () => void {
   return () => {
     elementIds.forEach((id) => {

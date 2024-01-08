@@ -45,7 +45,7 @@ export default function Home() {
                 duration: Duration.Quarter,
               },
               {
-                notes: [Note.C, Note.E, Note.G],
+                notes: [Note.C],
                 duration: Duration.Quarter,
               },
               {
