@@ -15,6 +15,8 @@ export type MusicalEvent = {
  * Use the time signature to validate the bar.
  */
 export type Bar = {
-  timeSignature: string;
+  timeSignature: Fraction;
   events: MusicalEvent[];
 };
+
+export type Fraction = [number, number];

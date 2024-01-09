@@ -3,18 +3,18 @@ import { describe, it, expect } from "@jest/globals";
 import {
   simplifyDurations,
   toDuration,
-  toFraction,
+  toNumber,
   toSixteenths,
 } from "./durations";
 import { Duration } from ".";
 
-describe("toFraction", () => {
+describe("toNumber", () => {
   it("should convert a duration to a fraction", () => {
-    expect(toFraction(Duration.Whole)).toBe(1);
-    expect(toFraction(Duration.Half)).toBe(1 / 2);
-    expect(toFraction(Duration.Quarter)).toBe(1 / 4);
-    expect(toFraction(Duration.Eighth)).toBe(1 / 8);
-    expect(toFraction(Duration.Sixteenth)).toBe(1 / 16);
+    expect(toNumber(Duration.Whole)).toBe(1);
+    expect(toNumber(Duration.Half)).toBe(1 / 2);
+    expect(toNumber(Duration.Quarter)).toBe(1 / 4);
+    expect(toNumber(Duration.Eighth)).toBe(1 / 8);
+    expect(toNumber(Duration.Sixteenth)).toBe(1 / 16);
   });
 });
 

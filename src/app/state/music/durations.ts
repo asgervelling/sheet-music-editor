@@ -1,7 +1,6 @@
-import { assert } from "console";
 import { Duration } from ".";
 
-export function toFraction(duration: Duration): number {
+export function toNumber(duration: Duration): number {
   switch (duration) {
     case Duration.Whole:
       return 1;

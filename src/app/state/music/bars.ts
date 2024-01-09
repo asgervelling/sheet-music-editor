@@ -1,5 +1,6 @@
 import { Bar, Duration, MusicalEvent, Note } from ".";
-import { toFraction } from "./durations";
+import { toNumber } from "./durations";
+import { Fraction } from "./types";
 
 /**
  * A bar is valid if the sum of the durations
@@ -8,21 +9,27 @@ import { toFraction } from "./durations";
  */
 export function validateBar(bar: Bar): boolean {
   const { timeSignature, events } = bar;
-  const [beatsPerBar, beatLength] = parseTimeSignature(timeSignature);
+  const [beatsPerBar, beatLength] = timeSignature;
   const totalBeats: number = events
     .map((e) => e.duration)
-    .reduce((acc, curr) => acc + toFraction(curr), 0);
+    .reduce((acc, curr) => acc + toNumber(curr), 0);
 
   return totalBeats === beatsPerBar / beatLength;
 }
 
 /**
- * Parse the nominator and denominator
- * of a time signature.
+ * Create a time signature from a string formatted
+ * as "n/n".
+ * If the formatting is wrong, a warning is printed
+ * and 4/4 is returned.
  */
-export function parseTimeSignature(sig: string): [number, number] {
+export function parseTimeSignature(sig: string): Fraction {
   const [top, bottom] = sig.split("/");
-  return [parseInt(top), parseInt(bottom)];
+  const [a, b] = [parseInt(top), parseInt(bottom)];
+  if (isNaN(a) || isNaN(b)) {
+    console.error(`Invalid time signature ${sig}. Returning 4/4`);
+  }
+  return [a, b];
 }
 
 /**
@@ -34,12 +41,12 @@ export function toFullBar(bar: Bar): Bar {
     return bar;
   }
   console.log("Invalid bar, filling with pauses");
-  const [beatsPerBar, beatLength] = parseTimeSignature(bar.timeSignature);
+  const [beatsPerBar, beatLength] = bar.timeSignature;
   const totalBeats = beatsPerBar / beatLength;
   const events = bar.events;
   const totalEventBeats = events
     .map((e) => e.duration)
-    .reduce((acc, curr) => acc + toFraction(curr), 0);
+    .reduce((acc, curr) => acc + toNumber(curr), 0);
   const missingBeats = totalBeats - totalEventBeats;
   const missingEvents = Math.floor(missingBeats / (1 / 16));
   const missingSixteenths = missingEvents * (1 / 16);

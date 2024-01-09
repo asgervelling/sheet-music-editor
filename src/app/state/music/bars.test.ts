@@ -1,7 +1,7 @@
 import { describe, it, expect } from "@jest/globals";
 
 import { Bar, Note, Duration, validateBar } from ".";
-import { toFullBar } from "./bars";
+import { parseTimeSignature, toFullBar } from "./bars";
 
 describe("validateBar", () => {
   it("should validate a bar", () => {
@@ -12,31 +12,31 @@ describe("validateBar", () => {
     const e16 = { notes: [Note.C], duration: Duration.Sixteenth };
 
     const validBar: Bar = {
-      timeSignature: "4/4",
+      timeSignature: parseTimeSignature("4/4"),
       events: [e4, e4, e4, e4],
     };
     expect(validateBar(validBar)).toBe(true);
 
     const barTooLong: Bar = {
-      timeSignature: "4/4",
+      timeSignature: parseTimeSignature("4/4"),
       events: [e1, e16],
     };
     expect(validateBar(barTooLong)).toBe(false);
 
     const barTooShort: Bar = {
-      timeSignature: "4/4",
+      timeSignature: parseTimeSignature("4/4"),
       events: [e2],
     };
     expect(validateBar(barTooShort)).toBe(false);
 
     const waltz: Bar = {
-      timeSignature: "3/4",
+      timeSignature: parseTimeSignature("3/4"),
       events: [e2, e4],
     };
     expect(validateBar(waltz)).toBe(true);
 
     const barWeirdTimeSignature: Bar = {
-      timeSignature: "13/16",
+      timeSignature: parseTimeSignature("13/16"),
       events: [e2, e4, e16],
     };
     expect(validateBar(barWeirdTimeSignature)).toBe(true);
@@ -48,7 +48,7 @@ describe("toFullBar", () => {
     const e4 = { notes: [Note.C], duration: Duration.Quarter };
     const e16 = { notes: [Note.C], duration: Duration.Sixteenth };
     const bar: Bar = {
-      timeSignature: "4/4",
+      timeSignature: parseTimeSignature("4/4"),
       events: [e4, e16],
     };
     const fullBar = toFullBar(bar);

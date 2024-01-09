@@ -8,7 +8,6 @@
 import { StaveNote } from "vexflow";
 
 import { Bar, Duration, MusicalEvent, Note, parseTimeSignature, validateBar } from "./state/music";
-import { toFraction } from "./state/music/bars";
 
 /**
  * Convert a Note to the note name format used by VexFlow.
