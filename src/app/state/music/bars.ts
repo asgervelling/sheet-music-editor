@@ -1,5 +1,5 @@
 import { Bar, Duration, MusicalEvent, Note } from ".";
-import { toNumber } from "./durations";
+import { toDuration, toNumber } from "./durations";
 import { Fraction } from "./types";
 
 /**
@@ -18,17 +18,63 @@ export function validateBar(bar: Bar): boolean {
 }
 
 /**
+ * A time signature is valid if
+ * - it is a valid fraction and
+ * - the denominator is a power of 2
+ * - the numerator is not 0
+ */
+export function validateTimeSignature(sig: Fraction): boolean {
+  const isPowerOfTwo = (n: number) => (n & (n - 1)) === 0;
+  const [a, b] = sig;
+  return validateFraction(sig) && isPowerOfTwo(b) && a !== 0;
+}
+
+/**
+ * A fraction is valid if it is a tuple of two integers.
+ * The denominator must not be 0.
+ */
+export function validateFraction(frac: Fraction): boolean {
+  try {
+    const [a, b] = frac;
+    return b !== 0 && [a, b].every(Number.isInteger);
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
+export function timeLeft(bar: Bar): Duration {
+  const { timeSignature, events } = bar;
+  const [beatsPerBar, beatLength] = timeSignature;
+  const totalBeats: number = events
+    .map((e) => e.duration)
+    .reduce((acc, curr) => acc + toNumber(curr), 0);
+  const beatsLeft = beatsPerBar / beatLength - totalBeats;
+  return toDuration(beatsLeft);
+}
+
+/**
  * Create a time signature from a string formatted
  * as "n/n".
- * If the formatting is wrong, a warning is printed
- * and 4/4 is returned.
+ * If the formatting is wrong, an error is thrown.
  */
 export function parseTimeSignature(sig: string): Fraction {
   const [top, bottom] = sig.split("/");
   const [a, b] = [parseInt(top), parseInt(bottom)];
-  if (isNaN(a) || isNaN(b)) {
-    console.error(`Invalid time signature ${sig}. Returning 4/4`);
-  }
+
+  // Find formatting errors
+  const isFloat = (n: number) => n % 1 !== 0;
+  [a, b].forEach((n) => {
+    if (isNaN(n)) {
+      throw new Error(`Invalid time signature ${sig}. ${n} is not a number.`);
+    }
+    if (isFloat(n)) {
+      throw new Error(
+        `Invalid time signature ${sig}. ${n} must be an integer.`
+      );
+    }
+  });
+
   return [a, b];
 }
 
