@@ -1,7 +1,7 @@
 "use client";
 import { useContext } from "react";
 import { StateContext } from "@/app/state/StateContext";
-import DurationIcon from "./icons/DurationIcon"
+import { DurationIcon } from "./icons";
 
 /**
  * A visual representation of state.history,

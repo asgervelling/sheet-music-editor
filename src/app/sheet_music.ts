@@ -7,7 +7,7 @@
  */
 import { StaveNote } from "vexflow";
 
-import { Bar, Duration, MusicalEvent, Note, parseTimeSignature, validateBar } from "./state/music";
+import { MusicalEvent, Note } from "./state/music";
 
 /**
  * Convert a Note to the note name format used by VexFlow.

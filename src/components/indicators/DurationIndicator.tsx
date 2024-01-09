@@ -2,7 +2,7 @@
 import React, { useContext } from "react";
 import { StateContext } from "@/app/state/StateContext";
 import { Duration, DurationToKey } from "@/app/state/music";
-import DurationIcon from "../icons/DurationIcon";
+import { DurationIcon } from "../icons";
 
 interface DurationKeyProps {
   duration: Duration;

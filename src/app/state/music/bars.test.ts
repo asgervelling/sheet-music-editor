@@ -18,7 +18,7 @@ const event = (notes: Note[], duration: Duration): MusicalEvent => ({
 /**
  * Helper function to create an event
  * with an arbitrary note and some duration
-*/
+ */
 const e = (d: Duration) => event([Note.C], d);
 
 describe("validateBar", () => {
@@ -147,10 +147,7 @@ describe("timeLeft", () => {
           e(Duration.Quarter),
         ],
       })
-    ).toEqual([
-      Duration.Whole,
-      Duration.Sixteenth,
-    ]);
+    ).toEqual([Duration.Whole, Duration.Sixteenth]);
   });
 });
 
@@ -161,8 +158,21 @@ describe("toFullBar", () => {
       events: [e(Duration.Quarter), e(Duration.Sixteenth)],
     };
     const fullBar = toFullBar(bar);
-    expect(fullBar.events[2].notes[0]).toBe(Note.PAUSE);
-    expect(fullBar.events[2].duration).toBe(Duration.Sixteenth);
-    expect(fullBar.events.length).toBe(13);
+    expect(fullBar.events).toEqual([
+      event([Note.C], Duration.Quarter),
+      event([Note.C], Duration.Sixteenth),
+      event([Note.PAUSE], Duration.Half),
+      event([Note.PAUSE], Duration.Eighth),
+      event([Note.PAUSE], Duration.Sixteenth),
+    ]);
+  });
+
+  it("should not fill a bar that is already full", () => {
+    const bar: Bar = {
+      timeSignature: parseTimeSignature("4/4"),
+      events: [e(Duration.Whole)],
+    };
+    const fullBar = toFullBar(bar);
+    expect(fullBar.events).toEqual([event([Note.C], Duration.Whole)]);
   });
 });

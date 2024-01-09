@@ -19,4 +19,7 @@ export type Bar = {
   events: MusicalEvent[];
 };
 
+/**
+ * A fraction with a numerator and a denominator.
+ */
 export type Fraction = [number, number];

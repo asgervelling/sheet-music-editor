@@ -15,8 +15,13 @@ export function toNumber(duration: Duration): number {
   }
 }
 
-export function toDuration(fraction: number): Duration {
-  switch (fraction) {
+/**
+ * Convert a float to a duration.
+ * If the float does not correspond to
+ * a duration from the enum, an error is thrown.
+ */
+export function toDuration(float: number): Duration {
+  switch (float) {
     case 1:
       return Duration.Whole;
     case 1 / 2:
@@ -50,9 +55,6 @@ export function toSixteenths(d: Duration): Duration[] {
 /**
  * Simplify an array of durations
  * to the shortest possible array of durations.
- *
- * [16th, 16th, 16th] -> [8th, 16th]
- * [16th, 16th, 16th, 16th] -> [Duration.Quarter]
  */
 export function simplifyDurations(durations_: Duration[]): Duration[] {
   if (durations_.length < 2) {

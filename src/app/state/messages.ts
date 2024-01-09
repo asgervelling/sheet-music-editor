@@ -1,6 +1,7 @@
 /**
  * Enum for the different types of messages
- * that can be given to the reducer.
+ * that can be given to the reducer
+ * to update state.
  */
 export enum Message {
   SET_DURATION = "SET_DURATION",

@@ -81,23 +81,9 @@ export function timeLeft(bar: Bar): Duration[] {
  * and the time signature.
  */
 export function toFullBar(bar: Bar): Bar {
-  if (validateBar(bar)) {
-    return bar;
-  }
-  console.log("Invalid bar, filling with pauses");
-  const [beatsPerBar, beatLength] = bar.timeSignature;
-  const totalBeats = beatsPerBar / beatLength;
-  const events = bar.events;
-  const totalEventBeats = events
-    .map((e) => e.duration)
-    .reduce((acc, curr) => acc + toNumber(curr), 0);
-  const missingBeats = totalBeats - totalEventBeats;
-  const missingEvents = Math.floor(missingBeats / (1 / 16));
-  const missingSixteenths = missingEvents * (1 / 16);
-  const missingEvent: MusicalEvent = {
-    notes: [Note.PAUSE],
-    duration: Duration.Sixteenth,
+  const pause = (d: Duration) => ({ notes: [Note.PAUSE], duration: d });
+  return {
+    ...bar,
+    events: [...bar.events, ...timeLeft(bar).map(pause)],
   };
-  const newEvents = [...events, ...Array(missingEvents).fill(missingEvent)];
-  return { ...bar, events: newEvents };
 }

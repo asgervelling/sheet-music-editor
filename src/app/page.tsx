@@ -1,9 +1,11 @@
 "use client";
 import History from "@/components/History";
-import DurationIndicatorGroup from "@/components/indicators/DurationIndicatorGroup";
-import EnterKeyIndicator from "@/components/indicators/EnterKeyIndicator";
-import RedoIndicatorGroup from "@/components/indicators/RedoIndicatorGroup";
-import UndoIndicatorGroup from "@/components/indicators/UndoIndicatorGroup";
+import {
+  DurationIndicatorGroup,
+  EnterKeyIndicator,
+  RedoIndicatorGroup,
+  UndoIndicatorGroup,
+} from "@/components/indicators";
 import KeyDispatcher from "@/components/KeyDispatcher";
 import Piano from "@/components/Piano";
 import { SheetMusicSystem } from "@/components/scores";
@@ -45,7 +47,7 @@ export default function Home() {
       ],
     },
   ];
-  
+
   return (
     <StateProvider>
       <KeyDispatcher />
@@ -71,9 +73,7 @@ export default function Home() {
         {/* Bottom half */}
         <div className="py-20 px-32 col-span-2">
           <History />
-          <SheetMusicSystem
-            bars={bars}
-          />
+          <SheetMusicSystem bars={bars} />
         </div>
       </div>
     </StateProvider>
