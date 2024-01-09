@@ -1,6 +1,11 @@
 import { describe, it, expect } from "@jest/globals";
 
-import { toDuration, toFraction, toSixteenths } from "./durations";
+import {
+  simplifyDurations,
+  toDuration,
+  toFraction,
+  toSixteenths,
+} from "./durations";
 import { Duration } from ".";
 
 describe("toFraction", () => {
@@ -29,10 +34,42 @@ describe("toDuration", () => {
 
 describe("toSixteenths", () => {
   it("should convert a duration to an array of sixteenths", () => {
-    expect(toSixteenths(Duration.Whole)).toEqual(Array(16).fill(Duration.Sixteenth));
-    expect(toSixteenths(Duration.Half)).toEqual(Array(8).fill(Duration.Sixteenth));
-    expect(toSixteenths(Duration.Quarter)).toEqual(Array(4).fill(Duration.Sixteenth));
-    expect(toSixteenths(Duration.Eighth)).toEqual(Array(2).fill(Duration.Sixteenth));
-    expect(toSixteenths(Duration.Sixteenth)).toEqual(Array(1).fill(Duration.Sixteenth));
+    expect(toSixteenths(Duration.Whole)).toEqual(
+      Array(16).fill(Duration.Sixteenth)
+    );
+    expect(toSixteenths(Duration.Half)).toEqual(
+      Array(8).fill(Duration.Sixteenth)
+    );
+    expect(toSixteenths(Duration.Quarter)).toEqual(
+      Array(4).fill(Duration.Sixteenth)
+    );
+    expect(toSixteenths(Duration.Eighth)).toEqual(
+      Array(2).fill(Duration.Sixteenth)
+    );
+    expect(toSixteenths(Duration.Sixteenth)).toEqual(
+      Array(1).fill(Duration.Sixteenth)
+    );
+  });
+});
+
+describe("simplifyDurations", () => {
+  it("should convert a whole note to a whole note", () => {
+    // Shorthand
+    const d1 = Duration.Whole;
+    const d2 = Duration.Half;
+    const d4 = Duration.Quarter;
+    const d8 = Duration.Eighth;
+    const d16 = Duration.Sixteenth;
+    
+    expect(simplifyDurations([d16, d16, d16])).toBe([d8, d16]);
+    expect(simplifyDurations([d8])).toBe([d8]);
+    expect(simplifyDurations([d8, d8])).toBe([d4]);
+    expect(simplifyDurations([d4])).toBe([d4]);
+    expect(simplifyDurations([d4, d4, d4])).toBe([d2, d4]);
+    expect(simplifyDurations([d4, d4, d4, d4])).toBe([d1]);
+    expect(simplifyDurations([d2])).toBe([d2]);
+    expect(simplifyDurations([d2, d2])).toBe([d1]);
+    expect(simplifyDurations([d2, d2, d2])).toBe([d1, d2]);
+    expect(simplifyDurations(Array(31).fill(d1))).toBe([d1, d2, d4, d8, d16])
   });
 });
