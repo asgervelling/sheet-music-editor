@@ -54,9 +54,9 @@ describe("validateFraction", () => {
     expect(validateFraction([7, 64])).toBe(true);
     expect(validateFraction([8, 128])).toBe(true);
     expect(validateFraction([47, 256])).toBe(true);
+    expect(validateFraction([3.0, 8.0])).toBe(true);
 
     expect(validateFraction([4.1, 4.0])).toBe(false);
-    expect(validateFraction([3.0, 8.0])).toBe(true);
     expect(validateFraction([4, 0])).toBe(false);
     
     expect(validateFraction([4, 5])).toBe(true);
@@ -73,6 +73,30 @@ describe("validateTimeSignature", () => {
     expect(validateTimeSignature([0, 4])).toBe(false);
   });
 });
+
+describe("parseTimeSignature", () => {
+  it("should parse time signatures formatted as 'n/n'", () => {
+    expect(parseTimeSignature("4/4")).toEqual([4, 4]);
+    expect(parseTimeSignature("3/4")).toEqual([3, 4]);
+    expect(parseTimeSignature("3/8")).toEqual([3, 8]);
+    expect(parseTimeSignature("3/16")).toEqual([3, 16]);
+    expect(parseTimeSignature("3/32")).toEqual([3, 32]);
+    expect(parseTimeSignature("3/64")).toEqual([3, 64]);
+    expect(parseTimeSignature("3/128")).toEqual([3, 128]);
+    expect(parseTimeSignature("3/256")).toEqual([3, 256]);
+
+    expect(() => parseTimeSignature("4/5")).toThrow();
+    expect(() => parseTimeSignature("4/6")).toThrow();
+    expect(() => parseTimeSignature("0/4")).toThrow();
+    expect(() => parseTimeSignature("4/0")).toThrow();
+
+    expect(() => parseTimeSignature("4/4/4")).toThrow();
+    expect(() => parseTimeSignature("4")).toThrow();
+    expect(() => parseTimeSignature("4/")).toThrow();
+    expect(() => parseTimeSignature("/4")).toThrow();
+    expect(() => parseTimeSignature("")).toThrow();
+  });
+})
 
 describe("toFullBar", () => {
   it("should fill a bar with pauses", () => {

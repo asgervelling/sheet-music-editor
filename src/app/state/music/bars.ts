@@ -34,13 +34,8 @@ export function validateTimeSignature(sig: Fraction): boolean {
  * The denominator must not be 0.
  */
 export function validateFraction(frac: Fraction): boolean {
-  try {
-    const [a, b] = frac;
-    return b !== 0 && [a, b].every(Number.isInteger);
-  } catch (e) {
-    console.log(e);
-    return false;
-  }
+  const [a, b] = frac;
+  return b !== 0 && [a, b].every(Number.isInteger);
 }
 
 export function timeLeft(bar: Bar): Duration {
@@ -59,22 +54,16 @@ export function timeLeft(bar: Bar): Duration {
  * If the formatting is wrong, an error is thrown.
  */
 export function parseTimeSignature(sig: string): Fraction {
-  const [top, bottom] = sig.split("/");
+  const [top, bottom, ...rest] = sig.split("/");
   const [a, b] = [parseInt(top), parseInt(bottom)];
-
-  // Find formatting errors
-  const isFloat = (n: number) => n % 1 !== 0;
-  [a, b].forEach((n) => {
-    if (isNaN(n)) {
-      throw new Error(`Invalid time signature ${sig}. ${n} is not a number.`);
-    }
-    if (isFloat(n)) {
-      throw new Error(
-        `Invalid time signature ${sig}. ${n} must be an integer.`
-      );
-    }
-  });
-
+  
+  if (!validateTimeSignature([a, b])) {
+    throw new Error(`Invalid time signature ${sig}.`);
+  }
+  if (rest.length > 0) {
+    throw new Error(`Invalid time signature ${sig}.`);
+  }
+  
   return [a, b];
 }
 
