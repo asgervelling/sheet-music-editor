@@ -1,3 +1,4 @@
+import { assert } from "console";
 import { Duration } from ".";
 
 export function toFraction(duration: Duration): number {
@@ -52,45 +53,34 @@ export function toSixteenths(d: Duration): Duration[] {
  * to the shortest possible array of durations.
  *
  * [16th, 16th, 16th] -> [8th, 16th]
+ * [16th, 16th, 16th, 16th] -> [Duration.Quarter]
  */
 export function simplifyDurations(durations_: Duration[]): Duration[] {
-  /*
-  Algorithm is:
-  sort
-  if can be simplified
-  simplify
-  recursive call
-  else
-  return
-*/
   if (durations_.length < 2) {
     // A single duration can't be simplified
     return durations_;
   }
 
-  // Create a sorted array of arrays
-  // containing equal values, e.g. [[A, A], [B]]
-  const groups = Object.values(Duration)
-    .filter((d) => durations_.includes(d))
-    .map((d) => durations_.filter((dur) => dur === d));
-
-  console.log(durations_);
-  console.log(groups);
-  
-
+  /**
+   * Simplify an array of durations
+   * where each duration is the same.
+   */
   const simplify = (durations: Duration[]): Duration[] => {
-    // Assume the array is sorted from short to long duration.
-    // Fold and simplify the first durations,
-    // that are the same.
-    const shortestDurations = durations.filter((d) => d === durations[0]);
-    const simplified = shortestDurations.reduce(simplifyPair);
-    return [];
-    // const changed: boolean
-
-    // Implementation...
+    if (new Set(durations).size > 1) {
+      throw new Error("All durations must be the same");
+    }
+    const n = durations.length;
+    if (n === 0) {
+      return [];
+    }
+    if (n === 1) {
+      return durations;
+    }
+    const [a, b, ...rest] = durations;
+    return [...simplifyPair(a, b), ...simplify(rest)];
   };
 
-  const simplifyPair = (a: Duration, b: Duration): Duration => {
+  const simplifyPair = (a: Duration, b: Duration): Duration[] => {
     if (a !== b) {
       throw new Error(
         "Inner function simplifyPair assumes that a and b are the same"
@@ -101,22 +91,24 @@ export function simplifyDurations(durations_: Duration[]): Duration[] {
     const i = lowToHigh.indexOf(a);
     if (i < lowToHigh.indexOf(Duration.Whole)) {
       // Simplify pair to a greater duration
-      return lowToHigh[i + 1];
+      return [lowToHigh[i + 1]];
     } else {
       // Pair cannot be simplified as they are both whole notes
-      return a;
+      return [a, b];
     }
   };
-  return [];
-}
 
-simplifyDurations([
-  Duration.Sixteenth,
-  Duration.Sixteenth,
-  Duration.Whole,
-  Duration.Eighth,
-  Duration.Whole,
-  Duration.Half,
-  Duration.Eighth,
-  Duration.Eighth,
-]);
+  // Create a sorted array of arrays
+  // containing equal values, e.g. [[A, A], [B]]
+  const groups = Object.values(Duration)
+    .filter((d) => durations_.includes(d))
+    .map((d) => durations_.filter((dur) => dur === d));
+
+  const simplified = groups.flatMap(simplify);
+  const isIrreducible = simplified.length === durations_.length;
+
+  if (isIrreducible) {
+    return simplified;
+  }
+  return simplifyDurations(simplified);
+}

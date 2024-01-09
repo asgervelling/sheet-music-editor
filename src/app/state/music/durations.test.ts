@@ -61,15 +61,16 @@ describe("simplifyDurations", () => {
     const d8 = Duration.Eighth;
     const d16 = Duration.Sixteenth;
     
-    expect(simplifyDurations([d16, d16, d16])).toBe([d8, d16]);
-    expect(simplifyDurations([d8])).toBe([d8]);
-    expect(simplifyDurations([d8, d8])).toBe([d4]);
-    expect(simplifyDurations([d4])).toBe([d4]);
-    expect(simplifyDurations([d4, d4, d4])).toBe([d2, d4]);
-    expect(simplifyDurations([d4, d4, d4, d4])).toBe([d1]);
-    expect(simplifyDurations([d2])).toBe([d2]);
-    expect(simplifyDurations([d2, d2])).toBe([d1]);
-    expect(simplifyDurations([d2, d2, d2])).toBe([d1, d2]);
-    expect(simplifyDurations(Array(31).fill(d1))).toBe([d1, d2, d4, d8, d16])
+    expect(simplifyDurations([d16, d16, d16])).toStrictEqual([d8, d16]);
+    expect(simplifyDurations([d8])).toStrictEqual([d8]);
+    expect(simplifyDurations([d8, d8])).toStrictEqual([d4]);
+    expect(simplifyDurations([d4])).toStrictEqual([d4]);
+    expect(simplifyDurations([d4, d4, d4])).toStrictEqual([d2, d4]);
+    expect(simplifyDurations([d4, d4, d4, d4])).toStrictEqual([d1]);
+    expect(simplifyDurations([d2])).toStrictEqual([d2]);
+    expect(simplifyDurations([d2, d2])).toStrictEqual([d1]);
+    expect(simplifyDurations([d2, d2, d2])).toStrictEqual([d1, d2]);
+    expect(simplifyDurations(Array(31).fill(d16))).toStrictEqual([d1, d2, d4, d8, d16])
+    expect(simplifyDurations([d16, d16, d1, d8, d1, d2, d8, d8])).toStrictEqual([d1, d1, d1]);
   });
 });
