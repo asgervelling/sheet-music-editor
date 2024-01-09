@@ -57,10 +57,7 @@ export function parseTimeSignature(sig: string): Fraction {
   const [top, bottom, ...rest] = sig.split("/");
   const [a, b] = [parseInt(top), parseInt(bottom)];
   
-  if (!validateTimeSignature([a, b])) {
-    throw new Error(`Invalid time signature ${sig}.`);
-  }
-  if (rest.length > 0) {
+  if (!validateTimeSignature([a, b]) || rest.length > 0) {
     throw new Error(`Invalid time signature ${sig}.`);
   }
   

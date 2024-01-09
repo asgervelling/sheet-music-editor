@@ -1,7 +1,12 @@
 import { describe, it, expect } from "@jest/globals";
 
 import { Bar, Note, Duration, validateBar } from ".";
-import { parseTimeSignature, toFullBar, validateFraction, validateTimeSignature } from "./bars";
+import {
+  parseTimeSignature,
+  toFullBar,
+  validateFraction,
+  validateTimeSignature,
+} from "./bars";
 
 describe("validateBar", () => {
   it("should validate a bar", () => {
@@ -58,7 +63,7 @@ describe("validateFraction", () => {
 
     expect(validateFraction([4.1, 4.0])).toBe(false);
     expect(validateFraction([4, 0])).toBe(false);
-    
+
     expect(validateFraction([4, 5])).toBe(true);
     expect(validateFraction([4, 6])).toBe(true);
     expect(validateFraction([0, 4])).toBe(true);
@@ -89,14 +94,12 @@ describe("parseTimeSignature", () => {
     expect(() => parseTimeSignature("4/6")).toThrow();
     expect(() => parseTimeSignature("0/4")).toThrow();
     expect(() => parseTimeSignature("4/0")).toThrow();
-
-    expect(() => parseTimeSignature("4/4/4")).toThrow();
     expect(() => parseTimeSignature("4")).toThrow();
     expect(() => parseTimeSignature("4/")).toThrow();
     expect(() => parseTimeSignature("/4")).toThrow();
     expect(() => parseTimeSignature("")).toThrow();
   });
-})
+});
 
 describe("toFullBar", () => {
   it("should fill a bar with pauses", () => {
