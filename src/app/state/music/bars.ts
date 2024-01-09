@@ -1,5 +1,5 @@
 import { Bar, Duration, MusicalEvent, Note } from ".";
-import { toDuration, toNumber } from "./durations";
+import { simplifyDurations, toDuration, toNumber } from "./durations";
 import { Fraction } from "./types";
 
 /**
@@ -38,16 +38,6 @@ export function validateFraction(frac: Fraction): boolean {
   return b !== 0 && [a, b].every(Number.isInteger);
 }
 
-export function timeLeft(bar: Bar): Duration {
-  const { timeSignature, events } = bar;
-  const [beatsPerBar, beatLength] = timeSignature;
-  const totalBeats: number = events
-    .map((e) => e.duration)
-    .reduce((acc, curr) => acc + toNumber(curr), 0);
-  const beatsLeft = beatsPerBar / beatLength - totalBeats;
-  return toDuration(beatsLeft);
-}
-
 /**
  * Create a time signature from a string formatted
  * as "n/n".
@@ -56,12 +46,34 @@ export function timeLeft(bar: Bar): Duration {
 export function parseTimeSignature(sig: string): Fraction {
   const [top, bottom, ...rest] = sig.split("/");
   const [a, b] = [parseInt(top), parseInt(bottom)];
-  
+
   if (!validateTimeSignature([a, b]) || rest.length > 0) {
     throw new Error(`Invalid time signature ${sig}.`);
   }
-  
+
   return [a, b];
+}
+
+/**
+ * Given a bar's timestamp and musical events,
+ * find out how much time is yet to be used
+ * in the bar, in terms of note durations.
+ */
+export function timeLeft(bar: Bar): Duration[] {
+  const [a, b] = bar.timeSignature;
+  const totalBeats: number = bar.events
+    .map((e) => e.duration)
+    .reduce((acc, curr) => acc + toNumber(curr), 0);
+
+  if (totalBeats >= a / b) {
+    return [];
+  }
+
+  const beatsLeft = a / b - totalBeats;
+  const sixteenthsLeft = beatsLeft / toNumber(Duration.Sixteenth);
+
+  const sixteenths = Array(sixteenthsLeft).fill(Duration.Sixteenth);
+  return simplifyDurations(sixteenths);
 }
 
 /**

@@ -1,20 +1,33 @@
 import { describe, it, expect } from "@jest/globals";
 
-import { Bar, Note, Duration, validateBar } from ".";
+import { Bar, Note, Duration, validateBar, MusicalEvent } from ".";
 import {
   parseTimeSignature,
   toFullBar,
   validateFraction,
   validateTimeSignature,
+  timeLeft,
 } from "./bars";
+
+/** Helper function to create an event */
+const event = (notes: Note[], duration: Duration): MusicalEvent => ({
+  notes,
+  duration,
+});
+
+/**
+ * Helper function to create an event
+ * with an arbitrary note and some duration
+*/
+const e = (d: Duration) => event([Note.C], d);
 
 describe("validateBar", () => {
   it("should validate a bar", () => {
     // Define some musical events
-    const e1 = { notes: [Note.C], duration: Duration.Whole };
-    const e2 = { notes: [Note.C], duration: Duration.Half };
-    const e4 = { notes: [Note.C], duration: Duration.Quarter };
-    const e16 = { notes: [Note.C], duration: Duration.Sixteenth };
+    const e1 = e(Duration.Whole);
+    const e2 = e(Duration.Half);
+    const e4 = e(Duration.Quarter);
+    const e16 = e(Duration.Sixteenth);
 
     const validBar: Bar = {
       timeSignature: parseTimeSignature("4/4"),
@@ -101,13 +114,51 @@ describe("parseTimeSignature", () => {
   });
 });
 
+describe("timeLeft", () => {
+  it("should return the time left in a bar", () => {
+    expect(
+      timeLeft({
+        timeSignature: parseTimeSignature("4/4"),
+        events: [e(Duration.Quarter), e(Duration.Sixteenth)],
+      })
+    ).toEqual([Duration.Half, Duration.Eighth, Duration.Sixteenth]);
+
+    expect(
+      timeLeft({
+        timeSignature: parseTimeSignature("4/4"),
+        events: [
+          e(Duration.Quarter),
+          e(Duration.Quarter),
+          e(Duration.Quarter),
+          e(Duration.Sixteenth),
+        ],
+      })
+    ).toEqual([Duration.Eighth, Duration.Sixteenth]);
+
+    expect(
+      timeLeft({
+        timeSignature: parseTimeSignature("15/8"),
+        events: [
+          e(Duration.Sixteenth),
+          e(Duration.Sixteenth),
+          e(Duration.Sixteenth),
+          e(Duration.Eighth),
+          e(Duration.Quarter),
+          e(Duration.Quarter),
+        ],
+      })
+    ).toEqual([
+      Duration.Whole,
+      Duration.Sixteenth,
+    ]);
+  });
+});
+
 describe("toFullBar", () => {
   it("should fill a bar with pauses", () => {
-    const e4 = { notes: [Note.C], duration: Duration.Quarter };
-    const e16 = { notes: [Note.C], duration: Duration.Sixteenth };
     const bar: Bar = {
       timeSignature: parseTimeSignature("4/4"),
-      events: [e4, e16],
+      events: [e(Duration.Quarter), e(Duration.Sixteenth)],
     };
     const fullBar = toFullBar(bar);
     expect(fullBar.events[2].notes[0]).toBe(Note.PAUSE);
