@@ -1,6 +1,6 @@
 import { Duration } from "@/app/state/music"
 import React from "react";
-import { WholeNoteIcon } from "./WholeNoteIcon";
+import WholeNoteIcon from "./WholeNoteIcon";
 import HalfNoteIcon from "./HalfNoteIcon";
 import QuarterNoteIcon from "./QuarterNoteIcon";
 import EighthNoteIcon from "./EighthNoteIcon";
@@ -30,8 +30,5 @@ function Icon({ duration }: DurationSVGProps) {
       return EighthNoteIcon();
     case Duration.Sixteenth:
       return SixteenthNoteIcon();
-    default:
-      console.error("Unknown note length:", duration);
-      return <>Error</>;
   }
 }
