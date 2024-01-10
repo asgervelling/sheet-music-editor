@@ -33,7 +33,7 @@ export function toDuration(float: number): Duration {
     case 1 / 16:
       return Duration.Sixteenth;
     default:
-      throw new Error("Invalid fraction");
+      throw new Error("Invalid float duration " + float);
   }
 }
 
