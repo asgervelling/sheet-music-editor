@@ -175,4 +175,29 @@ describe("toFullBar", () => {
     const fullBar = toFullBar(bar);
     expect(fullBar.events).toEqual([event([Note.C], Duration.Whole)]);
   });
+
+  it("should not fill a bar that already has too many notes", () => {
+    const bar: Bar = {
+      timeSignature: parseTimeSignature("4/4"),
+      events: [e(Duration.Whole), e(Duration.Half)]
+    };
+    expect(toFullBar(bar)).toEqual(bar);
+  });
+
+  it("should fill a bar with a strange time signature", () => {
+    const bar: Bar = {
+      timeSignature: parseTimeSignature("7919/1024"),
+      events: [e(Duration.Quarter)],
+      /*
+      This time signature is not yet possible, since 
+      16th notes are currently the shortest durations.
+      In order for the rest of this bar to be filled,
+      we require these durations:
+
+      [w, w, w, w, w, w, h, q, 8, 16, 64, 128, 256, 512].
+
+      Refactor idea: Note should not be a record but a function.
+      */
+    }
+  });
 });

@@ -1,5 +1,5 @@
-import { Bar, Duration, MusicalEvent, Note } from ".";
-import { simplifyDurations, toDuration, toNumber } from "./durations";
+import { Bar, Duration, Note } from ".";
+import { simplifyDurations, toNumber } from "./durations";
 import { Fraction } from "./types";
 
 /**

@@ -81,6 +81,11 @@ export function simplifyDurations(durations_: Duration[]): Duration[] {
     return [...simplifyPair(a, b), ...simplify(rest)];
   };
 
+  /**
+   * Simplify a pair of durations
+   * where each duration is the same,
+   * such as [Quarter, Quarter] -> Half.
+   */
   const simplifyPair = (a: Duration, b: Duration): Duration[] => {
     if (a !== b) {
       throw new Error(
