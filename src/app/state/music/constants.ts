@@ -19,8 +19,7 @@ export enum Note {
 }
 
 /**
- * The length of a note,
- * from whole to sixteenth
+ * The length of a note.
  */
 export enum Duration {
   Whole = "w",
