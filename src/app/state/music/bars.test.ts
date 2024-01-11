@@ -1,5 +1,7 @@
 import { describe, it, expect } from "@jest/globals";
 
+import { Flow } from "vexflow";
+
 import { Bar, Note, Duration, validateBar, MusicalEvent } from ".";
 import {
   parseTimeSignature,
@@ -198,6 +200,9 @@ describe("toFullBar", () => {
 
       Refactor idea: Note should not be a record but a function.
       */
-    }
+    };
+    [1, "2", "4", 8].forEach((d) => {
+      console.log(d, Flow.durationToTicks(d.toString()));
+    })
   });
 });

@@ -1,6 +1,7 @@
 import { describe, it, expect } from "@jest/globals";
 
 import {
+  isPowerOfTwo,
   simplifyDurations,
   toDuration,
   toNumber,
@@ -74,3 +75,16 @@ describe("simplifyDurations", () => {
     expect(simplifyDurations([d16, d16, d1, d8, d1, d2, d8, d8])).toStrictEqual([d1, d1, d1]);
   });
 });
+
+describe("isPowerOfTwo", () => {
+  it("should return true if n is a power of two", () => {
+    for (let i = 0; i < 10; i++) {
+      const powerOfTwo = 2 ** i;
+      const nextPowerOfTwo = 2 ** (i + 1)
+      expect(isPowerOfTwo(powerOfTwo)).toBe(true);
+      for (let j = powerOfTwo + 1; j < nextPowerOfTwo; j++) {
+        expect(isPowerOfTwo(j)).toBe(false);
+      }
+    }
+  })
+})

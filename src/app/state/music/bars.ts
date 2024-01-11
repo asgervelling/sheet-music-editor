@@ -1,5 +1,5 @@
 import { Bar, Duration, Note } from ".";
-import { simplifyDurations, toNumber } from "./durations";
+import { isPowerOfTwo, simplifyDurations, toNumber } from "./durations";
 import { Fraction } from "./types";
 
 /**
@@ -24,7 +24,6 @@ export function validateBar(bar: Bar): boolean {
  * - the numerator is not 0
  */
 export function validateTimeSignature(sig: Fraction): boolean {
-  const isPowerOfTwo = (n: number) => (n & (n - 1)) === 0;
   const [a, b] = sig;
   return validateFraction(sig) && isPowerOfTwo(b) && a !== 0;
 }

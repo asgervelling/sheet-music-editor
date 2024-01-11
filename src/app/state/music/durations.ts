@@ -1,5 +1,9 @@
 import { Duration } from ".";
 
+export function isPowerOfTwo(n: number) {
+  return n > 0 && (n & (n - 1)) === 0;
+};
+
 export function toNumber(duration: Duration): number {
   switch (duration) {
     case Duration.Whole:
@@ -12,6 +16,8 @@ export function toNumber(duration: Duration): number {
       return 1 / 8;
     case Duration.Sixteenth:
       return 1 / 16;
+    case Duration.ThirtySecond:
+      return 1 / 32;
   }
 }
 
@@ -32,6 +38,8 @@ export function toDuration(float: number): Duration {
       return Duration.Eighth;
     case 1 / 16:
       return Duration.Sixteenth;
+    case 1 / 32:
+      return Duration.ThirtySecond;
     default:
       throw new Error("Invalid float duration " + float);
   }

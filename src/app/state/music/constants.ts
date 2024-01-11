@@ -1,3 +1,7 @@
+import { validateFraction } from "./bars";
+import { isPowerOfTwo } from "./durations";
+import { Fraction } from "./types";
+
 export enum Note {
   C = "C",
   Db = "D♭",
@@ -24,6 +28,7 @@ export enum Duration {
   Quarter = "q",
   Eighth = "8",
   Sixteenth = "16",
+  ThirtySecond = "32",
 }
 
 /**
@@ -59,6 +64,7 @@ export const DurationToKey: Record<Duration, string> = {
   [Duration.Quarter]: "3",
   [Duration.Eighth]: "4",
   [Duration.Sixteenth]: "5",
+  [Duration.ThirtySecond]: "6",
 };
 
 /**
