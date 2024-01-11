@@ -1,6 +1,6 @@
 import { Bar, Duration, Note } from ".";
 import { isPowerOfTwo, simplifyDurations, toNumber } from "./durations";
-import { Fraction } from "./types";
+import { Fraction, MusicalEvent } from "./types";
 
 /**
  * A bar is valid if the sum of the durations
@@ -85,4 +85,47 @@ export function toFullBar(bar: Bar): Bar {
     ...bar,
     events: [...bar.events, ...timeLeft(bar).map(pause)],
   };
+}
+
+/**
+ * Calculate the number of bars the events take up in the given time signature,
+ * as a float.
+ */
+export function numberOfBars(bar: Bar): number {
+  const totalBeats: number = bar.events
+    .map((e) => e.duration)
+    .reduce((acc, d) => acc + toNumber(d), 0);
+  const [a, b] = bar.timeSignature;
+  const fullBars: number = totalBeats / (a / b);
+  console.log(totalBeats, [a, b], fullBars);
+
+  return fullBars;
+}
+
+export enum BarStatus {
+  Incomplete = "Incomplete",
+  Full = "Full",
+  Overflow = "Overflow",
+}
+
+/**
+ * Figure out whether a bar is full, incomplete or overflowing.
+ */
+export function getBarStatus(bar: Bar): BarStatus {
+  const fullBars: number = numberOfBars(bar);
+  const overflow: number = fullBars - Math.floor(fullBars);
+
+  if (overflow === 0) return BarStatus.Full;
+  if (fullBars > 1) return BarStatus.Overflow;
+  return BarStatus.Incomplete;
+}
+
+/**
+ * Turn an array of musical events into an array of bars.
+ */
+export function toBars(events: MusicalEvent[], timeSignature: Fraction) {
+  if (events.length === 0) {
+    return [];
+  }
+  // const [x, xs] =
 }

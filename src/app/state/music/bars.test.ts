@@ -1,7 +1,5 @@
 import { describe, it, expect } from "@jest/globals";
 
-import { Flow } from "vexflow";
-
 import { Bar, Note, Duration, validateBar, MusicalEvent } from ".";
 import {
   parseTimeSignature,
@@ -9,6 +7,9 @@ import {
   validateFraction,
   validateTimeSignature,
   timeLeft,
+  toBars,
+  getBarStatus,
+  BarStatus,
 } from "./bars";
 
 /** Helper function to create an event */
@@ -23,6 +24,8 @@ const event = (notes: Note[], duration: Duration): MusicalEvent => ({
  */
 const c = (d: Duration) => event([Note.C], d);
 
+const p = parseTimeSignature;
+
 describe("validateBar", () => {
   it("should validate a bar", () => {
     // Define some musical events
@@ -32,31 +35,31 @@ describe("validateBar", () => {
     const e16 = c(Duration.Sixteenth);
 
     const validBar: Bar = {
-      timeSignature: parseTimeSignature("4/4"),
+      timeSignature: p("4/4"),
       events: [e4, e4, e4, e4],
     };
     expect(validateBar(validBar)).toBe(true);
 
     const barTooLong: Bar = {
-      timeSignature: parseTimeSignature("4/4"),
+      timeSignature: p("4/4"),
       events: [e1, e16],
     };
     expect(validateBar(barTooLong)).toBe(false);
 
     const barTooShort: Bar = {
-      timeSignature: parseTimeSignature("4/4"),
+      timeSignature: p("4/4"),
       events: [e2],
     };
     expect(validateBar(barTooShort)).toBe(false);
 
     const waltz: Bar = {
-      timeSignature: parseTimeSignature("3/4"),
+      timeSignature: p("3/4"),
       events: [e2, e4],
     };
     expect(validateBar(waltz)).toBe(true);
 
     const barWeirdTimeSignature: Bar = {
-      timeSignature: parseTimeSignature("13/16"),
+      timeSignature: p("13/16"),
       events: [e2, e4, e16],
     };
     expect(validateBar(barWeirdTimeSignature)).toBe(true);
@@ -94,25 +97,25 @@ describe("validateTimeSignature", () => {
   });
 });
 
-describe("parseTimeSignature", () => {
+describe("p", () => {
   it("should parse time signatures formatted as 'n/n'", () => {
-    expect(parseTimeSignature("4/4")).toEqual([4, 4]);
-    expect(parseTimeSignature("3/4")).toEqual([3, 4]);
-    expect(parseTimeSignature("3/8")).toEqual([3, 8]);
-    expect(parseTimeSignature("3/16")).toEqual([3, 16]);
-    expect(parseTimeSignature("3/32")).toEqual([3, 32]);
-    expect(parseTimeSignature("3/64")).toEqual([3, 64]);
-    expect(parseTimeSignature("3/128")).toEqual([3, 128]);
-    expect(parseTimeSignature("3/256")).toEqual([3, 256]);
+    expect(p("4/4")).toEqual([4, 4]);
+    expect(p("3/4")).toEqual([3, 4]);
+    expect(p("3/8")).toEqual([3, 8]);
+    expect(p("3/16")).toEqual([3, 16]);
+    expect(p("3/32")).toEqual([3, 32]);
+    expect(p("3/64")).toEqual([3, 64]);
+    expect(p("3/128")).toEqual([3, 128]);
+    expect(p("3/256")).toEqual([3, 256]);
 
-    expect(() => parseTimeSignature("4/5")).toThrow();
-    expect(() => parseTimeSignature("4/6")).toThrow();
-    expect(() => parseTimeSignature("0/4")).toThrow();
-    expect(() => parseTimeSignature("4/0")).toThrow();
-    expect(() => parseTimeSignature("4")).toThrow();
-    expect(() => parseTimeSignature("4/")).toThrow();
-    expect(() => parseTimeSignature("/4")).toThrow();
-    expect(() => parseTimeSignature("")).toThrow();
+    expect(() => p("4/5")).toThrow();
+    expect(() => p("4/6")).toThrow();
+    expect(() => p("0/4")).toThrow();
+    expect(() => p("4/0")).toThrow();
+    expect(() => p("4")).toThrow();
+    expect(() => p("4/")).toThrow();
+    expect(() => p("/4")).toThrow();
+    expect(() => p("")).toThrow();
   });
 });
 
@@ -120,14 +123,14 @@ describe("timeLeft", () => {
   it("should return the time left in a bar", () => {
     expect(
       timeLeft({
-        timeSignature: parseTimeSignature("4/4"),
+        timeSignature: p("4/4"),
         events: [c(Duration.Quarter), c(Duration.Sixteenth)],
       })
     ).toEqual([Duration.Half, Duration.Eighth, Duration.Sixteenth]);
 
     expect(
       timeLeft({
-        timeSignature: parseTimeSignature("4/4"),
+        timeSignature: p("4/4"),
         events: [
           c(Duration.Quarter),
           c(Duration.Quarter),
@@ -139,7 +142,7 @@ describe("timeLeft", () => {
 
     expect(
       timeLeft({
-        timeSignature: parseTimeSignature("15/8"),
+        timeSignature: p("15/8"),
         events: [
           c(Duration.Sixteenth),
           c(Duration.Sixteenth),
@@ -156,7 +159,7 @@ describe("timeLeft", () => {
 describe("toFullBar", () => {
   it("should fill a bar with pauses", () => {
     const bar: Bar = {
-      timeSignature: parseTimeSignature("4/4"),
+      timeSignature: p("4/4"),
       events: [c(Duration.Quarter), c(Duration.Sixteenth)],
     };
     const fullBar = toFullBar(bar);
@@ -171,7 +174,7 @@ describe("toFullBar", () => {
 
   it("should not fill a bar that is already full", () => {
     const bar: Bar = {
-      timeSignature: parseTimeSignature("4/4"),
+      timeSignature: p("4/4"),
       events: [c(Duration.Whole)],
     };
     const fullBar = toFullBar(bar);
@@ -180,7 +183,7 @@ describe("toFullBar", () => {
 
   it("should not fill a bar that already has too many notes", () => {
     const bar: Bar = {
-      timeSignature: parseTimeSignature("4/4"),
+      timeSignature: p("4/4"),
       events: [c(Duration.Whole), c(Duration.Half)],
     };
     expect(toFullBar(bar)).toEqual(bar);
@@ -188,7 +191,7 @@ describe("toFullBar", () => {
 
   it("should fill a bar with a strange time signature", () => {
     const bar: Bar = {
-      timeSignature: parseTimeSignature("31/32"),
+      timeSignature: p("31/32"),
       events: [c(Duration.Quarter)],
     };
     expect(toFullBar(bar).events).toEqual([
@@ -198,5 +201,45 @@ describe("toFullBar", () => {
       event([Note.PAUSE], Duration.Sixteenth),
       event([Note.PAUSE], Duration.ThirtySecond),
     ]);
+
+    const bars: Bar[] = [
+      {
+        timeSignature: p("4/4"),
+        events: [c(Duration.Whole)],
+      },
+      {
+        timeSignature: p("4/4"),
+        events: [c(Duration.Half), c(Duration.Half)],
+      },
+      {
+        timeSignature: p("4/4"),
+        events: [c(Duration.Half), c(Duration.Quarter)], // Missing a quarter note
+      },
+    ];
+
+    const events: MusicalEvent[] = bars.map((b) => b.events).flat();
+  });
+
+  describe("getBarStatus", () => {
+    it("should return the status of a bar", () => {
+      expect(
+        getBarStatus({
+          timeSignature: p("4/4"),
+          events: [c(Duration.Half), c(Duration.Quarter)],
+        })
+      ).toEqual(BarStatus.Incomplete);
+      expect(
+        getBarStatus({
+          timeSignature: p("5/8"),
+          events: [c(Duration.Eighth), c(Duration.Half)],
+        })
+      ).toEqual(BarStatus.Full);
+      expect(
+        getBarStatus({
+          timeSignature: p("4/4"),
+          events: [c(Duration.Whole), c(Duration.Whole), c(Duration.Eighth)],
+        })
+      ).toEqual(BarStatus.Overflow);
+    });
   });
 });

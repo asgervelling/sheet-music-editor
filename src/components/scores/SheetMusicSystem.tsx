@@ -23,14 +23,10 @@ enum DIV_ID {
   ERROR = "error",
 }
 
-type SheetMusicSystemProps = {
-  bars: Bar[];
-};
-
 /**
  * A system of staves. Will be rendered as sheet music.
  */
-export default function SheetMusicSystem({ bars }: SheetMusicSystemProps) {
+export default function SheetMusicSystem({ bars }: { bars: Bar[] }) {
   const containerRef = useRef(null);
   const renderContextRef = useRef<RenderContext | null>(null);
 
@@ -46,16 +42,20 @@ export default function SheetMusicSystem({ bars }: SheetMusicSystemProps) {
       draw(context, stave, voice);
     })
 
-    // Return a cleanup function
-    return () => {
-      [DIV_ID.OUTPUT, DIV_ID.ERROR].forEach((id) => {
-        const div: HTMLElement | null = document.getElementById(id);
-        if (div) {
-          div.innerHTML = "";
-        }
-      });
-    };
+    return cleanUp;
   }, [containerRef.current]);
+
+  /**
+   * Remove child elements of output and error divs.
+   */
+  function cleanUp() {
+    [DIV_ID.OUTPUT, DIV_ID.ERROR].forEach((id) => {
+      const div: HTMLElement | null = document.getElementById(id);
+      if (div) {
+        div.innerHTML = "";
+      }
+    });
+  }
 
   return (
     <div>
