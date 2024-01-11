@@ -46,13 +46,14 @@ export function toDuration(float: number): Duration {
 }
 
 /**
- * Convert a duration to an array of sixteenths.
+ * Convert a duration to an array of the shortest
+ * duration we have.
  */
-export function toSixteenths(d: Duration): Duration[] {
+export function expandDuration(d: Duration): Duration[] {
   const lowToHigh: Duration[] = Object.values(Duration).reverse();
   const i = lowToHigh.indexOf(d);
 
-  const f = toSixteenths;
+  const f = expandDuration;
   if (i > 0) {
     return [...f(lowToHigh[i - 1]), ...f(lowToHigh[i - 1])];
   } else {

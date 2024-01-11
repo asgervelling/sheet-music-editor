@@ -69,10 +69,10 @@ export function timeLeft(bar: Bar): Duration[] {
   }
 
   const beatsLeft = a / b - totalBeats;
-  const sixteenthsLeft = beatsLeft / toNumber(Duration.Sixteenth);
+  const thirtySecondsLeft = beatsLeft / toNumber(Duration.ThirtySecond);
 
-  const sixteenths = Array(sixteenthsLeft).fill(Duration.Sixteenth);
-  return simplifyDurations(sixteenths);
+  const thirtySeconds = Array(thirtySecondsLeft).fill(Duration.ThirtySecond);
+  return simplifyDurations(thirtySeconds);
 }
 
 /**

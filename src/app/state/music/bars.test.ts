@@ -18,18 +18,18 @@ const event = (notes: Note[], duration: Duration): MusicalEvent => ({
 });
 
 /**
- * Helper function to create an event
- * with an arbitrary note and some duration
+ * Create an event with the note C
+ * and give it a duration.
  */
-const e = (d: Duration) => event([Note.C], d);
+const c = (d: Duration) => event([Note.C], d);
 
 describe("validateBar", () => {
   it("should validate a bar", () => {
     // Define some musical events
-    const e1 = e(Duration.Whole);
-    const e2 = e(Duration.Half);
-    const e4 = e(Duration.Quarter);
-    const e16 = e(Duration.Sixteenth);
+    const e1 = c(Duration.Whole);
+    const e2 = c(Duration.Half);
+    const e4 = c(Duration.Quarter);
+    const e16 = c(Duration.Sixteenth);
 
     const validBar: Bar = {
       timeSignature: parseTimeSignature("4/4"),
@@ -121,7 +121,7 @@ describe("timeLeft", () => {
     expect(
       timeLeft({
         timeSignature: parseTimeSignature("4/4"),
-        events: [e(Duration.Quarter), e(Duration.Sixteenth)],
+        events: [c(Duration.Quarter), c(Duration.Sixteenth)],
       })
     ).toEqual([Duration.Half, Duration.Eighth, Duration.Sixteenth]);
 
@@ -129,10 +129,10 @@ describe("timeLeft", () => {
       timeLeft({
         timeSignature: parseTimeSignature("4/4"),
         events: [
-          e(Duration.Quarter),
-          e(Duration.Quarter),
-          e(Duration.Quarter),
-          e(Duration.Sixteenth),
+          c(Duration.Quarter),
+          c(Duration.Quarter),
+          c(Duration.Quarter),
+          c(Duration.Sixteenth),
         ],
       })
     ).toEqual([Duration.Eighth, Duration.Sixteenth]);
@@ -141,12 +141,12 @@ describe("timeLeft", () => {
       timeLeft({
         timeSignature: parseTimeSignature("15/8"),
         events: [
-          e(Duration.Sixteenth),
-          e(Duration.Sixteenth),
-          e(Duration.Sixteenth),
-          e(Duration.Eighth),
-          e(Duration.Quarter),
-          e(Duration.Quarter),
+          c(Duration.Sixteenth),
+          c(Duration.Sixteenth),
+          c(Duration.Sixteenth),
+          c(Duration.Eighth),
+          c(Duration.Quarter),
+          c(Duration.Quarter),
         ],
       })
     ).toEqual([Duration.Whole, Duration.Sixteenth]);
@@ -157,7 +157,7 @@ describe("toFullBar", () => {
   it("should fill a bar with pauses", () => {
     const bar: Bar = {
       timeSignature: parseTimeSignature("4/4"),
-      events: [e(Duration.Quarter), e(Duration.Sixteenth)],
+      events: [c(Duration.Quarter), c(Duration.Sixteenth)],
     };
     const fullBar = toFullBar(bar);
     expect(fullBar.events).toEqual([
@@ -172,7 +172,7 @@ describe("toFullBar", () => {
   it("should not fill a bar that is already full", () => {
     const bar: Bar = {
       timeSignature: parseTimeSignature("4/4"),
-      events: [e(Duration.Whole)],
+      events: [c(Duration.Whole)],
     };
     const fullBar = toFullBar(bar);
     expect(fullBar.events).toEqual([event([Note.C], Duration.Whole)]);
@@ -181,28 +181,22 @@ describe("toFullBar", () => {
   it("should not fill a bar that already has too many notes", () => {
     const bar: Bar = {
       timeSignature: parseTimeSignature("4/4"),
-      events: [e(Duration.Whole), e(Duration.Half)]
+      events: [c(Duration.Whole), c(Duration.Half)],
     };
     expect(toFullBar(bar)).toEqual(bar);
   });
 
   it("should fill a bar with a strange time signature", () => {
     const bar: Bar = {
-      timeSignature: parseTimeSignature("7919/1024"),
-      events: [e(Duration.Quarter)],
-      /*
-      This time signature is not yet possible, since 
-      16th notes are currently the shortest durations.
-      In order for the rest of this bar to be filled,
-      we require these durations:
-
-      [w, w, w, w, w, w, h, q, 8, 16, 64, 128, 256, 512].
-
-      Refactor idea: Note should not be a record but a function.
-      */
+      timeSignature: parseTimeSignature("31/32"),
+      events: [c(Duration.Quarter)],
     };
-    [1, "2", "4", 8].forEach((d) => {
-      console.log(d, Flow.durationToTicks(d.toString()));
-    })
+    expect(toFullBar(bar).events).toEqual([
+      event([Note.C], Duration.Quarter),
+      event([Note.PAUSE], Duration.Half),
+      event([Note.PAUSE], Duration.Eighth),
+      event([Note.PAUSE], Duration.Sixteenth),
+      event([Note.PAUSE], Duration.ThirtySecond),
+    ]);
   });
 });

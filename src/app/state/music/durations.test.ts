@@ -5,7 +5,7 @@ import {
   simplifyDurations,
   toDuration,
   toNumber,
-  toSixteenths,
+  expandDuration,
 } from "./durations";
 import { Duration } from ".";
 
@@ -33,22 +33,25 @@ describe("toDuration", () => {
   });
 });
 
-describe("toSixteenths", () => {
+describe("expandDuration", () => {
   it("should convert a duration to an array of sixteenths", () => {
-    expect(toSixteenths(Duration.Whole)).toEqual(
-      Array(16).fill(Duration.Sixteenth)
+    expect(expandDuration(Duration.Whole)).toEqual(
+      Array(32).fill(Duration.ThirtySecond)
     );
-    expect(toSixteenths(Duration.Half)).toEqual(
-      Array(8).fill(Duration.Sixteenth)
+    expect(expandDuration(Duration.Half)).toEqual(
+      Array(16).fill(Duration.ThirtySecond)
     );
-    expect(toSixteenths(Duration.Quarter)).toEqual(
-      Array(4).fill(Duration.Sixteenth)
+    expect(expandDuration(Duration.Quarter)).toEqual(
+      Array(8).fill(Duration.ThirtySecond)
     );
-    expect(toSixteenths(Duration.Eighth)).toEqual(
-      Array(2).fill(Duration.Sixteenth)
+    expect(expandDuration(Duration.Eighth)).toEqual(
+      Array(4).fill(Duration.ThirtySecond)
     );
-    expect(toSixteenths(Duration.Sixteenth)).toEqual(
-      Array(1).fill(Duration.Sixteenth)
+    expect(expandDuration(Duration.Sixteenth)).toEqual(
+      Array(2).fill(Duration.ThirtySecond)
+    );
+    expect(expandDuration(Duration.ThirtySecond)).toEqual(
+      Array(1).fill(Duration.ThirtySecond)
     );
   });
 });
