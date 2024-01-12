@@ -96,30 +96,22 @@ describe("isPowerOfTwo", () => {
 describe("timeSignatureToDurations", () => {
   it("should convert a time signature to an array of durations", () => {
     expect(timeSignatureToDurations([4, 4])).toStrictEqual([
-      Duration.Quarter,
-      Duration.Quarter,
-      Duration.Quarter,
-      Duration.Quarter,
+      Duration.Whole
     ]);
     expect(timeSignatureToDurations([3, 4])).toStrictEqual([
-      Duration.Quarter,
-      Duration.Quarter,
+      Duration.Half,
       Duration.Quarter,
     ]);
     expect(timeSignatureToDurations([6, 8])).toStrictEqual([
-      Duration.Eighth,
-      Duration.Eighth,
-      Duration.Eighth,
-      Duration.Eighth,
-      Duration.Eighth,
-      Duration.Eighth,
+      Duration.Half,
+      Duration.Quarter,
     ]);
     expect(timeSignatureToDurations([5, 8])).toStrictEqual([
-      Duration.Eighth,
-      Duration.Eighth,
-      Duration.Eighth,
-      Duration.Eighth,
+      Duration.Half,
       Duration.Eighth,
     ]);
+    expect(timeSignatureToDurations([16, 32])).toStrictEqual([
+      Duration.Half
+    ])
   });
 });

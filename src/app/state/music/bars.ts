@@ -165,11 +165,37 @@ const tail = <T>(l: T[]) => {
   return l.slice(1);
 };
 
+/**
+ * Split a list of events into chunks.
+ * Each chunk is a list of events that fit
+ * within a bar in the given time signature.
+ * If an event's duration is too long to fit in a chunk,
+ * it will be split into multiple events
+ * and placed across multiple chunks.
+ */
 export function chunk(
   timeSignature: Fraction,
   events: MusicalEvent[]
 ): MusicalEvent[][] {
-  const status = barStatus({ timeSignature, events });
+  if (events.length === 0) {
+    return [];
+  }
+  const bar = { timeSignature, events };
+  const status = barStatus(bar);
+  if (status !== BarStatus.Overflow) {
+    return [events];
+  }
+  // Does the first event overflow too?
+  // If so, it needs to be split
+  const [x, xs] = [head(events), tail(events)];
+  const [fst, snd] = splitEvent(x, timeSignatureToDurations(timeSignature));
+  const overflows: boolean = snd.length > 0;
+  if (overflows) {
+    return [[...fst], ...chunk(timeSignature, snd)];
+  } else {
+    return [[x], ...chunk(timeSignature, xs)];
+  }
+
   console.log("events", events);
   console.log("status", status);
   switch (barStatus({ timeSignature, events })) {
@@ -178,11 +204,9 @@ export function chunk(
       return [events];
     case BarStatus.Overflow:
       // Does the first event overflow too?
+      // If so, it needs to be split
       const [x, xs] = [head(events), tail(events)];
-      const [fst, snd] = splitEvent(
-        x,
-        timeSignatureToDurations(timeSignature)
-      );
+      const [fst, snd] = splitEvent(x, timeSignatureToDurations(timeSignature));
       const overflows: boolean = snd.length > 0;
       console.log("overflows", overflows);
       console.log("x", x);

@@ -57,7 +57,7 @@ export function timeSignatureToDurations(ts: Fraction): Duration[] {
   for (let i = 0; i < a; i++) {
     durations.push(toDuration(duration));
   }
-  return durations;
+  return simplifyDurations(durations);
 }
 
 /**

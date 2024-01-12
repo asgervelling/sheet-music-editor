@@ -286,12 +286,12 @@ describe("splitEvent", () => {
   it("should split a whole note after a quarter and an eighth", () => {
     const event: MusicalEvent = c(D.Whole);
     const at: Duration[] = [D.Quarter, D.Eighth];
-    
-    const [fst, snd] = splitEvent(event, at)
+
+    const [fst, snd] = splitEvent(event, at);
     expect(fst).toEqual([c(D.Quarter), c(D.Eighth)]);
     expect(snd).toEqual([c(D.Half), c(D.Eighth)]);
   });
-  
+
   it("should split a quarter note after a thirty-second", () => {
     const event = c(D.Quarter);
     const at: Duration[] = [D.ThirtySecond];
@@ -306,7 +306,7 @@ describe("splitEvent", () => {
 
     const [fst, snd] = splitEvent(event, at);
     expect(fst).toEqual([c(D.ThirtySecond)]);
-    expect(snd).toEqual([c(D.Eighth), c(D.Sixteenth), c(D.ThirtySecond)])
+    expect(snd).toEqual([c(D.Eighth), c(D.Sixteenth), c(D.ThirtySecond)]);
   });
 
   it("should split a quarter note after a quarter note", () => {
@@ -326,16 +326,50 @@ describe("splitEvent", () => {
     expect(fst).toEqual([]);
     expect(snd).toEqual([event]);
   });
+
+  it("should not split 4/4 after a whole note", () => {
+    const event = c(D.Whole);
+    const at = [D.Whole];
+
+    const [fst, snd] = splitEvent(event, at);
+    expect(fst).toEqual([event]);
+    expect(snd).toEqual([]);
+  })
 });
 
-// describe("chunk", () => {
-//   it("should chunk a bar", () => {
-//     const ts = p("4/4");
-//     const events: MusicalEvent[] = [
-//       c(D.Whole),
-//       c(D.Whole),
-//     ];
-//     console.log(chunk(ts, events));
-//     expect(chunk(ts, events)).toEqual([[c(D.Whole)], [c(D.Whole)]]);
-//   });
-// });
+describe("chunk", () => {
+  it("should create a single chunk with no events", () => {
+    expect(chunk(p("4/4"), [])).toEqual([]);
+  });
+
+  it("should create a single chunk with a few events", () => {
+    expect(chunk(p("3/4"), [c(D.Quarter)])).toEqual([[c(D.Quarter)]]);
+    expect(chunk(p("4/4"), [c(D.Whole)])).toEqual([[c(D.Whole)]]);
+    console.log(chunk(p("4/8"), [c(D.Half), c(D.Half)]))
+    expect(chunk(p("4/8"), [c(D.Quarter), c(D.Quarter)])).toEqual([
+      [c(D.Quarter), c(D.Quarter)],
+    ]);
+  });
+
+  it("should create two chunks when overflowing", () => {
+    expect(chunk(p("4/4"), [c(D.Whole), c(D.Whole)])).toEqual([
+      [c(D.Whole)],
+      [c(D.Whole)],
+    ]);
+  });
+
+  // it("should create many chunks when overflowing", () => {
+  //   console.log("Here it is");
+  //   console.log(chunk(p("17/32"), [c(D.Sixteenth), c(D.Whole), c(D.Whole), c(D.Whole)]));
+  //   expect(chunk(p("17/32"), [c(D.Sixteenth), c(D.Whole), c(D.Whole), c(D.Whole)])).toEqual(
+  //     [
+  //       [c(D.Sixteenth), c(D.Quarter), c(D.Eighth), c(D.Sixteenth), c(D.ThirtySecond)],
+  //       [c(D.Half), c(D.ThirtySecond)],
+  //       [c(D.Half), c(D.ThirtySecond)],
+  //       [c(D.Quarter), c(D.Eighth), c(D.Sixteenth), c(D.ThirtySecond), c(D.Sixteenth)],
+  //       [c(D.Half), c(D.ThirtySecond)],
+  //       [c(D.Quarter), c(D.Eighth), c(D.ThirtySecond)],
+  //     ]
+  //   );
+  // });
+});
