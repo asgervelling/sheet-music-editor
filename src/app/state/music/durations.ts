@@ -1,4 +1,6 @@
 import { Duration } from ".";
+import { validateFraction, validateTimeSignature } from "./bars";
+import { Fraction } from "./types";
 
 export function isPowerOfTwo(n: number) {
   return n > 0 && (n & (n - 1)) === 0;
@@ -43,6 +45,19 @@ export function toDuration(float: number): Duration {
     default:
       throw new Error("Invalid float duration " + float);
   }
+}
+
+export function timeSignatureToDurations(ts: Fraction): Duration[] {
+  const [a, b] = ts;
+  if (!validateTimeSignature(ts)) {
+    throw new Error("Invalid time signature " + ts);
+  }
+  const duration = 1 / b;
+  const durations: Duration[] = [];
+  for (let i = 0; i < a; i++) {
+    durations.push(toDuration(duration));
+  }
+  return durations;
 }
 
 /**

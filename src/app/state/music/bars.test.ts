@@ -12,6 +12,7 @@ import {
   BarStatus,
   splitEvent,
   timeOverflow,
+  chunk,
 } from "./bars";
 
 /** Helper function to create an event */
@@ -257,16 +258,25 @@ describe("barStatus", () => {
         events: [c(D.Half), c(D.Quarter)],
       })
     ).toEqual(BarStatus.Incomplete);
+
     expect(
       barStatus({
         timeSignature: p("5/8"),
         events: [c(D.Eighth), c(D.Half)],
       })
     ).toEqual(BarStatus.Full);
+
     expect(
       barStatus({
         timeSignature: p("4/4"),
         events: [c(D.Whole), c(D.Whole), c(D.Eighth)],
+      })
+    ).toEqual(BarStatus.Overflow);
+
+    expect(
+      barStatus({
+        timeSignature: p("4/4"),
+        events: [c(D.Whole), c(D.Whole)],
       })
     ).toEqual(BarStatus.Overflow);
   });
@@ -317,3 +327,15 @@ describe("splitEvent", () => {
     expect(snd).toEqual([event]);
   });
 });
+
+// describe("chunk", () => {
+//   it("should chunk a bar", () => {
+//     const ts = p("4/4");
+//     const events: MusicalEvent[] = [
+//       c(D.Whole),
+//       c(D.Whole),
+//     ];
+//     console.log(chunk(ts, events));
+//     expect(chunk(ts, events)).toEqual([[c(D.Whole)], [c(D.Whole)]]);
+//   });
+// });

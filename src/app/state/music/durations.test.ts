@@ -6,6 +6,7 @@ import {
   toDuration,
   toNumber,
   expandDuration,
+  timeSignatureToDurations,
 } from "./durations";
 import { Duration } from ".";
 
@@ -91,3 +92,34 @@ describe("isPowerOfTwo", () => {
     }
   })
 })
+
+describe("timeSignatureToDurations", () => {
+  it("should convert a time signature to an array of durations", () => {
+    expect(timeSignatureToDurations([4, 4])).toStrictEqual([
+      Duration.Quarter,
+      Duration.Quarter,
+      Duration.Quarter,
+      Duration.Quarter,
+    ]);
+    expect(timeSignatureToDurations([3, 4])).toStrictEqual([
+      Duration.Quarter,
+      Duration.Quarter,
+      Duration.Quarter,
+    ]);
+    expect(timeSignatureToDurations([6, 8])).toStrictEqual([
+      Duration.Eighth,
+      Duration.Eighth,
+      Duration.Eighth,
+      Duration.Eighth,
+      Duration.Eighth,
+      Duration.Eighth,
+    ]);
+    expect(timeSignatureToDurations([5, 8])).toStrictEqual([
+      Duration.Eighth,
+      Duration.Eighth,
+      Duration.Eighth,
+      Duration.Eighth,
+      Duration.Eighth,
+    ]);
+  });
+});

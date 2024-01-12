@@ -3,6 +3,7 @@ import {
   expandDuration,
   isPowerOfTwo,
   simplifyDurations,
+  timeSignatureToDurations,
   toDuration,
   toNumber,
 } from "./durations";
@@ -142,8 +143,8 @@ export function barStatus(bar: Bar): BarStatus {
   const fullBars: number = numberOfBars(bar);
   const overflow: number = fullBars - Math.floor(fullBars);
 
-  if (overflow === 0) return BarStatus.Full;
   if (fullBars > 1) return BarStatus.Overflow;
+  if (overflow === 0) return BarStatus.Full;
   return BarStatus.Incomplete;
 }
 
@@ -164,28 +165,50 @@ const tail = <T>(l: T[]) => {
   return l.slice(1);
 };
 
-/**
- * Turn an array of musical events into an array of bars.
- */
-export function toBars(events: MusicalEvent[], timeSignature: Fraction) {
-  if (events.length === 0) {
-    return [];
+export function chunk(
+  timeSignature: Fraction,
+  events: MusicalEvent[]
+): MusicalEvent[][] {
+  const status = barStatus({ timeSignature, events });
+  console.log("events", events);
+  console.log("status", status);
+  switch (barStatus({ timeSignature, events })) {
+    case BarStatus.Incomplete:
+    case BarStatus.Full:
+      return [events];
+    case BarStatus.Overflow:
+      // Does the first event overflow too?
+      const [x, xs] = [head(events), tail(events)];
+      const [fst, snd] = splitEvent(
+        x,
+        timeSignatureToDurations(timeSignature)
+      );
+      const overflows: boolean = snd.length > 0;
+      console.log("overflows", overflows);
+      console.log("x", x);
+      console.log("timeSignature", timeSignature);
+      console.log("fst", fst);
+      console.log("snd", snd);
+      if (overflows) {
+        return [[...fst], ...chunk(timeSignature, snd)];
+      } else {
+        return [[...fst], ...chunk(timeSignature, xs)];
+      }
   }
+}
 
-  if (events.length === 1) {
-    const bar: Bar = { timeSignature, events };
-    if (barStatus(bar) === BarStatus.Overflow) {
-      // Split the note that is too long into two notes.
-      // The first note is at the end of the first bar,
-      // the second note is at the beginning of the next bar.
-      const lastEvent = head(events);
-      const b: Bar = { timeSignature, events };
-      // timeLeft(b)
-      //   .reduce((acc: MusicalEvent[], d) => , [])
-    }
-    return [{ timeSignature, events }];
+/**
+ * Turn an array of musical events into an array of bars
+ * with the given time signature.
+ */
+export function toBars(timeSignature: Fraction, events: MusicalEvent[]) {
+  const bar: Bar = { timeSignature, events };
+  switch (barStatus(bar)) {
+    case BarStatus.Incomplete:
+    case BarStatus.Full:
+      return [bar];
+    case BarStatus.Overflow:
   }
-  const [x, xs] = [head(events), tail(events)];
 }
 
 function toBarss(bars: Bar[]) {
@@ -207,7 +230,7 @@ function toBarss(bars: Bar[]) {
 }
 
 /**
- * Split an event after a given array of durations. 
+ * Split an event after a given array of durations.
  * @param event An event you want to split
  * @param at An array of durations after which you want to split the event
  * @returns A tuple of event arrays. The first array contains the events
