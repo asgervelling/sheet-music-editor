@@ -8,8 +8,10 @@ import {
   validateTimeSignature,
   timeLeft,
   toBars,
-  getBarStatus,
+  barStatus,
   BarStatus,
+  splitEvent,
+  timeOverflow,
 } from "./bars";
 
 /** Helper function to create an event */
@@ -25,14 +27,15 @@ const event = (notes: Note[], duration: Duration): MusicalEvent => ({
 const c = (d: Duration) => event([Note.C], d);
 
 const p = parseTimeSignature;
+const D = Duration;
 
 describe("validateBar", () => {
   it("should validate a bar", () => {
     // Define some musical events
-    const e1 = c(Duration.Whole);
-    const e2 = c(Duration.Half);
-    const e4 = c(Duration.Quarter);
-    const e16 = c(Duration.Sixteenth);
+    const e1 = c(D.Whole);
+    const e2 = c(D.Half);
+    const e4 = c(D.Quarter);
+    const e16 = c(D.Sixteenth);
 
     const validBar: Bar = {
       timeSignature: p("4/4"),
@@ -124,35 +127,62 @@ describe("timeLeft", () => {
     expect(
       timeLeft({
         timeSignature: p("4/4"),
-        events: [c(Duration.Quarter), c(Duration.Sixteenth)],
+        events: [c(D.Quarter), c(D.Sixteenth)],
       })
-    ).toEqual([Duration.Half, Duration.Eighth, Duration.Sixteenth]);
+    ).toEqual([D.Half, D.Eighth, D.Sixteenth]);
 
     expect(
       timeLeft({
         timeSignature: p("4/4"),
-        events: [
-          c(Duration.Quarter),
-          c(Duration.Quarter),
-          c(Duration.Quarter),
-          c(Duration.Sixteenth),
-        ],
+        events: [c(D.Quarter), c(D.Quarter), c(D.Quarter), c(D.Sixteenth)],
       })
-    ).toEqual([Duration.Eighth, Duration.Sixteenth]);
+    ).toEqual([D.Eighth, D.Sixteenth]);
 
     expect(
       timeLeft({
         timeSignature: p("15/8"),
         events: [
-          c(Duration.Sixteenth),
-          c(Duration.Sixteenth),
-          c(Duration.Sixteenth),
-          c(Duration.Eighth),
-          c(Duration.Quarter),
-          c(Duration.Quarter),
+          c(D.Sixteenth),
+          c(D.Sixteenth),
+          c(D.Sixteenth),
+          c(D.Eighth),
+          c(D.Quarter),
+          c(D.Quarter),
         ],
       })
-    ).toEqual([Duration.Whole, Duration.Sixteenth]);
+    ).toEqual([D.Whole, D.Sixteenth]);
+  });
+});
+
+describe("timeOverflow", () => {
+  it("should return the time overflow in a bar", () => {
+    expect(
+      timeOverflow({
+        timeSignature: p("4/4"),
+        events: [c(D.Half), c(D.Quarter), c(D.ThirtySecond), c(D.Half)],
+      })
+    ).toEqual([D.Quarter, D.ThirtySecond]);
+
+    expect(
+      timeOverflow({
+        timeSignature: p("4/4"),
+        events: [c(D.Quarter), c(D.Half)],
+      })
+    ).toEqual([]);
+
+    expect(
+      timeOverflow({
+        timeSignature: p("15/8"),
+        events: [
+          c(D.Eighth),
+          c(D.Quarter),
+          c(D.Quarter),
+          c(D.Quarter),
+          c(D.Quarter),
+          c(D.Whole), // 17/8
+        ],
+      })
+    ).toEqual([D.Quarter]);
   });
 });
 
@@ -160,31 +190,31 @@ describe("toFullBar", () => {
   it("should fill a bar with pauses", () => {
     const bar: Bar = {
       timeSignature: p("4/4"),
-      events: [c(Duration.Quarter), c(Duration.Sixteenth)],
+      events: [c(D.Quarter), c(D.Sixteenth)],
     };
     const fullBar = toFullBar(bar);
     expect(fullBar.events).toEqual([
-      event([Note.C], Duration.Quarter),
-      event([Note.C], Duration.Sixteenth),
-      event([Note.PAUSE], Duration.Half),
-      event([Note.PAUSE], Duration.Eighth),
-      event([Note.PAUSE], Duration.Sixteenth),
+      event([Note.C], D.Quarter),
+      event([Note.C], D.Sixteenth),
+      event([Note.PAUSE], D.Half),
+      event([Note.PAUSE], D.Eighth),
+      event([Note.PAUSE], D.Sixteenth),
     ]);
   });
 
   it("should not fill a bar that is already full", () => {
     const bar: Bar = {
       timeSignature: p("4/4"),
-      events: [c(Duration.Whole)],
+      events: [c(D.Whole)],
     };
     const fullBar = toFullBar(bar);
-    expect(fullBar.events).toEqual([event([Note.C], Duration.Whole)]);
+    expect(fullBar.events).toEqual([event([Note.C], D.Whole)]);
   });
 
   it("should not fill a bar that already has too many notes", () => {
     const bar: Bar = {
       timeSignature: p("4/4"),
-      events: [c(Duration.Whole), c(Duration.Half)],
+      events: [c(D.Whole), c(D.Half)],
     };
     expect(toFullBar(bar)).toEqual(bar);
   });
@@ -192,54 +222,98 @@ describe("toFullBar", () => {
   it("should fill a bar with a strange time signature", () => {
     const bar: Bar = {
       timeSignature: p("31/32"),
-      events: [c(Duration.Quarter)],
+      events: [c(D.Quarter)],
     };
     expect(toFullBar(bar).events).toEqual([
-      event([Note.C], Duration.Quarter),
-      event([Note.PAUSE], Duration.Half),
-      event([Note.PAUSE], Duration.Eighth),
-      event([Note.PAUSE], Duration.Sixteenth),
-      event([Note.PAUSE], Duration.ThirtySecond),
+      event([Note.C], D.Quarter),
+      event([Note.PAUSE], D.Half),
+      event([Note.PAUSE], D.Eighth),
+      event([Note.PAUSE], D.Sixteenth),
+      event([Note.PAUSE], D.ThirtySecond),
     ]);
 
     const bars: Bar[] = [
       {
         timeSignature: p("4/4"),
-        events: [c(Duration.Whole)],
+        events: [c(D.Whole)],
       },
       {
         timeSignature: p("4/4"),
-        events: [c(Duration.Half), c(Duration.Half)],
+        events: [c(D.Half), c(D.Half)],
       },
       {
         timeSignature: p("4/4"),
-        events: [c(Duration.Half), c(Duration.Quarter)], // Missing a quarter note
+        events: [c(D.Half), c(D.Quarter)], // Missing a quarter note
       },
     ];
+  });
+});
 
-    const events: MusicalEvent[] = bars.map((b) => b.events).flat();
+describe("barStatus", () => {
+  it("should return the status of a bar", () => {
+    expect(
+      barStatus({
+        timeSignature: p("4/4"),
+        events: [c(D.Half), c(D.Quarter)],
+      })
+    ).toEqual(BarStatus.Incomplete);
+    expect(
+      barStatus({
+        timeSignature: p("5/8"),
+        events: [c(D.Eighth), c(D.Half)],
+      })
+    ).toEqual(BarStatus.Full);
+    expect(
+      barStatus({
+        timeSignature: p("4/4"),
+        events: [c(D.Whole), c(D.Whole), c(D.Eighth)],
+      })
+    ).toEqual(BarStatus.Overflow);
+  });
+});
+
+describe("splitEvent", () => {
+  it("should split a whole note after a quarter and an eighth", () => {
+    const event: MusicalEvent = c(D.Whole);
+    const at: Duration[] = [D.Quarter, D.Eighth];
+    
+    const [fst, snd] = splitEvent(event, at)
+    expect(fst).toEqual([c(D.Quarter), c(D.Eighth)]);
+    expect(snd).toEqual([c(D.Half), c(D.Eighth)]);
+  });
+  
+  it("should split a quarter note after a thirty-second", () => {
+    const event = c(D.Quarter);
+    const at: Duration[] = [D.ThirtySecond];
+
+    /* 
+    Event of length 4       = [8, 8] = [16, 16, 16, 16] = [32] * 8
+    Split after one 32      = [[32], [32] * 7]
+    Second part simplified  = [32, 32, 32, 32, 32, 32, 32]
+                            = [16, 16, 16, 32]
+                            = [8, 16, 32]
+    */
+
+    const [fst, snd] = splitEvent(event, at);
+    expect(fst).toEqual([c(D.ThirtySecond)]);
+    expect(snd).toEqual([c(D.Eighth), c(D.Sixteenth), c(D.ThirtySecond)])
   });
 
-  describe("getBarStatus", () => {
-    it("should return the status of a bar", () => {
-      expect(
-        getBarStatus({
-          timeSignature: p("4/4"),
-          events: [c(Duration.Half), c(Duration.Quarter)],
-        })
-      ).toEqual(BarStatus.Incomplete);
-      expect(
-        getBarStatus({
-          timeSignature: p("5/8"),
-          events: [c(Duration.Eighth), c(Duration.Half)],
-        })
-      ).toEqual(BarStatus.Full);
-      expect(
-        getBarStatus({
-          timeSignature: p("4/4"),
-          events: [c(Duration.Whole), c(Duration.Whole), c(Duration.Eighth)],
-        })
-      ).toEqual(BarStatus.Overflow);
-    });
+  it("should split a quarter note after a quarter note", () => {
+    const event = c(D.Quarter);
+    const at = [D.Quarter];
+
+    const [fst, snd] = splitEvent(event, at);
+    expect(fst).toEqual([event]);
+    expect(snd).toEqual([]);
+  });
+
+  it("should split a quarter note after no duration", () => {
+    const event = c(D.Quarter);
+    const at: Duration[] = [];
+
+    const [fst, snd] = splitEvent(event, at);
+    expect(fst).toEqual([]);
+    expect(snd).toEqual([event]);
   });
 });
