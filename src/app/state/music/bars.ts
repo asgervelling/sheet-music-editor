@@ -4,7 +4,6 @@ import {
   isPowerOfTwo,
   simplifyDurations,
   timeSignatureToDurations,
-  toDuration,
   toNumber,
 } from "./durations";
 import { Fraction, MusicalEvent } from "./types";
@@ -125,17 +124,6 @@ export enum BarStatus {
   Overflow = "Overflow",
 }
 
-enum Status {
-  Incomplete = "Incomplete",
-  Full = "Full",
-  Overflow = "Overflow",
-}
-
-type BarStatuss =
-  | { status: BarStatus.Full }
-  | { status: BarStatus.Incomplete; events: MusicalEvent[] }
-  | { status: BarStatus.Overflow; events: MusicalEvent[] };
-
 /**
  * Figure out whether a bar is full, incomplete or overflowing.
  */
@@ -148,15 +136,6 @@ export function barStatus(bar: Bar): BarStatus {
   return BarStatus.Incomplete;
 }
 
-export function toBarStatuss(bar: Bar): BarStatuss {
-  const fullBars: number = numberOfBars(bar);
-  const overflow: number = fullBars - Math.floor(fullBars);
-
-  if (overflow === 0) return { status: BarStatus.Full };
-  if (fullBars > 1) return { status: BarStatus.Overflow, events: bar.events };
-  return { status: BarStatus.Incomplete, events: bar.events };
-}
-
 const head = <T>(l: T[]) => l[0];
 const tail = <T>(l: T[]) => {
   if (l.length === 0) {
@@ -166,6 +145,66 @@ const tail = <T>(l: T[]) => {
 };
 
 /**
+ * If l is empty, return the default.
+ * Otherwise, return the last element of l.
+ */
+function lastOrDefault<T>(l: T[], default_: T): T {
+  const last: T | undefined = l.at(-1);
+  if (last === undefined) return default_;
+  return last;
+}
+
+export function chunk(
+  timeSignature: Fraction,
+  events_: MusicalEvent[]
+): MusicalEvent[][] {
+  function toChunks(
+    events: MusicalEvent[],
+    chunks: MusicalEvent[][]
+  ): MusicalEvent[][] {
+    console.log(
+      `toChunks(${timeSignature}, [${events.map((e) => e.duration)}], [${chunks.map((c) =>
+        "[" + c.map((e) => e.duration).join(", ") + "]"
+      )}])`
+    );
+    if (events.length === 0) {
+      console.log(
+        `No more events. Return [${chunks
+          .filter((c) => c.length > 0)
+          .map((c) =>  "[" + c.map((e) => e.duration).join(", ") + "]")}]`
+      );
+      return chunks.filter((c) => c.length > 0);
+    }
+    const [x, xs] = [head(events), tail(events)];
+    const prevChunks = chunks.slice(0, -1);
+    const chunk = lastOrDefault(chunks, []);
+    const bar: Bar = { timeSignature, events: [...chunk, x] };
+
+    console.log(`[x, xs] = [${x.duration}, [${xs.map((e) => e.duration)}]]`);
+    console.log(`prevChunks = [${prevChunks.map((c) => c.map((e) => e.duration))}]`);
+    console.log(`chunk = [${chunk.map((e) => e.duration)}]`);
+    console.log(`bar = [${bar.events.map((e) => e.duration)}]`);
+    console.log(`barStatus(bar) = ${barStatus(bar)}`);
+
+    switch (barStatus(bar)) {
+      case BarStatus.Full:
+        return toChunks(xs, [...prevChunks, [...chunk, x], []]);
+      case BarStatus.Incomplete:
+        return toChunks(xs, [...prevChunks, [...chunk, x]]);
+      case BarStatus.Overflow:
+        const b: Bar = { timeSignature, events: chunk.slice(0, -1) };
+        const [fst, snd] = splitEvent(x, timeLeft(b));
+        return toChunks(
+          [...snd, ...xs],
+          [...prevChunks, [...chunk, ...fst], []]
+        );
+    }
+  }
+
+  return toChunks(events_, [[]]);
+}
+
+/**
  * Split a list of events into chunks.
  * Each chunk is a list of events that fit
  * within a bar in the given time signature.
@@ -173,83 +212,46 @@ const tail = <T>(l: T[]) => {
  * it will be split into multiple events
  * and placed across multiple chunks.
  */
-export function chunk(
+export function chunkk(
   timeSignature: Fraction,
   events: MusicalEvent[]
 ): MusicalEvent[][] {
+  const bar = { timeSignature, events };
+  const status = barStatus(bar);
+  const [x, xs] = [head(events), tail(events)];
+  console.log(
+    "Status for bar",
+    bar.events.map((e) => `${e.duration}, `),
+    "is",
+    status
+  );
+  console.log("x, xs:", x, xs);
   if (events.length === 0) {
     return [];
   }
-  const bar = { timeSignature, events };
-  const status = barStatus(bar);
-  if (status !== BarStatus.Overflow) {
+  if (status === BarStatus.Full) {
     return [events];
+  }
+  if (status === BarStatus.Incomplete) {
+    // Get a new time signature that is the time left in the bar
+    const k = timeLeft({ timeSignature, events: xs }).reduce(
+      (acc, curr) => acc + toNumber(curr),
+      0
+    );
+    const complete: MusicalEvent[] = [x, ...chunk(timeSignature, xs).flat()];
+    console.log("Complete", complete);
+    console.log("Time left", k);
   }
   // Does the first event overflow too?
   // If so, it needs to be split
-  const [x, xs] = [head(events), tail(events)];
   const [fst, snd] = splitEvent(x, timeSignatureToDurations(timeSignature));
   const overflows: boolean = snd.length > 0;
+  console.log("fst, snd:", fst, snd);
+  console.log("overflows:", overflows);
   if (overflows) {
     return [[...fst], ...chunk(timeSignature, snd)];
   } else {
     return [[x], ...chunk(timeSignature, xs)];
-  }
-
-  console.log("events", events);
-  console.log("status", status);
-  switch (barStatus({ timeSignature, events })) {
-    case BarStatus.Incomplete:
-    case BarStatus.Full:
-      return [events];
-    case BarStatus.Overflow:
-      // Does the first event overflow too?
-      // If so, it needs to be split
-      const [x, xs] = [head(events), tail(events)];
-      const [fst, snd] = splitEvent(x, timeSignatureToDurations(timeSignature));
-      const overflows: boolean = snd.length > 0;
-      console.log("overflows", overflows);
-      console.log("x", x);
-      console.log("timeSignature", timeSignature);
-      console.log("fst", fst);
-      console.log("snd", snd);
-      if (overflows) {
-        return [[...fst], ...chunk(timeSignature, snd)];
-      } else {
-        return [[...fst], ...chunk(timeSignature, xs)];
-      }
-  }
-}
-
-/**
- * Turn an array of musical events into an array of bars
- * with the given time signature.
- */
-export function toBars(timeSignature: Fraction, events: MusicalEvent[]) {
-  const bar: Bar = { timeSignature, events };
-  switch (barStatus(bar)) {
-    case BarStatus.Incomplete:
-    case BarStatus.Full:
-      return [bar];
-    case BarStatus.Overflow:
-  }
-}
-
-function toBarss(bars: Bar[]) {
-  if (bars.length === 0) {
-    return [];
-  }
-  if (bars.length === 1) {
-    const bar = head(bars);
-    const [x, xs] = [head(bar.events), tail(bar.events)];
-    switch (barStatus(bar)) {
-      case BarStatus.Full:
-        return [bar];
-      case BarStatus.Incomplete:
-        return [bar];
-      case BarStatus.Overflow:
-        return [];
-    }
   }
 }
 
