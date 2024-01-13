@@ -162,29 +162,13 @@ export function chunk(
     events: MusicalEvent[],
     chunks: MusicalEvent[][]
   ): MusicalEvent[][] {
-    console.log(
-      `toChunks(${timeSignature}, [${events.map((e) => e.duration)}], [${chunks.map((c) =>
-        "[" + c.map((e) => e.duration).join(", ") + "]"
-      )}])`
-    );
     if (events.length === 0) {
-      console.log(
-        `No more events. Return [${chunks
-          .filter((c) => c.length > 0)
-          .map((c) =>  "[" + c.map((e) => e.duration).join(", ") + "]")}]`
-      );
       return chunks.filter((c) => c.length > 0);
     }
     const [x, xs] = [head(events), tail(events)];
     const prevChunks = chunks.slice(0, -1);
     const chunk = lastOrDefault(chunks, []);
     const bar: Bar = { timeSignature, events: [...chunk, x] };
-
-    console.log(`[x, xs] = [${x.duration}, [${xs.map((e) => e.duration)}]]`);
-    console.log(`prevChunks = [${prevChunks.map((c) => c.map((e) => e.duration))}]`);
-    console.log(`chunk = [${chunk.map((e) => e.duration)}]`);
-    console.log(`bar = [${bar.events.map((e) => e.duration)}]`);
-    console.log(`barStatus(bar) = ${barStatus(bar)}`);
 
     switch (barStatus(bar)) {
       case BarStatus.Full:
@@ -193,7 +177,8 @@ export function chunk(
         return toChunks(xs, [...prevChunks, [...chunk, x]]);
       case BarStatus.Overflow:
         const b: Bar = { timeSignature, events: chunk.slice(0, -1) };
-        const [fst, snd] = splitEvent(x, timeLeft(b));
+        let [fst, snd] = splitEvent(x, timeLeft(b));
+
         return toChunks(
           [...snd, ...xs],
           [...prevChunks, [...chunk, ...fst], []]
@@ -203,7 +188,6 @@ export function chunk(
 
   return toChunks(events_, [[]]);
 }
-
 /**
  * Split a list of events into chunks.
  * Each chunk is a list of events that fit
@@ -279,4 +263,18 @@ export function splitEvent(
     duration: d,
   });
   return [fst.map(toEvent), snd.map(toEvent)];
+}
+
+export function splitEvents(
+  events: MusicalEvent[],
+  at: Duration[]
+): [MusicalEvent[], MusicalEvent[]] {
+  const [fst, snd] = events.reduce(
+    ([fst, snd], event) => {
+      const [fst_, snd_] = splitEvent(event, at);
+      return [[...fst, ...fst_], [...snd, ...snd_]];
+    },
+    [[], []] as [MusicalEvent[], MusicalEvent[]]
+  );
+  return [fst, snd];
 }

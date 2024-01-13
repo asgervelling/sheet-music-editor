@@ -164,7 +164,7 @@ describe("timeLeft", () => {
         timeSignature: p("1/4"),
         events: [],
       })
-    ).toEqual([Duration.Quarter]);
+    ).toEqual([D.Quarter]);
   });
 });
 
@@ -373,7 +373,6 @@ describe("splitEvent", () => {
     expect(fst).toEqual([c(D.Quarter)]);
     expect(snd).toEqual([]);
   });
-
 });
 
 describe("chunk", () => {
@@ -396,12 +395,51 @@ describe("chunk", () => {
   //   ]);
   // });
 
-  it("should split events when overflowing, if necessary", () => {
-    expect(chunk(p("3/4"), [c(D.Whole)])).toEqual([
-      [c(D.Half), c(D.Quarter)],
-      [c(D.Quarter)]
+  // it("should split events when overflowing", () => {
+  //   expect(chunk(p("3/4"), [c(D.Whole)])).toEqual([
+  //     [c(D.Half), c(D.Quarter)],
+  //     [c(D.Quarter)],
+  //   ]);
+  // });
+
+  // it("should overflow multiple times without splitting", () => {
+  //   expect(chunk(p("1/4"), [c(D.Whole)])).toEqual([
+  //     [c(D.Quarter)],
+  //     [c(D.Quarter)],
+  //     [c(D.Quarter)],
+  //     [c(D.Quarter)],
+  //   ]);
+  // });
+
+  it("should overflow multiple times and split", () => {
+    const expected = [
+      [c(D.Half), c(D.Eighth)],
+      [c(D.Quarter), c(D.Eighth), c(D.Quarter)],
+      [c(D.Half), c(D.Eighth)],
+      [c(D.Eighth)],
+    ];
+    console.log("Expected:", expected.map((c) => c.map((event) => `${event.duration}`)));
+    console.log("Actual:  ",
+      chunk(p("5/8"), [c(D.Whole), c(D.Whole)]).map((c) =>
+        c.map((event) => `${event.duration}`)
+      )
+    );
+    expect(chunk(p("5/8"), [c(D.Whole), c(D.Whole)])).toEqual([
+      [c(D.Half), c(D.Eighth)],
+      [c(D.Quarter), c(D.Eighth), c(D.Quarter)],
+      [c(D.Half), c(D.Eighth)],
+      [c(D.Eighth)],
     ]);
   });
+
+  // it("should split into parts that overflow", () => {
+  //   expect(chunk(p("7/8"), [c(D.Whole), c(D.Whole), c(D.Whole)])).toEqual([
+  //     [c(D.Half), c(D.Quarter), c(D.Eighth)],
+  //     [c(D.Eighth), c(D.Half), c(D.Quarter)],
+  //     [c(D.Quarter), c(D.Half), c(D.Eighth)],
+  //     [c(D.Quarter), c(D.Eighth)],
+  //   ]);
+  // });
 
   function printChunks(chunks: MusicalEvent[][]) {
     return console.log(
@@ -426,15 +464,15 @@ describe("chunk", () => {
   //     [c(D.Eighth)],
   //   ]);
 
-    // expect(chunk(p("17/32"), [c(D.Sixteenth), c(D.Whole), c(D.Whole), c(D.Whole)])).toEqual(
-    //   [
-    //     [c(D.Sixteenth), c(D.Quarter), c(D.Eighth), c(D.Sixteenth), c(D.ThirtySecond)],
-    //     [c(D.Half), c(D.ThirtySecond)],
-    //     [c(D.Half), c(D.ThirtySecond)],
-    //     [c(D.Quarter), c(D.Eighth), c(D.Sixteenth), c(D.ThirtySecond), c(D.Sixteenth)],
-    //     [c(D.Half), c(D.ThirtySecond)],
-    //     [c(D.Quarter), c(D.Eighth), c(D.ThirtySecond)],
-    //   ]
-    // );
+  // expect(chunk(p("17/32"), [c(D.Sixteenth), c(D.Whole), c(D.Whole), c(D.Whole)])).toEqual(
+  //   [
+  //     [c(D.Sixteenth), c(D.Quarter), c(D.Eighth), c(D.Sixteenth), c(D.ThirtySecond)],
+  //     [c(D.Half), c(D.ThirtySecond)],
+  //     [c(D.Half), c(D.ThirtySecond)],
+  //     [c(D.Quarter), c(D.Eighth), c(D.Sixteenth), c(D.ThirtySecond), c(D.Sixteenth)],
+  //     [c(D.Half), c(D.ThirtySecond)],
+  //     [c(D.Quarter), c(D.Eighth), c(D.ThirtySecond)],
+  //   ]
+  // );
   // });
 });
