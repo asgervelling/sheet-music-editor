@@ -12,12 +12,11 @@ import { SheetMusicSystem } from "@/components/scores";
 
 import { Bar, Duration, Note } from "./state/music";
 import { StateProvider } from "./state/StateContext";
-import { parseTimeSignature, toFullBar } from "./state/music/bars";
 
 export default function Home() {
   const bars: Bar[] = [
     {
-      timeSignature: parseTimeSignature("4/4"),
+      ts: [4, Duration.Quarter],
       events: [
         {
           notes: [Note.C, Note.E],
@@ -26,7 +25,7 @@ export default function Home() {
       ],
     },
     {
-      timeSignature: parseTimeSignature("4/4"),
+      ts: [4, Duration.Quarter],
       events: [
         {
           notes: [Note.D],

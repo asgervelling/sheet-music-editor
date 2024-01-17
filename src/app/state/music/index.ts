@@ -6,5 +6,4 @@ export {
   DurationToKey,
   KeyToDuration,
 } from "./constants";
-export type { MusicalEvent, Bar } from "./types";
-export { validateBar, parseTimeSignature } from "./bars";
+export type { MusicalEvent, Bar } from "./bars";
