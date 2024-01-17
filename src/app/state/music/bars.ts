@@ -1,30 +1,6 @@
-import { Duration, lengthIn32nds, split } from "./durations";
-import { TimeSignature } from "./time_signatures";
-
-export enum Note {
-  C = "C",
-  Db = "D♭",
-  D = "D",
-  Eb = "E♭",
-  E = "E",
-  F = "F",
-  Gb = "G♭",
-  G = "G",
-  Ab = "A♭",
-  A = "A",
-  Bb = "B♭",
-  B = "B",
-  PAUSE = "PAUSE",
-}
-
-/**
- * A single note or pause is a list of length 1.
- * A chord is a list of notes.
- */
-export type MusicalEvent = {
-  notes: Note[];
-  duration: Duration;
-};
+import { Duration, lengthIn32nds, simplify, split } from "./durations";
+import { MusicalEvent, Note } from "./events";
+import { TimeSignature, tsTo32nds } from "./time_signatures";
 
 /**
  * A bar has a time signature and some musical events.
@@ -39,15 +15,6 @@ export type MusicalEvent = {
 export type Bar = {
   ts: TimeSignature;
   events: MusicalEvent[];
-};
-
-
-const head = <T>(l: T[]) => l[0];
-const tail = <T>(l: T[]) => {
-  if (l.length === 0) {
-    return [];
-  }
-  return l.slice(1);
 };
 
 /**
@@ -100,3 +67,32 @@ function splitEvent(event: MusicalEvent, length: Duration[]): MusicalEvent[][] {
     part.map((d) => ({ ...event, duration: d }))
   );
 }
+
+/**
+ * Given a possibly incomplete `chunk`, and a `chunkSize` in 32nd notes,
+ * fill the rest of the chunk with pauses.
+ */
+export function fillChunk(
+  chunk: MusicalEvent[],
+  chunkSize: number
+): MusicalEvent[] {
+  const length = lengthIn32nds(chunk.map((e) => e.duration));
+  if (length < chunkSize) {
+    const n = chunkSize - length;
+    const missing: Duration[] = simplify(Array(n).fill(Duration.ThirtySecond));
+    const pauses: MusicalEvent[] = missing.map((d) => ({
+      notes: [Note.PAUSE],
+      duration: d,
+    }));
+    return [...chunk, ...pauses];
+  }
+  return chunk;
+}
+
+const head = <T>(l: T[]) => l[0];
+const tail = <T>(l: T[]) => {
+  if (l.length === 0) {
+    return [];
+  }
+  return l.slice(1);
+};

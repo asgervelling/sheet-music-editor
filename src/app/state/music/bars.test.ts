@@ -1,5 +1,6 @@
 import { describe, it, expect } from "@jest/globals";
-import { Note, MusicalEvent, chunk } from "./bars";
+import { Note, MusicalEvent } from "./events";
+import { chunk, fillChunk } from "./bars";
 import { Duration } from "./durations";
 
 function repeat<T>(x: T, n: number): T[] {
@@ -36,23 +37,19 @@ describe("repeat", () => {
   });
 });
 
+function fmtEvent(e: MusicalEvent) {
+  return `([${e.notes.join(", ")}], ${e.duration})`;
+}
+
+function fmtChunk(c: MusicalEvent[]) {
+  return `[${c.map(fmtEvent).join(", ")}]`;
+}
+
+function fmtChunks(chunks: MusicalEvent[][]) {
+  return `[\n${chunks.map((c) => "  " + fmtChunk(c)).join(",\n")}\n]`;
+}
+
 describe("chunk", () => {
-  function fmtEvent(e: MusicalEvent) {
-    return `([${e.notes.join(", ")}], ${e.duration})`;
-  }
-
-  function fmtChunk(c: MusicalEvent[]) {
-    return `[${c.map(fmtEvent).join(", ")}]`;
-  }
-
-  function fmtChunks(chunks: MusicalEvent[][]) {
-    return `[\n${chunks.map((c) => "  " + fmtChunk(c)).join(",\n")}\n]`;
-  }
-
-  function dbgChunk(events: MusicalEvent[], chunkSizes: number[]) {
-    console.log(`chunk(${fmtChunk(events)}, [${chunkSizes}])`);
-    console.log(fmtChunks(chunk(events, chunkSizes)), "\n");
-  }
 
   it("should divide one event into one chunk", () => {
     expect(chunk([e2], [16])).toEqual([[e2]]);
@@ -95,5 +92,25 @@ describe("chunk", () => {
       [c8, c32],
       [c8, c16, c32],
     ]);
+  });
+});
+
+describe("fillChunk", () => {
+  const p = (d: Duration) => note([Note.PAUSE], d);
+  const p2 = p(D.Half);
+  const p4 = p(D.Quarter);
+  const p8 = p(D.Eighth);
+
+  it("should not fill a full chunk", () => {
+    expect(fillChunk([c2], 16)).toEqual([c2]);
+    expect(fillChunk([e32, c2], 16)).toEqual([e32, c2]);
+  });
+
+  it("should fill an empty chunk", () => {
+    expect(fillChunk([], 16)).toEqual([p2]);
+  });
+
+  it("should fill a chunk with a single note", () => {
+    expect(fillChunk([e8], 16)).toEqual([e8, p4, p8]);
   });
 });
