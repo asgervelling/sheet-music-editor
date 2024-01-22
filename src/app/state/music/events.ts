@@ -121,37 +121,45 @@ export function expandTo32nds(e: MusicalEvent): MusicalEvent[] {
  * does not have the same notes, `event.tiedToNext` will be set to false \
  * and grouped as a single untied event.
  */
-// export function findEventGroups(events: MusicalEvent[]): MusicalEvent[][] {
-//   if (events.length === 0) {
-//     return [];
-//   }
+export function findEventGroups(events: MusicalEvent[]): MusicalEvent[][] {
+  const n = firstGroupLength(events);
+  if (n === 0) {
+    return [];
+  }
 
-//   const event = head(events);
-//   if (event.tiedToNext) {
-    
-//   } else {
+  const [groupEvents, remainingEvents] = [events.slice(0, n), events.slice(n)];
 
-//   }
-// }
+  const firstInGroup = groupEvents.slice(0, -1);
+  const lastInGroup = untie(groupEvents[groupEvents.length - 1]);
+  const group = [...firstInGroup, lastInGroup];
+
+  return [group, ...findEventGroups(remainingEvents)];
+}
+
+function untie(e: MusicalEvent): MusicalEvent {
+  return { ...e, tiedToNext: false };
+}
 
 /**
  * Given an array of events, figure out the number of events
  * it is grouped with, such as
- * 
+ *
  *   // 3 32nd note E's tied together \
  *   firstGroupLength([e32t, e32t, e32, d32]) -> 3
- * 
+ *
  *   // A C cannot be tied with a D \
  *   firstGroupLength([c1t, d1t]) -> 1
- * 
+ *
  * @returns a number greater than 0
  */
 export function firstGroupLength(events: MusicalEvent[]): number {
   if (events.length === 0) return 0;
 
   function countTiedNotes(events: MusicalEvent[], notes: Note[]): number {
-    if (events.length === 0) return 0;
-    if (head(events).notes === notes) {
+    if (events.length === 0) {
+      return 0;
+    }
+    if (head(events).notes.every((note, i) => note === notes[i])) {
       if (head(events).tiedToNext) {
         return 1 + countTiedNotes(tail(events), notes);
       } else {

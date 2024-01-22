@@ -76,7 +76,7 @@ describe("repeat", () => {
 //     ]);
 //   });
 
-//   it.only("should handle a weird time signature", () => {
+//   it("should handle a weird time signature", () => {
 //     // console.log(fmtChunks(chunk([c1], [11, 11, 10])));
 //     expect(chunk([c1], [11, 11, 10])).toEqual([
 //       [c4, c16, c32],

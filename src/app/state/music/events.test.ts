@@ -1,6 +1,6 @@
 import { describe, it, expect } from "@jest/globals";
 
-import { chunkEvents, expandTo32nds, firstGroupLength } from "./events";
+import { chunkEvents, expandTo32nds, findEventGroups, firstGroupLength } from "./events";
 import {
   repeat,
   c1,
@@ -21,7 +21,9 @@ import {
 } from "./test_helpers";
 
 const c4t = tiedToNext(c4);
+const c16t = tiedToNext(c16);
 const c32t = tiedToNext(c32);
+const e2t = tiedToNext(e2);
 const e32t = tiedToNext(e32);
 
 describe("expandTo32nds", () => {
@@ -143,10 +145,42 @@ describe("firstGroupLength", () => {
     expect(firstGroupLength([c4, c4])).toEqual(1);
     expect(firstGroupLength([c4])).toEqual(1);
   });
+
+  it("should recognize a group of events with different lengths", () => {
+    expect(firstGroupLength([c32t, c4t, c16])).toEqual(3);
+  });
+
+  it("should recognize a group of events with different lengths, then a tied event with different notes", () => {
+    expect(firstGroupLength([c32t, c4t, e2t])).toEqual(2);
+  });
 });
 
-// describe("findEventGroups", () => {
-//   it("should group a single untied event as a single group", () => {
-//     expect(findEventGroups([c32])).toEqual([[c32]]);
-//   });
-// });
+describe("findEventGroups", () => {
+  it("should group a single untied event as a single group", () => {
+    expect(findEventGroups([c32])).toEqual([[c32]]);
+  });
+
+  it("should group a single tied event as a single group consisting of an untied event", () => {
+    expect(findEventGroups([c32t])).toEqual([[c32]]);
+  });
+
+  it("should not find groups in an empty array", () => {
+    expect(findEventGroups([])).toEqual([]);
+  });
+
+  it("should recognize tied events and an untied event", () => {
+    expect(findEventGroups([c32t, c4t, c16])).toEqual([[c32t, c4t, c16]]);
+  });
+
+  it("should recognize untied events with same notes as different groups", () => {
+    expect(findEventGroups([c32, c4, c16])).toEqual([[c32], [c4], [c16]]);
+  });
+
+  it("should recognize tied events, all with different notes, as different groups", () => {
+    expect(findEventGroups([c32t, e2t, c16t])).toEqual([[c32], [e2], [c16]]);
+  });
+
+  it("should recognize tied events, as a single group with an untied event at the end", () => {
+    expect(findEventGroups([c32t, c32t, c32t])).toEqual([[c32t, c32t, c32]]);
+  });  
+});
