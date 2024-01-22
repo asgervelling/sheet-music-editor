@@ -2,20 +2,29 @@ import { describe, it, expect } from "@jest/globals";
 
 import { Duration, expand, simplify, split, split32nds } from "./durations";
 import { tsTo32nds } from "./time_signatures";
-
-const D = Duration;
-
-function repeat<T>(x: T, n: number): T[] {
-  function createArray<T>(a: T[], n: number) {
-    if (n === 1) return a;
-    return createArray([...a, a[0]], n - 1);
-  }
-
-  return createArray([x], n);
-}
-
-const _32nds = (n: number): Duration.ThirtySecond[] =>
-  repeat(D.ThirtySecond, n);
+import {
+  e2,
+  e4,
+  e8,
+  e16,
+  e32,
+  c1,
+  c2,
+  c4,
+  c8,
+  c16,
+  c32,
+  p,
+  p1,
+  p2,
+  p4,
+  p8,
+  p16,
+  p32,
+  repeat,
+  D,
+  _32nds,
+} from "./test_helpers";
 
 describe("expand", () => {
   it("should convert a duration to an array of sixteenths", () => {
@@ -48,6 +57,7 @@ describe("simplify", () => {
     const d4 = D.Quarter;
     const d8 = D.Eighth;
     const d16 = D.Sixteenth;
+    const d32 = D.ThirtySecond;
     
     expect(simplify([d16, d16, d16])).toStrictEqual([d8, d16]);
     expect(simplify([d8])).toStrictEqual([d8]);
@@ -60,6 +70,7 @@ describe("simplify", () => {
     expect(simplify([d2, d2, d2])).toStrictEqual([d1, d2]);
     expect(simplify(Array(31).fill(d16))).toStrictEqual([d1, d2, d4, d8, d16])
     expect(simplify([d16, d16, d1, d8, d1, d2, d8, d8])).toStrictEqual([d1, d1, d1]);
+    expect(simplify([d8, d32, d8, d32])).toStrictEqual([d4, d16]);
   });
 });
 
@@ -139,6 +150,18 @@ describe("split", () => {
     expect(split(ds, length)).toEqual([
       [D.Quarter, D.Eighth],
       [D.Whole, D.Quarter],
+    ]);
+  });
+
+  it("should split uneven durations", () => {
+    expect(split([D.Whole], _32nds(11))).toEqual([
+      [D.Quarter, D.Sixteenth, D.ThirtySecond],
+      [D.Half, D.Eighth, D.ThirtySecond],
+    ])
+
+    expect(split([D.Half, D.Eighth, D.ThirtySecond], _32nds(11))).toEqual([
+      [D.Quarter, D.Sixteenth, D.ThirtySecond],
+      [D.Quarter, D.Sixteenth],
     ]);
   });
 });

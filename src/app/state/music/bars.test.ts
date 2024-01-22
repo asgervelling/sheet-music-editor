@@ -1,34 +1,31 @@
 import { describe, it, expect } from "@jest/globals";
 import { Note, MusicalEvent } from "./events";
-import { chunk, fillChunk } from "./bars";
-import { Duration } from "./durations";
-
-function repeat<T>(x: T, n: number): T[] {
-  function createArray<T>(a: T[], n: number) {
-    if (n === 1) return a;
-    return createArray([...a, a[0]], n - 1);
-  }
-
-  return createArray([x], n);
-}
-
-function note(notes: Note[], duration: Duration): MusicalEvent {
-  return { notes, duration };
-}
-const c = (d: Duration) => note([Note.C], d);
-const e = (d: Duration) => note([Note.E], d);
-const D = Duration;
-
-const e2 = e(D.Half);
-const e4 = e(D.Quarter);
-const e8 = e(D.Eighth);
-const e16 = e(D.Sixteenth);
-const e32 = e(D.ThirtySecond);
-const c2 = c(D.Half);
-const c4 = c(D.Quarter);
-const c8 = c(D.Eighth);
-const c16 = c(D.Sixteenth);
-const c32 = c(D.ThirtySecond);
+import { Bar, chunk, fillChunk, toBars } from "./bars";
+import { TimeSignature } from "./time_signatures";
+import {
+  e2,
+  e4,
+  e8,
+  e16,
+  e32,
+  c1,
+  c2,
+  c4,
+  c8,
+  c16,
+  c32,
+  p,
+  p1,
+  p2,
+  p4,
+  p8,
+  p16,
+  p32,
+  repeat,
+  D,
+  fmtChunks,
+  fmtChunk,
+} from "./test_helpers";
 
 describe("repeat", () => {
   it("should create an array of x repeated n times", () => {
@@ -37,20 +34,7 @@ describe("repeat", () => {
   });
 });
 
-function fmtEvent(e: MusicalEvent) {
-  return `([${e.notes.join(", ")}], ${e.duration})`;
-}
-
-function fmtChunk(c: MusicalEvent[]) {
-  return `[${c.map(fmtEvent).join(", ")}]`;
-}
-
-function fmtChunks(chunks: MusicalEvent[][]) {
-  return `[\n${chunks.map((c) => "  " + fmtChunk(c)).join(",\n")}\n]`;
-}
-
 describe("chunk", () => {
-
   it("should divide one event into one chunk", () => {
     expect(chunk([e2], [16])).toEqual([[e2]]);
   });
@@ -93,17 +77,25 @@ describe("chunk", () => {
       [c8, c16, c32],
     ]);
   });
+
+  it.only("should handle a weird time signature", () => {
+    // console.log(fmtChunks(chunk([c1], [11, 11, 10])));
+    expect(chunk([c1], [11, 11, 10])).toEqual([
+      [c4, c16, c32],
+      [c4, c16, c32],
+      [c4, c16],
+    ]);
+  });
 });
 
 describe("fillChunk", () => {
-  const p = (d: Duration) => note([Note.PAUSE], d);
-  const p2 = p(D.Half);
-  const p4 = p(D.Quarter);
-  const p8 = p(D.Eighth);
-
   it("should not fill a full chunk", () => {
     expect(fillChunk([c2], 16)).toEqual([c2]);
     expect(fillChunk([e32, c2], 16)).toEqual([e32, c2]);
+  });
+
+  it("should not fill a chunk with size 0", () => {
+    expect(fillChunk([c2], 0)).toEqual([c2]);
   });
 
   it("should fill an empty chunk", () => {
@@ -112,5 +104,100 @@ describe("fillChunk", () => {
 
   it("should fill a chunk with a single note", () => {
     expect(fillChunk([e8], 16)).toEqual([e8, p4, p8]);
+  });
+
+  it("should simplify durations", () => {
+    expect(fillChunk([c4, e4], 32)).toEqual([c4, e4, p2]);
+  });
+});
+
+describe("toBars", () => {
+  it("should create a bar of pauses from no events", () => {
+    expect(toBars([], [4, D.Quarter])).toEqual([
+      {
+        ts: [4, D.Quarter],
+        events: [p1],
+      },
+    ]);
+  });
+
+  it("should create a bar from one incomplete chunk", () => {
+    expect(toBars([c2], [7, D.Quarter])).toEqual([
+      {
+        ts: [7, D.Quarter],
+        events: [c2, p1, p4],
+      },
+    ]);
+  });
+
+  it("should create a bar from one complete chunk", () => {
+    expect(toBars([c2], [2, D.Quarter])).toEqual([
+      {
+        ts: [2, D.Quarter],
+        events: [c2],
+      },
+    ]);
+  });
+
+  it("should create two bars from two complete chunks", () => {
+    expect(toBars([c2, e2], [2, D.Quarter])).toEqual([
+      {
+        ts: [2, D.Quarter],
+        events: [c2],
+      },
+      {
+        ts: [2, D.Quarter],
+        events: [e2],
+      },
+    ]);
+  });
+
+  it("should create two bars from three events", () => {
+    expect(toBars([c2, e2, c2], [3, D.Quarter])).toEqual([
+      {
+        ts: [3, D.Quarter],
+        events: [c2, e4],
+      },
+      {
+        ts: [3, D.Quarter],
+        events: [e4, c2],
+      },
+    ]);
+  });
+
+  it("should create three bars from two events and add a pause", () => {
+    const ts: TimeSignature = [2, D.Quarter];
+    expect(toBars([c1, e2], ts)).toEqual([
+      { ts, events: [c2] },
+      { ts, events: [c2] },
+      { ts, events: [e2] },
+    ]);
+  });
+
+  function fmtBar(b: Bar) {
+    return `{ ts: ${b.ts}, events: ${fmtChunk(b.events)} }`;
+  }
+
+  function fmtBars(bars: Bar[]) {
+    return `[\n${bars.map((b) => "  " + fmtBar(b)).join(",\n")}\n]`;
+  }
+
+  it("should handle a weird time signature", () => {
+    // const ts: TimeSignature = [11, Duration.ThirtySecond];
+    // console.log(fmtBars(toBars([c1], ts)));
+    // expect(toBars([c1], ts)).toEqual([
+    //   { ts, events: [c4, c16, c32] },
+    //   { ts, events: [c4, c16, c32] },
+    //   { ts, events: [c4, c16] },
+    // ]);
+    // Total dur:     32 +16 + 8 + 4 + 2 + 1 = 61/32
+    // expect(toBars([c1, e2, c4, e8, c16, e32], ts)).toEqual([
+    //   { ts, events: [c4, c16, c32] }, // c1
+    //   { ts, events: [c4, c16, c32] },
+    //   { ts, events: [c4, c16, e32] }, // e2
+    //   { ts, events: [e4, e16, e32] },
+    //   { ts, events: [e8, c8, c16, c32] }, // c4
+    //   { ts, events: [c32, e8, c16, e32, p16, p32] },
+    // ]);
   });
 });

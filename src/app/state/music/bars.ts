@@ -18,6 +18,45 @@ export type Bar = {
 };
 
 /**
+ * Create an appropriate amount of bars
+ * from an array of events and a time signature. \
+ * If the last bar is incomplete, it will be filled with pauses.
+ */
+export function toBars(events: MusicalEvent[], ts: TimeSignature): Bar[] {
+  const chunkSize: number = tsTo32nds(ts).length;
+  if (events.length === 0) {
+    const events = fillChunk([], chunkSize);
+    return [{ ts, events }];
+  }
+
+  const createBar = (events: MusicalEvent[]): Bar => ({ ts, events });
+
+  const event32nds: number = lengthIn32nds(events.map((e) => e.duration));
+  const quotient = Math.floor(event32nds / chunkSize);
+  const remainder = event32nds % chunkSize;
+
+  if (remainder === 0) {
+    const chunkSizes: number[] = Array(quotient).fill(chunkSize);
+    const chunks = chunk(events, chunkSizes);
+    return chunks.map(createBar);
+  }
+
+  // Remainder !== 0
+  const chunkSizes: number[] = [...Array(quotient).fill(chunkSize), remainder];
+  const chunks = chunk(events, chunkSizes);
+  const n = chunks.length;
+  const c: MusicalEvent[] = chunks[n - 1];
+  const lastChunk = fillChunk(c, remainder);
+  const firstChunks = chunks.slice(0, n - 1);
+  if (firstChunks.length === 0) {
+    const ch = fillChunk(chunks[0], chunkSize);
+    return [createBar(ch)];
+  }
+  
+  return [...firstChunks, lastChunk].map(createBar);
+}
+
+/**
  * Divide an array of events into chunks with the given sizes.
  */
 export function chunk(

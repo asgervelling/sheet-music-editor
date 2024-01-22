@@ -107,6 +107,7 @@ export function incrementDuration(a: Duration): Duration {
 export function split(durations: Duration[], length: Duration[]): Duration[][] {
   const _32nds = (ds: Duration[]) => ds.flatMap(expand);
   const [fst, snd] = split32nds(_32nds(durations), _32nds(length));
+  console.log(`split([${durations}], [${length}]) = [[${simplify(fst)}], [${simplify(snd)}]]`);
   return [simplify(fst), simplify(snd)];
 }
 
