@@ -10,7 +10,11 @@ export function repeat<T>(x: T, n: number): T[] {
 }
 
 export function note(notes: Note[], duration: Duration): MusicalEvent {
-  return { notes, duration };
+  return { notes, duration, tiedToNext: false };
+}
+
+export function tiedToNext(e: MusicalEvent): MusicalEvent {
+  return { ...e, tiedToNext: true };
 }
 
 export const c = (d: Duration) => note([Note.C], d);
@@ -41,7 +45,8 @@ export const _32nds = (n: number): Duration.ThirtySecond[] =>
   repeat(D.ThirtySecond, n);
 
 export function fmtEvent(e: MusicalEvent) {
-  return `([${e.notes.join(", ")}], ${e.duration})`;
+  const tiedStatus = e.tiedToNext ? "t" : "";
+  return `([${e.notes.join(", ")}], ${e.duration}, ${tiedStatus})`;
 }
 
 export function fmtChunk(c: MusicalEvent[]) {
