@@ -1,6 +1,6 @@
-import { Duration, expand } from "./durations";
+import { Duration, expand, simplify } from "./durations";
 import { head, tail } from "./lists";
-import { fmtChunk, fmtEvent } from "./test_helpers";
+import { fmtChunk, fmtChunks, fmtEvent } from "./test_helpers";
 
 export enum Note {
   C = "C",
@@ -31,6 +31,13 @@ export type MusicalEvent = {
   duration: Duration;
   tiedToNext: boolean;
 };
+
+export function chunk(
+  events: MusicalEvent[],
+  chunkSizes: number[]
+): MusicalEvent[][] {
+  return simplifyChunks(chunkEvents(events, chunkSizes));
+}
 
 /**
  * Divide `events` into `chunkSizes.length` chunks,
@@ -110,6 +117,35 @@ export function expandTo32nds(e: MusicalEvent): MusicalEvent[] {
   return [...tied, last];
 }
 
+export function simplifyChunks(chunks: MusicalEvent[][]): MusicalEvent[][] {
+  let newChunks: MusicalEvent[][] = [];
+  for (const chunk of chunks) {
+    newChunks.push(simplifyEvents(chunk));
+  }
+  return newChunks;
+}
+
+function simplifyEvents(events: MusicalEvent[]): MusicalEvent[] {
+  if (events.length === 0) {
+    return [];
+  }
+
+  const groups = findEventGroups(events);
+  let simplifiedGroups: MusicalEvent[][] = [];
+  for (const g of groups) {
+    const durations = g.map((e) => e.duration);
+    const first: MusicalEvent = head(g);
+    simplifiedGroups.push(
+      simplify(durations).map((d) => ({
+        notes: first.notes,
+        duration: d,
+        tiedToNext: first.tiedToNext,
+      }))
+    );
+  }
+  return simplifiedGroups.map(untieLast).flat();
+}
+
 /**
  * Find groups of events that have been split up but belong together. \
  * An event group is either
@@ -127,13 +163,25 @@ export function findEventGroups(events: MusicalEvent[]): MusicalEvent[][] {
     return [];
   }
 
-  const [groupEvents, remainingEvents] = [events.slice(0, n), events.slice(n)];
-
-  const firstInGroup = groupEvents.slice(0, -1);
-  const lastInGroup = untie(groupEvents[groupEvents.length - 1]);
-  const group = [...firstInGroup, lastInGroup];
-
+  const [group, remainingEvents] = [
+    untieLast(events.slice(0, n)),
+    events.slice(n),
+  ];
   return [group, ...findEventGroups(remainingEvents)];
+}
+
+/**
+ * Return `events` where the last event has
+ * `tiedToNext: false`.
+ */
+function untieLast(events: MusicalEvent[]): MusicalEvent[] {
+  const n = events.length;
+  if (n === 0) {
+    return [];
+  }
+  const firstInGroup = events.slice(0, -1);
+  const lastInGroup = untie(events[n - 1]);
+  return [...firstInGroup, lastInGroup];
 }
 
 function untie(e: MusicalEvent): MusicalEvent {

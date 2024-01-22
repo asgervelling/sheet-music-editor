@@ -1,6 +1,12 @@
 import { describe, it, expect } from "@jest/globals";
 
-import { chunkEvents, expandTo32nds, findEventGroups, firstGroupLength } from "./events";
+import {
+  chunkEvents,
+  expandTo32nds,
+  findEventGroups,
+  firstGroupLength,
+  simplifyChunks,
+} from "./events";
 import {
   repeat,
   c1,
@@ -20,7 +26,10 @@ import {
   fmtChunks,
 } from "./test_helpers";
 
+const c1t = tiedToNext(c1);
+const c2t = tiedToNext(c2);
 const c4t = tiedToNext(c4);
+const c8t = tiedToNext(c8);
 const c16t = tiedToNext(c16);
 const c32t = tiedToNext(c32);
 const e2t = tiedToNext(e2);
@@ -182,5 +191,22 @@ describe("findEventGroups", () => {
 
   it("should recognize tied events, as a single group with an untied event at the end", () => {
     expect(findEventGroups([c32t, c32t, c32t])).toEqual([[c32t, c32t, c32]]);
-  });  
+  });
+});
+
+describe("simplifyChunks", () => {
+  it("should simplify a single chunk", () => {
+    expect(simplifyChunks([[c32t, c32t, c32]])).toEqual([[c16t, c32]]);
+  });
+
+  it("should simplify a single chunk of events with different durations", () => {
+    expect(simplifyChunks([[c8t, c8t, c4t, c32]])).toEqual([[c2t, c32]]);
+  });
+
+  it("should simplify multiple chunks", () => {
+    console.log(fmtChunks(simplifyChunks([[c8, c8t, c1], [], [e32, e32, c32t, c32t, c16t, e16]])))
+    expect(
+      simplifyChunks([[c8, c8t, c8t, c1], [e32, e32, c32t, c32t, c16t, e16]])
+    ).toEqual([[c8, c1t, c4], [e32, e32, c8, e16]]);
+  });
 });
