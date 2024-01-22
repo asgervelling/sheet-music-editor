@@ -58,6 +58,7 @@ describe("Reducer Tests", () => {
         {
           notes: [Note.C],
           duration: Duration.Quarter,
+          tiedToNext: false,
         },
       ],
       undoStack: [],
@@ -73,10 +74,12 @@ describe("Reducer Tests", () => {
       {
         notes: [Note.C],
         duration: Duration.Quarter,
+        tiedToNext: false,
       },
       {
         notes: [Note.Db, Note.F, Note.Ab],
         duration: Duration.Quarter,
+        tiedToNext: false,
       },
     ]);
   });
@@ -106,6 +109,7 @@ describe("Reducer Tests", () => {
       {
         notes: [Note.Db],
         duration: Duration.Quarter,
+        tiedToNext: false,
       },
     ];
     const s0: State = {
@@ -123,7 +127,6 @@ describe("Reducer Tests", () => {
       { type: Message.KEY_PRESS, payload: { key: "z" } },
     ];
     const s2 = keyCombination.reduce(reducer, s0);
-    // expect(s2.history).toEqual([[{ name: Note.Db, length: Duration.Quarter }]]);
     expect(s2.history).toEqual([]);
     expect(s2.undoStack).toEqual(initialHistory);
 
@@ -143,6 +146,7 @@ describe("Reducer Tests", () => {
       {
         notes: [Note.Db],
         duration: Duration.Quarter,
+        tiedToNext: false,
       },
     ];
     const s0: State = {

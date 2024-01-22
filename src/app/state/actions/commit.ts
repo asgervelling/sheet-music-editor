@@ -21,7 +21,7 @@ export default function commit(state: State): State {
  */
 function createMusicalEvent(state: State): MusicalEvent {
   const noNotes = state.activeNotes.length === 0;
-  if (noNotes) return { notes: [Note.PAUSE], duration: state.currDuration };
+  if (noNotes) return { notes: [Note.PAUSE], duration: state.currDuration, tiedToNext: false };
   else return createNotesFromNames(state);
 }
 
@@ -38,5 +38,6 @@ function createNotesFromNames(state: State): MusicalEvent {
   return {
     notes: [...state.activeNotes].sort(compareFn),
     duration: state.currDuration,
+    tiedToNext: false,
   };
 }

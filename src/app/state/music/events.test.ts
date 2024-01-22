@@ -206,7 +206,7 @@ describe("simplifyChunks", () => {
   it("should simplify multiple chunks", () => {
     console.log(fmtChunks(simplifyChunks([[c8, c8t, c1], [], [e32, e32, c32t, c32t, c16t, e16]])))
     expect(
-      simplifyChunks([[c8, c8t, c8t, c1], [e32, e32, c32t, c32t, c16t, e16]])
-    ).toEqual([[c8, c1t, c4], [e32, e32, c8, e16]]);
+      simplifyChunks([[c8, c8t, c8t, c1], [], [e32, e32, c32t, c32t, c16t, e16]])
+    ).toEqual([[c8, c1t, c4], [], [e32, e32, c8, e16]]);
   });
 });
