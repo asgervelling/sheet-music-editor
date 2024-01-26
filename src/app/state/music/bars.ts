@@ -1,6 +1,6 @@
 import { Duration, lengthIn32nds, simplify, split } from "./durations";
 import { MusicalEvent, Note } from "./events";
-import { head, tail } from "./lists";
+import { head, tail } from "./arrays";
 import { TimeSignature, tsTo32nds } from "./time_signatures";
 
 /**

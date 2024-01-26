@@ -30,10 +30,6 @@ export function expand(d: Duration): Duration.ThirtySecond[] {
  * to the shortest possible array of durations.
  */
 export function simplify(durations_: Duration[]): Duration[] {
-  if (durations_.length < 2) {
-    // A single duration can't be simplified
-    return durations_;
-  }
 
   /**
    * Simplify an array of durations
@@ -107,7 +103,6 @@ export function incrementDuration(a: Duration): Duration {
 export function split(durations: Duration[], length: Duration[]): Duration[][] {
   const _32nds = (ds: Duration[]) => ds.flatMap(expand);
   const [fst, snd] = split32nds(_32nds(durations), _32nds(length));
-  console.log(`split([${durations}], [${length}]) = [[${simplify(fst)}], [${simplify(snd)}]]`);
   return [simplify(fst), simplify(snd)];
 }
 

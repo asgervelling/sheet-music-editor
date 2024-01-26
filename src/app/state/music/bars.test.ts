@@ -77,7 +77,6 @@ describe("repeat", () => {
 //   });
 
 //   it("should handle a weird time signature", () => {
-//     // console.log(fmtChunks(chunk([c1], [11, 11, 10])));
 //     expect(chunk([c1], [11, 11, 10])).toEqual([
 //       [c4, c16, c32],
 //       [c4, c16, c32],
@@ -182,7 +181,6 @@ describe("repeat", () => {
 
 //   it("should handle a weird time signature", () => {
 //     // const ts: TimeSignature = [11, Duration.ThirtySecond];
-//     // console.log(fmtBars(toBars([c1], ts)));
 //     // expect(toBars([c1], ts)).toEqual([
 //     //   { ts, events: [c4, c16, c32] },
 //     //   { ts, events: [c4, c16, c32] },

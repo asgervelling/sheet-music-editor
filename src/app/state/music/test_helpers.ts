@@ -21,6 +21,7 @@ export const c = (d: Duration) => note([Note.C], d);
 export const e = (d: Duration) => note([Note.E], d);
 export const D = Duration;
 
+export const e1 = e(D.Whole);
 export const e2 = e(D.Half);
 export const e4 = e(D.Quarter);
 export const e8 = e(D.Eighth);

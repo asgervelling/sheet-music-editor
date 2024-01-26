@@ -30,9 +30,9 @@ function createMusicalEvent(state: State): MusicalEvent {
  */
 function createNotesFromNames(state: State): MusicalEvent {
   const compareFn = (a: Note, b: Note) => {
-    const durations = Object.values(Note);
-    const aIndex = durations.indexOf(a);
-    const bIndex = durations.indexOf(b);
+    const notes = Object.values(Note);
+    const aIndex = notes.indexOf(a);
+    const bIndex = notes.indexOf(b);
     return aIndex - bIndex;
   }
   return {

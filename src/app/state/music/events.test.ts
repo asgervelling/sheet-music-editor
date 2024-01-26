@@ -5,7 +5,9 @@ import {
   expandTo32nds,
   findEventGroups,
   firstGroupLength,
-  simplifyChunks,
+  groupTiedEvents,
+  simplify,
+  simplifyPair,
 } from "./events";
 import {
   repeat,
@@ -18,6 +20,7 @@ import {
   tiedToNext,
   fmtChunk,
   fmtEvent,
+  e1,
   e2,
   e4,
   e16,
@@ -32,7 +35,11 @@ const c4t = tiedToNext(c4);
 const c8t = tiedToNext(c8);
 const c16t = tiedToNext(c16);
 const c32t = tiedToNext(c32);
+const e1t = tiedToNext(e1);
 const e2t = tiedToNext(e2);
+const e4t = tiedToNext(e4);
+const e8t = tiedToNext(e8);
+const e16t = tiedToNext(e16);
 const e32t = tiedToNext(e32);
 
 describe("expandTo32nds", () => {
@@ -192,21 +199,174 @@ describe("findEventGroups", () => {
   it("should recognize tied events, as a single group with an untied event at the end", () => {
     expect(findEventGroups([c32t, c32t, c32t])).toEqual([[c32t, c32t, c32]]);
   });
+
+  it("should find two groups", () => {
+    expect(findEventGroups([e2, c2])).toEqual([[e2], [c2]]);
+  });
 });
 
-describe("simplifyChunks", () => {
-  it("should simplify a single chunk", () => {
-    expect(simplifyChunks([[c32t, c32t, c32]])).toEqual([[c16t, c32]]);
+// describe("simplifyChunks", () => {
+//   it("should simplify a single chunk", () => {
+//     expect(simplifyChunks([[c32t, c32t, c32]])).toEqual([[c16t, c32]]);
+//   });
+
+//   it("should simplify a single chunk of events with different durations", () => {
+//     expect(simplifyChunks([[c8t, c8t, c4t, c32]])).toEqual([[c2t, c32]]);
+//   });
+
+//   it("should simplify multiple chunks", () => {
+//     expect(
+//       simplifyChunks([[c8, c8t, c8t, c1], [], [e32, e32, c32t, c32t, c16t, e16]])
+//     ).toEqual([[c8, c1t, c4], [], [e32, e32, c8, e16]]);
+//   });
+
+//   it("should simplify across chunk borders", () => {
+//     expect(simplifyChunks([[c2], [e2]]))
+//   })
+// });
+
+// describe("chunk", () => {
+//   it("should divide one event into one chunk", () => {
+//     expect(chunk([e2], [16])).toEqual([[e2]]);
+//   });
+
+//   it("should divide two events into two chunks", () => {
+//     expect(chunk([e2, c2], [16, 16])).toEqual([[e2], [c2]]);
+//   });
+
+//   it("should divide two events into three chunks", () => {
+//     // 32, 16, 8, 4, 2,  1
+//     // 1,  2,  4, 8, 16, 32
+//     expect(chunk([e2, c2], [10, 12, 10])).toEqual([
+//       [e4t, e16t],
+//       [e8t, e16, c8t, c16t],
+//       [c4t, c16],
+//     ]);
+//   });
+// })
+
+describe("groupTiedEvents", () => {
+  it("should create one group from a single untied event", () => {
+    expect(groupTiedEvents([c1])).toEqual([[c1]]);
   });
 
-  it("should simplify a single chunk of events with different durations", () => {
-    expect(simplifyChunks([[c8t, c8t, c4t, c32]])).toEqual([[c2t, c32]]);
+  it("should create one group from a single tied event", () => {
+    expect(groupTiedEvents([c1t])).toEqual([[c1t]]);
   });
 
-  it("should simplify multiple chunks", () => {
-    console.log(fmtChunks(simplifyChunks([[c8, c8t, c1], [], [e32, e32, c32t, c32t, c16t, e16]])))
+  it("should create one group from many tied events", () => {
+    expect(groupTiedEvents(repeat(c32t, 15))).toEqual([repeat(c32t, 15)]);
+    expect(groupTiedEvents(repeat(c32t, 154))).toEqual([repeat(c32t, 154)]);
+  });
+
+  it("should create two groups from two untied events", () => {
+    expect(groupTiedEvents([c2, c4])).toEqual([[c2], [c4]]);
+  });
+
+  it("should create two groups from two tied events with different notes", () => {
+    expect(groupTiedEvents([c2t, e4])).toEqual([[c2t], [e4]]);
+  });
+
+  it("should create one groups from two tied events with the same notes", () => {
+    expect(groupTiedEvents([c2t, c4])).toEqual([[c2t, c4]]);
+  });
+
+  it("should create a group where the last event is tied", () => {
+    expect(groupTiedEvents([c2t, c4t])).toEqual([[c2t, c4t]]);
+  });
+
+  it("should create three groups from a tied, an untied and a tied event with alternating notes", () => {
+    expect(groupTiedEvents([e4t, c4, e4t])).toEqual([[e4t], [c4], [e4t]]);
+  });
+
+  it("should create many groups", () => {
     expect(
-      simplifyChunks([[c8, c8t, c8t, c1], [], [e32, e32, c32t, c32t, c16t, e16]])
-    ).toEqual([[c8, c1t, c4], [], [e32, e32, c8, e16]]);
+      groupTiedEvents([c32t, c1t, e1t, e1t, e4, e16t, c16, c32t, c32t])
+    ).toEqual([[c32t, c1t], [e1t, e1t, e4], [e16t], [c16], [c32t, c32t]]);
   });
+
+  it("should create zero groups from zero events", () => {
+    expect(groupTiedEvents([])).toEqual([]);
+  });
+
+  it("should create one group from two whole notes", () => {
+    expect(groupTiedEvents([c1t, c1])).toEqual([[c1t, c1]]);
+  });
+});
+
+describe("simplifyPair", () => {
+  it("should simplify two 32nds to a 16th", () => {
+    expect(simplifyPair(c32, c32)).toEqual([c16]);
+  });
+
+  it("should simplify two 16ths to an 8th", () => {
+    expect(simplifyPair(c16, c16)).toEqual([c8]);
+  });
+
+  it("should simplify two 8ths to a quarter", () => {
+    expect(simplifyPair(c8, c8)).toEqual([c4]);
+  });
+
+  it("should simplify two quarters to a half", () => {
+    expect(simplifyPair(c4, c4)).toEqual([c2]);
+  });
+
+  it("should simplify two halves to a whole", () => {
+    expect(simplifyPair(c2, c2)).toEqual([c1]);
+  });
+
+  it("should not simplify two whole notes", () => {
+    expect(simplifyPair(c1, c1)).toEqual([c1, c1]);
+  });
+
+  it("should be tied or not tied based on the second event", () => {
+    expect(simplifyPair(c2t, c2)).toEqual([c1]);
+    expect(simplifyPair(c2, c2t)).toEqual([c1t]);
+    expect(simplifyPair(c2t, c2t)).toEqual([c1t]);
+  });
+});
+
+describe("simplify", () => {
+  it("should not simplify whole notes", () => {
+    expect(simplify([c1t, c1])).toEqual([c1t, c1]);
+  });
+
+  it("should simplify two 32nd notes", () => {
+    expect(simplify([c32t, c32])).toEqual([c16]);
+  });
+
+  it("should simplify three tied 32nd notes", () => {
+    expect(simplify([c32t, c32t, c32t])).toEqual([c16t, c32t]);
+  });
+
+  it("should simplify four tied 32nd notes", () => {
+    expect(simplify([c32t, c32t, c32t, c32t])).toEqual([c8t]);
+  });
+
+  it("should simplify a pair of each duration", () => {
+    expect(
+      simplify([c32t, c32, c16t, c16, c8t, c8, c4t, c4, c2t, c2, c1t, c1t])
+    ).toEqual([c16, c8, c4, c2, c1, c1t, c1t]);
+    expect(
+      simplify([c32t, c32t, c16t, c16t, c8t, c8t, c4t, c4t, c2t, c2t, c1t, c1t])
+    ).toEqual([c1t, c1t, c1t, c2t, c4t, c8t, c16t]);
+  });
+
+  it("should simplify tied events to the same, no matter the order", () => {
+    expect(simplify([c4t, c8t, c8t, c8t])).toEqual([c2t, c8t]);
+    expect(simplify([c8t, c4t, c8t, c8t])).toEqual([c2t, c8t]);
+    expect(simplify([c8t, c8t, c4t, c8t])).toEqual([c2t, c8t]);
+    expect(simplify([c8t, c8t, c8t, c4t])).toEqual([c2t, c8t]);
+  })
+
+  it("should simplify many tied events in jumbled order", () => {
+    console.log(fmtChunk(simplify([c8t, c1t, c2t, c32t, c16t, c1t, c8t, c4t, c32t, c4t, c2t, c16t])))
+    expect(
+      simplify([c8t, c1t, c2t, c32t, c16t, c1t, c8t, c4t, c32t, c4t, c2t, c16t])
+    ).toEqual([c1t, c1t, c1t, c2t, c4t, c8t, c16t]);
+  })
+
+  it("should simplify many events to a single event", () => {
+    expect(simplify([c32t, c32t, c16t, c8t, c4t, c2t])).toEqual([c1t]);
+  })
 });

@@ -1,5 +1,5 @@
-import { Duration, expand, simplify } from "./durations";
-import { head, tail } from "./lists";
+import { Duration, expand, incrementDuration } from "./durations";
+import { arrayEquals, head, tail } from "./arrays";
 import { fmtChunk, fmtChunks, fmtEvent } from "./test_helpers";
 
 export enum Note {
@@ -32,12 +32,12 @@ export type MusicalEvent = {
   tiedToNext: boolean;
 };
 
-export function chunk(
-  events: MusicalEvent[],
-  chunkSizes: number[]
-): MusicalEvent[][] {
-  return simplifyChunks(chunkEvents(events, chunkSizes));
-}
+// export function chunk(
+//   events: MusicalEvent[],
+//   chunkSizes: number[]
+// ): MusicalEvent[][] {
+//   return simplifyChunks(chunkEvents(events, chunkSizes));
+// }
 
 /**
  * Divide `events` into `chunkSizes.length` chunks,
@@ -48,7 +48,6 @@ export function chunkEvents(
   chunkSizes: number[]
 ): MusicalEvent[][] {
   if (events.length === 0) {
-    // Finished
     return [];
   }
 
@@ -117,34 +116,142 @@ export function expandTo32nds(e: MusicalEvent): MusicalEvent[] {
   return [...tied, last];
 }
 
-export function simplifyChunks(chunks: MusicalEvent[][]): MusicalEvent[][] {
-  let newChunks: MusicalEvent[][] = [];
-  for (const chunk of chunks) {
-    newChunks.push(simplifyEvents(chunk));
-  }
-  return newChunks;
+// export function simplifyChunks(chunks: MusicalEvent[][]): MusicalEvent[][] {
+//   let newChunks: MusicalEvent[][] = [];
+//   for (const chunk of chunks) {
+//     newChunks.push(simplifyEvents(chunk));
+//   }
+//   return newChunks;
+// }
+
+/**
+ * True if the two events are equal.
+ */
+function eq(a: MusicalEvent, b: MusicalEvent): boolean {
+  return (
+    a.notes.every((note, i) => note === b.notes[i]) &&
+    a.duration === b.duration &&
+    a.tiedToNext === b.tiedToNext
+  );
 }
 
-function simplifyEvents(events: MusicalEvent[]): MusicalEvent[] {
-  if (events.length === 0) {
+/**
+ * Simplify an array of events to have
+ * the the longest possible durations,
+ * by looking at events with shorter durations
+ * that are tied together.
+ * Music theory:
+ * https://en.wikipedia.org/wiki/Tie_(music)
+ */
+export function simplify(events_: MusicalEvent[]): MusicalEvent[] {
+
+  function simplifyGroup(group: MusicalEvent[], d: Duration): MusicalEvent[] {
+    if (group.length < 2 || d === Duration.Whole) {
+      return group;
+    }
+
+    const [a, ...rest] = group;
+    if (!rest.every((e) => arrayEquals(e.notes, a.notes))) {
+      throw new Error("A group of tied events must have the same notes");
+    }
+
+    // Find the index of an event with the same duration, if any
+    const i = rest.findIndex((e) => e.duration === a.duration);
+    if (i === -1) {
+      const restSimplified = simplifyGroup(rest, d);
+      return simplifyGroup([a, ...restSimplified], incrementDuration(d));
+    }
+
+    // Upgrade the two events with same duration to a greater duration
+    const newGroup = [
+      ...rest.slice(0, i),
+      ...simplifyPair(a, rest[i]),
+      ...rest.slice(i + 1),
+    ];
+    if (newGroup.length !== group.length) {
+      return simplifyGroup(newGroup, d);
+    }
+    return simplifyGroup(newGroup, incrementDuration(d));
+  }
+
+  const groups = groupTiedEvents(events_).map((g) => g.sort((a, b) => {
+    const durations = Object.values(Duration);
+    const aIndex = durations.indexOf(a.duration);
+    const bIndex = durations.indexOf(b.duration);
+    return bIndex - aIndex;
+  }))
+  return groups.flatMap((e) => simplifyGroup(e, Duration.ThirtySecond).sort((a, b) => {
+    const durations = Object.values(Duration);
+    const aIndex = durations.indexOf(a.duration);
+    const bIndex = durations.indexOf(b.duration);
+    return aIndex - bIndex;
+  }));
+}
+
+/**
+ * Create a 2d array, where each array
+ * contains events that are tied together.
+ */
+export function groupTiedEvents(events_: MusicalEvent[]): MusicalEvent[][] {
+  function firstGroup(events: MusicalEvent[]): MusicalEvent[] {
+    const n = events.length;
+    if (n === 0) {
+      return [];
+    }
+    if (n === 1) {
+      return [...events];
+    }
+    const [a, b, ...rest] = events;
+    if (a.tiedToNext && arrayEquals(a.notes, b.notes)) {
+      return [a, ...firstGroup([b, ...rest])];
+    }
+    return [a];
+  }
+
+  if (events_.length === 0) {
     return [];
   }
-
-  const groups = findEventGroups(events);
-  let simplifiedGroups: MusicalEvent[][] = [];
-  for (const g of groups) {
-    const durations = g.map((e) => e.duration);
-    const first: MusicalEvent = head(g);
-    simplifiedGroups.push(
-      simplify(durations).map((d) => ({
-        notes: first.notes,
-        duration: d,
-        tiedToNext: first.tiedToNext,
-      }))
-    );
-  }
-  return simplifiedGroups.map(untieLast).flat();
+  const group = firstGroup(events_);
+  const rest = events_.slice(group.length);
+  return [group, ...groupTiedEvents(rest)].filter((g) => g.length > 0);
 }
+
+export function simplifyPair(a: MusicalEvent, b: MusicalEvent): MusicalEvent[] {
+  if (!arrayEquals(a.notes, b.notes)) {
+    throw new Error("simplifyPair assumes that a and b have the same notes");
+  }
+
+  const lowToHigh: Duration[] = Object.values(Duration).reverse();
+  const i = lowToHigh.indexOf(a.duration);
+  if (a.duration !== Duration.Whole) {
+    // Simplify pair to a greater duration
+    return [{ ...b, duration: lowToHigh[i + 1] }]
+  } else {
+    // Pair cannot be simplified as they are both whole notes
+    return [a, b];
+  }
+}
+
+// function simplifyEvents(events: MusicalEvent[]): MusicalEvent[] {
+//   if (events.length === 0) {
+//     return [];
+//   }
+
+//   const groups = findEventGroups(events);
+//   let simplifiedGroups: MusicalEvent[][] = [];
+//   for (const g of groups) {
+//     const durations = g.map((e) => e.duration);
+//     const first: MusicalEvent = head(g);
+//     simplifiedGroups.push(
+//       simplify(durations).map((d) => ({
+//         notes: first.notes,
+//         duration: d,
+//         tiedToNext: first.tiedToNext,
+//       }))
+//     );
+//   }
+//   return simplifiedGroups.map(untieLast).flat();
+// }
 
 /**
  * Find groups of events that have been split up but belong together. \
