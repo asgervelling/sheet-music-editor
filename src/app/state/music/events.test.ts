@@ -4,8 +4,6 @@ import {
   chunk,
   chunkEvents,
   expandTo32nds,
-  findEventGroups,
-  firstGroupLength,
   groupTiedEvents,
   simplify,
   simplifyPair,
@@ -157,74 +155,6 @@ describe("chunkEvents", () => {
   });
 });
 
-describe("firstGroupLength", () => {
-  it("should recognize a group of tied events", () => {
-    expect(firstGroupLength([e32t, e32t, e32t, e32])).toEqual(4);
-  });
-
-  it("should return 1 for an event followed by an event with different notes", () => {
-    expect(firstGroupLength([c32, e32])).toEqual(1);
-  });
-
-  it("should return 1 for a tied event followed by an event with different notes", () => {
-    expect(firstGroupLength([c32t, e32])).toEqual(1);
-  });
-
-  it("should return 1 for a tied event followed by a tied event with different notes", () => {
-    expect(firstGroupLength([c32t, e32t])).toEqual(1);
-  });
-
-  it("should recognize different groups with the same notes", () => {
-    expect(firstGroupLength([c16, c16, c4t, c4, c4])).toEqual(1);
-    expect(firstGroupLength([c16, c4t, c4, c4])).toEqual(1);
-    expect(firstGroupLength([c4t, c4, c4])).toEqual(2);
-    expect(firstGroupLength([c4, c4])).toEqual(1);
-    expect(firstGroupLength([c4])).toEqual(1);
-  });
-
-  it("should recognize a group of events with different lengths", () => {
-    expect(firstGroupLength([c32t, c4t, c16])).toEqual(3);
-  });
-
-  it("should recognize a group of events with different lengths, then a tied event with different notes", () => {
-    expect(firstGroupLength([c32t, c4t, e2t])).toEqual(2);
-  });
-});
-
-describe("findEventGroups", () => {
-  it("should group a single untied event as a single group", () => {
-    expect(findEventGroups([c32])).toEqual([[c32]]);
-  });
-
-  it("should group a single tied event as a single group consisting of an untied event", () => {
-    expect(findEventGroups([c32t])).toEqual([[c32]]);
-  });
-
-  it("should not find groups in an empty array", () => {
-    expect(findEventGroups([])).toEqual([]);
-  });
-
-  it("should recognize tied events and an untied event", () => {
-    expect(findEventGroups([c32t, c4t, c16])).toEqual([[c32t, c4t, c16]]);
-  });
-
-  it("should recognize untied events with same notes as different groups", () => {
-    expect(findEventGroups([c32, c4, c16])).toEqual([[c32], [c4], [c16]]);
-  });
-
-  it("should recognize tied events, all with different notes, as different groups", () => {
-    expect(findEventGroups([c32t, e2t, c16t])).toEqual([[c32], [e2], [c16]]);
-  });
-
-  it("should recognize tied events, as a single group with an untied event at the end", () => {
-    expect(findEventGroups([c32t, c32t, c32t])).toEqual([[c32t, c32t, c32]]);
-  });
-
-  it("should find two groups", () => {
-    expect(findEventGroups([e2, c2])).toEqual([[e2], [c2]]);
-  });
-});
-
 describe("chunk", () => {
   it("should divide one event into one chunk", () => {
     expect(chunk([e2], [16])).toEqual([[e2]]);
@@ -238,11 +168,52 @@ describe("chunk", () => {
   });
 
   it("should divide two events into three chunks", () => {
-    // 32, 16, 8, 4, 2,  1
-    // 1,  2,  4, 8, 16, 32
     expect(chunk([e2, c2], [10, 12, 10])).toEqual([
       [e4t, e16t],
       [e8t, e16, c8t, c16t],
+      [c4t, c16],
+    ]);
+  });
+
+  it("should divide events into weirdly sized chunks", () => {
+    expect(chunk([e2, c2], [7, 12, 13])).toEqual([
+      [e8t, e16t, e32t],
+      [e4t, e32, c16t, c32t],
+      [c4t, c8t, c32],
+    ]);
+  });
+
+  it("should divide three events into one chunk", () => {
+    expect(chunk([e4, c4, e4], [24])).toEqual([[e4, c4, e4]]);
+  });
+
+  it("should divide three events into two chunks", () => {
+    expect(chunk([e4, c4, e4], [11, 13])).toEqual([
+      // Three quarter notes, E, C and E,
+      // split into two measures of 11/32 and 13/32
+      [e4, c16t, c32t],
+      [c8t, c32, e4],
+    ]);
+  });
+
+  it("should throw an error when the events don't match the chunks", () => {
+    expect(() => chunk([c4], [1])).toThrow();
+    expect(() => chunk([c4], [])).toThrow();
+  });
+
+  it("should do some uneven splits", () => {
+    expect(chunk([e32, c2], [2, 3, 5, 7])).toEqual([
+      [e32, c32t],
+      [c16t, c32t],
+      [c8t, c32t],
+      [c8t, c16t, c32],
+    ]);
+  });
+
+  it("more weird splits", () => {
+    expect(chunk([c1], [11, 11, 10])).toEqual([
+      [c4t, c16t, c32t],
+      [c4t, c16t, c32t],
       [c4t, c16],
     ]);
   });
