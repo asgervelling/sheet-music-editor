@@ -1,6 +1,5 @@
-import { Duration, expand, incrementDuration } from "./durations";
+import { Duration, expandDuration, incrementDuration } from "./durations";
 import { arrayEquals, first, head, last, tail } from "./arrays";
-import { fmtChunk, fmtChunks, fmtEvent, tiedToNext } from "./test_helpers";
 
 export enum Note {
   C = "C",
@@ -32,21 +31,16 @@ export type MusicalEvent = {
   tiedToNext: boolean;
 };
 
+/**
+ * Divide `events` into `chunkSizes.length` chunks,
+ * where each chunk has a total duration of the same length
+ * as `chunkSize[i]` 32nd notes.
+ */
 export function chunk(
   events: MusicalEvent[],
   chunkSizes: number[]
 ): MusicalEvent[][] {
-  return chunkEvents(events, chunkSizes).map(simplify);
-}
 
-/**
- * Divide `events` into `chunkSizes.length` chunks,
- * where the n'th chunk has a total of chunkSizes[n] 32nd notes.
- */
-export function chunkEvents(
-  events: MusicalEvent[],
-  chunkSizes: number[]
-): MusicalEvent[][] {
   function chunk32nds(
     events: MusicalEvent[],
     chunkSizes: number[]
@@ -69,7 +63,7 @@ export function chunkEvents(
     );
   }
 
-  return chunk32nds(expandedEvents, chunkSizes);
+  return chunk32nds(expandedEvents, chunkSizes).map(simplify);
 }
 
 /**
@@ -79,28 +73,13 @@ export function chunkEvents(
  * would become eight events with notes C and E and 32nd duration.
  */
 export function expandTo32nds(e: MusicalEvent): MusicalEvent[] {
-  if (e.duration === Duration.ThirtySecond) {
-    // Can't be expanded further
-    return [{ ...e, tiedToNext: e.tiedToNext || false }];
-  }
-
-  const toEvent = (d: Duration): MusicalEvent => ({
+  const _32nds = expandDuration(e.duration);
+  const tied: MusicalEvent[] = first(_32nds).map((_32nd) => ({
     notes: e.notes,
-    duration: d,
-    tiedToNext: false,
-  });
-  
-  const markTied = (e: MusicalEvent): MusicalEvent => ({
-    ...e,
+    duration: _32nd,
     tiedToNext: true,
-  });
-
-  const _32nds = expand(e.duration);
-  const tied: MusicalEvent[] = first(_32nds).map(toEvent).map(markTied);
-  const last_: MusicalEvent = {
-    ...toEvent(last(_32nds)),
-    tiedToNext: e.tiedToNext,
-  };
+  }))
+  const last_: MusicalEvent = { ...e, duration: Duration.ThirtySecond };
 
   return [...tied, last_];
 }
@@ -144,32 +123,34 @@ export function simplify(events_: MusicalEvent[]): MusicalEvent[] {
   }
 
   const groups = groupTiedEvents(events_)
-    .map((g) =>
-      [...g].sort((a, b) => {
-        const durations = Object.values(Duration);
-        const aIndex = durations.indexOf(a.duration);
-        const bIndex = durations.indexOf(b.duration);
-        return bIndex - aIndex;
-      })
-    )
+    .map(sortAscending)
     .map((g) => simplifyGroup(g, Duration.ThirtySecond));
 
-  const x = groups
-    .map((g) =>
-      [...g].sort((a, b) => {
-        const durations = Object.values(Duration);
-        const aIndex = durations.indexOf(a.duration);
-        const bIndex = durations.indexOf(b.duration);
-        return aIndex - bIndex;
-      })
-    )
+  return groups
+    .map(sortDecending)
     .map((g, i) => [
       ...first(g).map((e) => ({ ...e, tiedToNext: true })),
       { ...last(g), tiedToNext: last(groups[i]).tiedToNext },
     ])
     .flat();
+}
 
-  return x;
+function sortAscending(events: MusicalEvent[]): MusicalEvent[] {
+  return [...events].sort((a, b) => {
+    const durations = Object.values(Duration);
+    const aIndex = durations.indexOf(a.duration);
+    const bIndex = durations.indexOf(b.duration);
+    return bIndex - aIndex;
+  });
+}
+
+function sortDecending(events: MusicalEvent[]): MusicalEvent[] {
+  return [...events].sort((a, b) => {
+    const durations = Object.values(Duration);
+    const aIndex = durations.indexOf(a.duration);
+    const bIndex = durations.indexOf(b.duration);
+    return aIndex - bIndex;
+  });
 }
 
 /**
@@ -200,6 +181,13 @@ export function groupTiedEvents(events_: MusicalEvent[]): MusicalEvent[][] {
   return [group, ...groupTiedEvents(rest)].filter((g) => g.length > 0);
 }
 
+/**
+ * Simplify a pair of events to have a greater duration,
+ * if a greater duration exists, e.g:
+ * 
+ *   ['8', '8'] -> ['4']
+ *   ['w', 'w'] -> ['w', 'w']
+ */
 export function simplifyPair(a: MusicalEvent, b: MusicalEvent): MusicalEvent[] {
   if (!arrayEquals(a.notes, b.notes)) {
     throw new Error("simplifyPair assumes that a and b have the same notes");

@@ -1,4 +1,4 @@
-import { Duration, expand, incrementDuration } from "./durations";
+import { Duration, expandDuration, incrementDuration } from "./durations";
 
 /**
  * A musical time signature, such as 3/4,
@@ -25,7 +25,7 @@ export function tsTo32nds(ts: TimeSignature): Duration.ThirtySecond[] {
     throw new Error(`Invalid time signature: ${ts}`);
   }
   const [a, b] = ts;
-  const bExpanded = expand(b);
+  const bExpanded = expandDuration(b);
   return Array(a * bExpanded.length).fill(Duration.ThirtySecond);
 }
 
@@ -35,7 +35,7 @@ export function tsTo32nds(ts: TimeSignature): Duration.ThirtySecond[] {
 export function _32ndsToTs(_32nds: Duration.ThirtySecond[]): TimeSignature {
   const n = _32nds.length;
   const b = _32nds[0];
-  const a = n / expand(b).length;
+  const a = n / expandDuration(b).length;
 
   return simplifyTs([a, b]);
 }

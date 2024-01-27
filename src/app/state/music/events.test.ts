@@ -2,7 +2,6 @@ import { describe, it, expect } from "@jest/globals";
 
 import {
   chunk,
-  chunkEvents,
   expandTo32nds,
   groupTiedEvents,
   simplify,
@@ -17,18 +16,13 @@ import {
   c16,
   c32,
   tiedToNext,
-  fmtChunk,
-  fmtEvent,
   e1,
   e2,
   e4,
   e16,
   e8,
   e32,
-  fmtChunks,
 } from "./test_helpers";
-import { Duration } from ".";
-import { last } from "./arrays";
 
 const c1t = tiedToNext(c1);
 const c2t = tiedToNext(c2);
@@ -79,79 +73,6 @@ describe("expandTo32nds", () => {
     expect(expandTo32nds(c4t)).toEqual(repeat(c32t, 8));
     expect(expandTo32nds(c2t)).toEqual(repeat(c32t, 16));
     expect(expandTo32nds(c1t)).toEqual(repeat(c32t, 32));
-  });
-});
-
-describe("chunkEvents", () => {
-  it("should divide one event into one chunk", () => {
-    expect(chunkEvents([e2], [16])).toEqual([[...repeat(e32t, 15), e32]]);
-  });
-
-  it("should divide two events into two chunks", () => {
-    expect(chunkEvents([e2, c2], [16, 16])).toEqual([
-      [...repeat(e32t, 15), e32],
-      [...repeat(c32t, 15), c32],
-    ]);
-  });
-
-  it("should divide two events into three chunks", () => {
-    expect(chunkEvents([e2, c2], [10, 12, 10])).toEqual([
-      [...repeat(e32t, 10)],
-      [...repeat(e32t, 5), e32, ...repeat(c32t, 6)],
-      [...repeat(c32t, 9), c32],
-    ]);
-  });
-
-  it("should divide three events into one chunkEvents", () => {
-    expect(chunkEvents([e4, c4, e4], [24])).toEqual([
-      [
-        ...repeat(e32t, 7),
-        e32,
-        ...repeat(c32t, 7),
-        c32,
-        ...repeat(e32t, 7),
-        e32,
-      ],
-    ]);
-  });
-
-  it("should divide three events into two chunks", () => {
-    expect(chunkEvents([e4, c4, e4], [11, 13])).toEqual([
-      // Three quarter notes, E, C and E,
-      // split into two measures of 11/32 and 13/32
-      [...repeat(e32t, 7), e32, ...repeat(c32t, 3)],
-      [...repeat(c32t, 4), c32, ...repeat(e32t, 7), e32],
-    ]);
-  });
-
-  it("should throw an error when the events don't match the chunks", () => {
-    expect(() => chunkEvents([c4], [1])).toThrow();
-    expect(() => chunkEvents([c4], [])).toThrow();
-  });
-
-  it("should do some uneven splits", () => {
-    expect(chunkEvents([e32, c2], [2, 3, 5, 7])).toEqual([
-      [e32, c32t],
-      repeat(c32t, 3),
-      repeat(c32t, 5),
-      [...repeat(c32t, 6), c32],
-    ]);
-  });
-
-  it("should handle a weird time signature", () => {
-    expect(chunkEvents([c1], [11, 11, 10])).toEqual([
-      repeat(c32t, 11),
-      repeat(c32t, 11),
-      [...repeat(c32t, 9), c32],
-    ]);
-  });
-
-  it("should divide two events into three chunks", () => {
-    expect(chunkEvents([e2, c2], [10, 12, 10])).toEqual([
-      repeat(e32t, 10),
-      [...repeat(e32t, 5), e32, ...repeat(c32t, 6)],
-      [...repeat(c32t, 9), c32],
-    ]);
   });
 });
 

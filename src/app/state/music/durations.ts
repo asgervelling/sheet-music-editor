@@ -14,12 +14,15 @@ export enum Duration {
  * Convert a duration to an array of the shortest
  * duration we have.
  */
-export function expand(d: Duration): Duration.ThirtySecond[] {
+export function expandDuration(d: Duration): Duration.ThirtySecond[] {
   const lowToHigh: Duration[] = Object.values(Duration).reverse();
   const i = lowToHigh.indexOf(d);
 
   if (i > 0) {
-    return [...expand(lowToHigh[i - 1]), ...expand(lowToHigh[i - 1])];
+    return [
+      ...expandDuration(lowToHigh[i - 1]),
+      ...expandDuration(lowToHigh[i - 1]),
+    ];
   } else {
     return [Duration.ThirtySecond];
   }
