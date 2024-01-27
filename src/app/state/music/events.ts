@@ -1,6 +1,6 @@
 import { Duration, expand, incrementDuration } from "./durations";
-import { arrayEquals, head, tail } from "./arrays";
-import { fmtChunk, fmtChunks, fmtEvent } from "./test_helpers";
+import { arrayEquals, first, head, last, tail } from "./arrays";
+import { fmtChunk, fmtChunks, fmtEvent, tiedToNext } from "./test_helpers";
 
 export enum Note {
   C = "C",
@@ -32,27 +32,35 @@ export type MusicalEvent = {
   tiedToNext: boolean;
 };
 
-// export function chunk(
-//   events: MusicalEvent[],
-//   chunkSizes: number[]
-// ): MusicalEvent[][] {
-//   return simplifyChunks(chunkEvents(events, chunkSizes));
-// }
+export function chunk(
+  events: MusicalEvent[],
+  chunkSizes: number[]
+): MusicalEvent[][] {
+  return chunkEvents(events, chunkSizes).map(simplify);
+}
 
 /**
  * Divide `events` into `chunkSizes.length` chunks,
- * where the n'th chunk has a total length of chunkSizes[n] 32nd notes.
+ * where the n'th chunk has a total of chunkSizes[n] 32nd notes.
  */
 export function chunkEvents(
   events: MusicalEvent[],
   chunkSizes: number[]
 ): MusicalEvent[][] {
-  if (events.length === 0) {
-    return [];
+  function chunk32nds(
+    events: MusicalEvent[],
+    chunkSizes: number[]
+  ): MusicalEvent[][] {
+    if (chunkSizes.length === 0) {
+      return [];
+    }
+    const n = head(chunkSizes);
+    const [c, rest] = [events.slice(0, n), events.slice(n)];
+    return [c, ...chunk32nds(rest, tail(chunkSizes))];
   }
 
-  const expandedEvents = events.map(expandTo32nds);
-  const _32ndsInEvents = expandedEvents.flat().length;
+  const expandedEvents = events.flatMap(expandTo32nds);
+  const _32ndsInEvents = expandedEvents.length;
   const chunkSizesSum = chunkSizes.reduce((acc, n) => acc + n, 0);
   if (_32ndsInEvents !== chunkSizesSum) {
     throw new Error(
@@ -61,29 +69,7 @@ export function chunkEvents(
     );
   }
 
-  const event: MusicalEvent[] = head(expandedEvents);
-  const num32nds = event.length;
-  const chunkSize = head(chunkSizes);
-
-  if (num32nds === chunkSize) {
-    return [event, ...chunkEvents(tail(events), tail(chunkSizes))];
-  }
-  if (num32nds > chunkSize) {
-    const a = event.slice(0, chunkSize);
-    const b = event.slice(chunkSize);
-    return [
-      a,
-      ...chunkEvents([...b.flat(), ...tail(events)], tail(chunkSizes)),
-    ];
-  }
-  if (num32nds < chunkSize) {
-    const diff = chunkSize - num32nds;
-    const lastChunkSizes = [diff, ...tail(chunkSizes)];
-    const [a, ...b] = chunkEvents(tail(events), lastChunkSizes);
-    return [[...event, ...a], ...b];
-  }
-
-  return [];
+  return chunk32nds(expandedEvents, chunkSizes);
 }
 
 /**
@@ -94,7 +80,7 @@ export function chunkEvents(
  */
 export function expandTo32nds(e: MusicalEvent): MusicalEvent[] {
   if (e.duration === Duration.ThirtySecond) {
-    // Can't expand further
+    // Can't be expanded further
     return [{ ...e, tiedToNext: e.tiedToNext || false }];
   }
 
@@ -108,21 +94,20 @@ export function expandTo32nds(e: MusicalEvent): MusicalEvent[] {
     tiedToNext: true,
   });
 
+  // const _32nds = expand(e.duration);
+  // const rev = _32nds.reverse();
+  // const tied: MusicalEvent[] = tail(rev).map(toEvent).map(markTied);
+  // const last: MusicalEvent = { ...toEvent(head(rev)), tiedToNext: e.tiedToNext };
+
   const _32nds = expand(e.duration);
-  const rev = _32nds.reverse();
-  const tied: MusicalEvent[] = tail(rev).map(toEvent).map(markTied);
-  const last: MusicalEvent = toEvent(head(rev));
+  const tied: MusicalEvent[] = first(_32nds).map(toEvent).map(markTied);
+  const last_: MusicalEvent = {
+    ...toEvent(last(_32nds)),
+    tiedToNext: e.tiedToNext,
+  };
 
-  return [...tied, last];
+  return [...tied, last_];
 }
-
-// export function simplifyChunks(chunks: MusicalEvent[][]): MusicalEvent[][] {
-//   let newChunks: MusicalEvent[][] = [];
-//   for (const chunk of chunks) {
-//     newChunks.push(simplifyEvents(chunk));
-//   }
-//   return newChunks;
-// }
 
 /**
  * True if the two events are equal.
@@ -144,7 +129,6 @@ function eq(a: MusicalEvent, b: MusicalEvent): boolean {
  * https://en.wikipedia.org/wiki/Tie_(music)
  */
 export function simplify(events_: MusicalEvent[]): MusicalEvent[] {
-
   function simplifyGroup(group: MusicalEvent[], d: Duration): MusicalEvent[] {
     if (group.length < 2 || d === Duration.Whole) {
       return group;
@@ -174,18 +158,38 @@ export function simplify(events_: MusicalEvent[]): MusicalEvent[] {
     return simplifyGroup(newGroup, incrementDuration(d));
   }
 
-  const groups = groupTiedEvents(events_).map((g) => g.sort((a, b) => {
-    const durations = Object.values(Duration);
-    const aIndex = durations.indexOf(a.duration);
-    const bIndex = durations.indexOf(b.duration);
-    return bIndex - aIndex;
-  }))
-  return groups.flatMap((e) => simplifyGroup(e, Duration.ThirtySecond).sort((a, b) => {
-    const durations = Object.values(Duration);
-    const aIndex = durations.indexOf(a.duration);
-    const bIndex = durations.indexOf(b.duration);
-    return aIndex - bIndex;
-  }));
+  console.log("events:", fmtChunk(events_));
+
+  const groups = groupTiedEvents(events_)
+    .map((g) =>
+      [...g].sort((a, b) => {
+        const durations = Object.values(Duration);
+        const aIndex = durations.indexOf(a.duration);
+        const bIndex = durations.indexOf(b.duration);
+        return bIndex - aIndex;
+      })
+    )
+    .map((g) => simplifyGroup(g, Duration.ThirtySecond));
+
+  const x = groups
+    .map((g) =>
+      [...g].sort((a, b) => {
+        const durations = Object.values(Duration);
+        const aIndex = durations.indexOf(a.duration);
+        const bIndex = durations.indexOf(b.duration);
+        return aIndex - bIndex;
+      })
+    )
+    .map((g, i) => [
+      ...first(g).map((e) => ({ ...e, tiedToNext: true })),
+      { ...last(g), tiedToNext: last(groups[i]).tiedToNext },
+    ])
+    .flat();
+  // const x = groups.map((g) => g.map((e, i) => ({ ...e, tiedToNext: last(g).tiedToNext }))).flat();
+  console.log("groups:", fmtChunks(groups));
+  console.log("x:     ", fmtChunk(x));
+
+  return x;
 }
 
 /**
@@ -225,7 +229,7 @@ export function simplifyPair(a: MusicalEvent, b: MusicalEvent): MusicalEvent[] {
   const i = lowToHigh.indexOf(a.duration);
   if (a.duration !== Duration.Whole) {
     // Simplify pair to a greater duration
-    return [{ ...b, duration: lowToHigh[i + 1] }]
+    return [{ ...b, duration: lowToHigh[i + 1] }];
   } else {
     // Pair cannot be simplified as they are both whole notes
     return [a, b];
@@ -281,7 +285,7 @@ export function findEventGroups(events: MusicalEvent[]): MusicalEvent[][] {
  * Return `events` where the last event has
  * `tiedToNext: false`.
  */
-function untieLast(events: MusicalEvent[]): MusicalEvent[] {
+export function untieLast(events: MusicalEvent[]): MusicalEvent[] {
   const n = events.length;
   if (n === 0) {
     return [];
