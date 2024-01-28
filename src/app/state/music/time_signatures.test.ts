@@ -7,6 +7,7 @@ const _3_4: TimeSignature = [3, Duration.Quarter];
 const _4_4: TimeSignature = [4, Duration.Quarter];
 const _5_8: TimeSignature = [5, Duration.Eighth];
 const _13_16: TimeSignature = [13, Duration.Sixteenth];
+const _27_32: TimeSignature = [27, Duration.ThirtySecond];
 const _32_32: TimeSignature = [32, Duration.ThirtySecond];
 const _18_16: TimeSignature = [18, Duration.Sixteenth];
 const _12_8: TimeSignature = [12, Duration.Eighth];
@@ -18,6 +19,7 @@ describe("tsTo32nds", () => {
     expect(tsTo32nds(_4_4)).toStrictEqual(repeat(Duration.ThirtySecond, 32));
     expect(tsTo32nds(_5_8)).toStrictEqual(repeat(Duration.ThirtySecond, 20));
     expect(tsTo32nds(_13_16)).toStrictEqual(repeat(Duration.ThirtySecond, 26));
+    expect(tsTo32nds(_27_32)).toStrictEqual(repeat(Duration.ThirtySecond, 27));
     expect(tsTo32nds(_32_32)).toStrictEqual(repeat(Duration.ThirtySecond, 32));
     expect(tsTo32nds(_18_16)).toStrictEqual(repeat(Duration.ThirtySecond, 36));
     expect(tsTo32nds(_12_8)).toStrictEqual(repeat(Duration.ThirtySecond, 48));
@@ -31,6 +33,7 @@ describe("_32ndsToTs", () => {
     expect(_32ndsToTs(repeat(Duration.ThirtySecond, 32))).toStrictEqual(simplifyTs(_4_4));
     expect(_32ndsToTs(repeat(Duration.ThirtySecond, 20))).toStrictEqual(simplifyTs(_5_8));
     expect(_32ndsToTs(repeat(Duration.ThirtySecond, 26))).toStrictEqual(simplifyTs(_13_16));
+    expect(_32ndsToTs(repeat(Duration.ThirtySecond, 27))).toStrictEqual(simplifyTs(_27_32));
     expect(_32ndsToTs(repeat(Duration.ThirtySecond, 32))).toStrictEqual(simplifyTs(_32_32));
     expect(_32ndsToTs(repeat(Duration.ThirtySecond, 36))).toStrictEqual(simplifyTs(_18_16));
     expect(_32ndsToTs(repeat(Duration.ThirtySecond, 48))).toStrictEqual(simplifyTs(_12_8));
@@ -44,6 +47,7 @@ describe("canSimplify", () => {
     expect(canSimplify(_4_4)).toBe(true);
     expect(canSimplify(_5_8)).toBe(false);
     expect(canSimplify(_13_16)).toBe(false);
+    expect(canSimplify(_27_32)).toBe(false);
     expect(canSimplify(_32_32)).toBe(true);
     expect(canSimplify(_18_16)).toBe(true);
     expect(canSimplify(_12_8)).toBe(true);
@@ -57,6 +61,7 @@ describe("simplifyTs", () => {
     expect(simplifyTs(_4_4)).toEqual([1, Duration.Whole]);
     expect(simplifyTs(_5_8)).toEqual(_5_8);
     expect(simplifyTs(_13_16)).toEqual(_13_16);
+    expect(simplifyTs(_27_32)).toEqual(_27_32);
     expect(simplifyTs(_32_32)).toEqual([1, Duration.Whole]);
     expect(simplifyTs(_18_16)).toEqual([9, Duration.Eighth]);
     expect(simplifyTs(_12_8)).toEqual([3, Duration.Half]);
