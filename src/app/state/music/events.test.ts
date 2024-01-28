@@ -22,6 +22,8 @@ import {
   e16,
   e8,
   e32,
+  fmtChunk,
+  fmtChunks,
 } from "./test_helpers";
 
 const c1t = tiedToNext(c1);
@@ -115,11 +117,6 @@ describe("chunk", () => {
       [e4, c16t, c32t],
       [c8t, c32, e4],
     ]);
-  });
-
-  it("should throw an error when the events don't match the chunks", () => {
-    expect(() => chunk([c4], [1])).toThrow();
-    expect(() => chunk([c4], [])).toThrow();
   });
 
   it("should do some uneven splits", () => {
