@@ -1,13 +1,5 @@
 import { Duration, MusicalEvent, Note } from ".";
-
-export function repeat<T>(x: T, n: number): T[] {
-  function createArray<T>(a: T[], n: number) {
-    if (n === 1) return a;
-    return createArray([...a, a[0]], n - 1);
-  }
-
-  return createArray([x], n);
-}
+import { repeat } from "./arrays";
 
 export function note(notes: Note[], duration: Duration): MusicalEvent {
   return { notes, duration, tiedToNext: false };

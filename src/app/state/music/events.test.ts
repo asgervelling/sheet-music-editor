@@ -4,11 +4,11 @@ import {
   chunk,
   expandTo32nds,
   groupTiedEvents,
+  reciprocalChunk,
   simplify,
   simplifyPair,
 } from "./events";
 import {
-  repeat,
   c1,
   c2,
   c4,
@@ -24,7 +24,14 @@ import {
   e32,
   fmtChunk,
   fmtChunks,
+  p1,
+  p2,
+  p4,
+  p8,
+  p16,
+  p32,
 } from "./test_helpers";
+import { repeat } from "./arrays";
 
 const c1t = tiedToNext(c1);
 const c2t = tiedToNext(c2);
@@ -32,12 +39,20 @@ const c4t = tiedToNext(c4);
 const c8t = tiedToNext(c8);
 const c16t = tiedToNext(c16);
 const c32t = tiedToNext(c32);
+
 const e1t = tiedToNext(e1);
 const e2t = tiedToNext(e2);
 const e4t = tiedToNext(e4);
 const e8t = tiedToNext(e8);
 const e16t = tiedToNext(e16);
 const e32t = tiedToNext(e32);
+
+const p1t = tiedToNext(p1);
+const p2t = tiedToNext(p2);
+const p4t = tiedToNext(p4);
+const p8t = tiedToNext(p8);
+const p16t = tiedToNext(p16);
+const p32t = tiedToNext(p32);
 
 describe("expandTo32nds", () => {
   it("should expand a 32nd note to an untied 32nd note", () => {
@@ -276,4 +291,30 @@ describe("simplify", () => {
     expect(simplify([...repeat(e32t, 5), e32])).toEqual([e8t, e16]);
     expect(simplify([...repeat(c32t, 9), c32])).toEqual([c4t, c16]);
   });
+});
+
+describe("reciprocalChunk", () => {
+  it("should fill up an empty chunk of 4/4", () => {
+    expect(reciprocalChunk([], 32)).toEqual([p1]);
+  });
+
+  it("should fill up an empty chunk of 3/4", () => {
+    expect(reciprocalChunk([], 24)).toEqual([p2t, p4]);
+  });
+
+  it("should fill up an empty chunk of 15/32", () => {
+    expect(reciprocalChunk([], 15)).toEqual([p4t, p8t, p16t, p32]);
+  });
+
+  it("should not fill up a complete or overfull chunk", () => {
+    expect(reciprocalChunk([c32], 1)).toEqual([]);
+    expect(reciprocalChunk([c1], 32)).toEqual([]);
+    expect(reciprocalChunk([c1], 31)).toEqual([]);
+  })
+
+  it("should fill up semi-complete chunks of various lengths", () => {
+    expect(reciprocalChunk([e32], 2)).toEqual([p32]);
+    expect(reciprocalChunk([e32], 3)).toEqual([p16]);
+    expect(reciprocalChunk([c4t, c8, c8, e32t, e16], 34)).toEqual([p4t, p8t, p16t, p32]);
+  })
 });

@@ -17,3 +17,12 @@ export const first = <T>(l: T[]) => {
 export const arrayEquals = <T>(l: T[], m: T[]): boolean => {
   return l.length === m.length && l.every((e, i) => e === m[i]);
 }
+
+export function repeat<T>(x: T, n: number): T[] {
+  function createArray<T>(a: T[], n: number) {
+    if (n === 1) return a;
+    return createArray([...a, a[0]], n - 1);
+  }
+
+  return createArray([x], n);
+}

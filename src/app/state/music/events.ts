@@ -1,5 +1,5 @@
 import { Duration, expandDuration, incrementDuration } from "./durations";
-import { arrayEquals, first, head, last, tail } from "./arrays";
+import { arrayEquals, first, head, last, repeat, tail } from "./arrays";
 
 export enum Note {
   C = "C",
@@ -68,6 +68,34 @@ export function chunk(
 }
 
 /**
+ * Given a `chunk` and a `chunkSize` in 32nd notes, \
+ * return a second chunk that completes the first one. \
+ * If `chunk` is full, an empty chunk is returned. \
+ * If `chunk` is 3/4 full, a chunk containing a 1/4 pause is returned, \
+ * to fill out the `chunk`.
+ */
+export function reciprocalChunk(
+  chunk: MusicalEvent[],
+  chunkSize: number
+): MusicalEvent[] {
+  const sizeOf = (chunk: MusicalEvent[]): number =>
+    chunk.flatMap(expandTo32nds).length;
+  const missing32nds: number = chunkSize - sizeOf(chunk);
+  if (missing32nds < 1) {
+    return [];
+  }
+  const _32ndPauses: MusicalEvent[] = repeat(
+    {
+      notes: [Note.PAUSE],
+      duration: Duration.ThirtySecond,
+      tiedToNext: false,
+    },
+    missing32nds
+  );
+  return simplify(tieGroup(_32ndPauses));
+}
+
+/**
  * Simplify an array of events to have
  * the the longest possible durations,
  * by looking at events with shorter durations
@@ -117,10 +145,8 @@ export function simplify(events_: MusicalEvent[]): MusicalEvent[] {
 }
 
 function tieGroup(group: MusicalEvent[]) {
-  if (group.length === 0) return group;
-  const fst = first(group).map(withTiedToNext(true));
-  const lst = withTiedToNext(last(group).tiedToNext)(last(group));
-  return [...fst, lst];
+  const [b, ...a] = group.reverse();
+  return [b, ...a.map(withTiedToNext(true))].reverse();
 }
 
 /**
@@ -197,7 +223,7 @@ export function simplifyPair(a: MusicalEvent, b: MusicalEvent): MusicalEvent[] {
   const i = lowToHigh.indexOf(a.duration);
   if (a.duration !== Duration.Whole) {
     // Simplify pair to a greater duration
-    return [{ ...b, duration: lowToHigh[i + 1] }];
+    return [withDuration(lowToHigh[i + 1])(b)];
   } else {
     // Pair cannot be simplified as they are both whole notes
     return [a, b];

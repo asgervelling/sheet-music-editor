@@ -1,15 +1,7 @@
 import { describe, it, expect } from "@jest/globals";
 import { Duration } from "./durations";
 import { TimeSignature, _32ndsToTs, canSimplify, simplifyTs, tsTo32nds } from "./time_signatures";
-
-function repeat<T>(x: T, n: number): T[] {
-  function createArray<T>(a: T[], n: number) {
-    if (n === 1) return a;
-    return createArray([...a, a[0]], n - 1);
-  }
-
-  return createArray([x], n);
-}
+import { repeat } from "./arrays";
 
 const _3_4: TimeSignature = [3, Duration.Quarter];
 const _4_4: TimeSignature = [4, Duration.Quarter];
