@@ -6,6 +6,7 @@ import HalfNoteIcon from "./HalfNoteIcon";
 import QuarterNoteIcon from "./QuarterNoteIcon";
 import EighthNoteIcon from "./EighthNoteIcon";
 import SixteenthNoteIcon from "./SixteenthNoteIcon";
+import ThirtySecondNoteIcon from "./ThirtySecondNoteIcon";
 
 type DurationSVGProps = {
   duration: Duration;
@@ -31,5 +32,7 @@ function Icon({ duration }: DurationSVGProps) {
       return EighthNoteIcon();
     case Duration.Sixteenth:
       return SixteenthNoteIcon();
+    case Duration.ThirtySecond:
+      return ThirtySecondNoteIcon();
   }
 }

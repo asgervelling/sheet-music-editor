@@ -9,6 +9,7 @@ export default function DurationIndicatorGroup() {
       <DurationIndicator duration={Duration.Quarter} />
       <DurationIndicator duration={Duration.Eighth} />
       <DurationIndicator duration={Duration.Sixteenth} />
+      <DurationIndicator duration={Duration.ThirtySecond} />
     </div>
   );
 };
