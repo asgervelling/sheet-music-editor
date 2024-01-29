@@ -178,10 +178,10 @@ export function groupTiedEvents(events_: MusicalEvent[]): MusicalEvent[][] {
       return [...events];
     }
     const [a, b, ...rest] = events;
-    if (
+    const shouldTie =
       arrayEquals(a.notes, b.notes) &&
-      (a.tiedToNext || a.notes.includes(Note.PAUSE))
-    ) {
+      (a.tiedToNext || a.notes.includes(Note.PAUSE));
+    if (shouldTie) {
       return [a, ...firstGroup([b, ...rest])];
     }
     return [a];
