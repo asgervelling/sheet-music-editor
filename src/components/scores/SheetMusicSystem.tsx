@@ -8,8 +8,11 @@
  */
 "use client";
 import { toStaveNote } from "@/app/sheet_music";
+import { StateContext } from "@/app/state/StateContext";
 import { Bar, MusicalEvent } from "@/app/state/music";
-import { useEffect, useRef } from "react";
+import { createBars } from "@/app/state/music/bars";
+import { Duration } from "@/app/state/music/durations";
+import { useContext, useEffect, useRef } from "react";
 import { Formatter, RenderContext, Stave, Vex, Voice } from "vexflow";
 
 const { Renderer } = Vex.Flow;
@@ -27,6 +30,7 @@ enum DIV_ID {
  * A system of staves. Will be rendered as sheet music.
  */
 export default function SheetMusicSystem({ bars }: { bars: Bar[] }) {
+  const { state } = useContext(StateContext)!;
   const containerRef = useRef(null);
   const renderContextRef = useRef<RenderContext | null>(null);
 
@@ -34,16 +38,20 @@ export default function SheetMusicSystem({ bars }: { bars: Bar[] }) {
     const context = createRenderContext(DIV_ID.CONTAINER, DIV_ID.OUTPUT);
     renderContextRef.current = context;
 
+    const bs: Bar[] = createBars(state.history, [4, Duration.Quarter]);
+
     // Draw bars
-    bars.forEach((bar, i) => {
+    bs.forEach((bar, i) => {
       const x = i * STAVE_WIDTH;
       const stave = createStave(bar.events, x);
       const voice = createVoice(bar.events);
       draw(context, stave, voice);
     })
 
+    console.log(bs.length)
+
     return cleanUp;
-  }, [containerRef.current]);
+  }, [containerRef.current, state.history]);
 
   /**
    * Remove child elements of output and error divs.

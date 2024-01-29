@@ -28,10 +28,15 @@ export function toVexFlowName(note: Note): string {
  */
 export function toStaveNote(e: MusicalEvent): StaveNote {
   const keys = e.notes.map(toVexFlowName);
+  const duration = e.notes.includes(Note.PAUSE) ? `${e.duration}r` : e.duration;
   const note = new StaveNote({
     clef: "treble",
     keys: keys,
-    duration: e.duration,
+    duration: duration,
   });
   return note;
 }
+
+Object.values(Note).forEach((n) => {
+  console.log(n, toVexFlowName(n));
+})

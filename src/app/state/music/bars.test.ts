@@ -22,8 +22,7 @@ import {
   p8,
 } from "./test_helpers";
 import { TimeSignature } from "./time_signatures";
-import { head, repeat } from "./arrays";
-import { MusicalEvent } from ".";
+import { repeat } from "./arrays";
 
 const _3_4: TimeSignature = [3, D.Quarter];
 const _3_16: TimeSignature = [3, D.Sixteenth];
@@ -34,7 +33,6 @@ function fmtBars(bars: Bar[]) {
 
 describe("createBars", () => {
   it("should fill the last bar with pauses", () => {
-    console.log(fmtBars(createBars([c1, e1], [3, D.Quarter])))
     expect(createBars([c1, e1], [3, D.Quarter])).toEqual([
       {
         ts: _3_4,
@@ -63,7 +61,6 @@ describe("createBars", () => {
   });
 
   it("should split multiple events over multiple bars", () => {
-    console.log((createBars([c1, e1t, e1t, e1], _3_16)))
     expect(createBars([c1, e1t, e1t, e1], _3_16)).toEqual([
       ...repeat({ ts: _3_16, events: [c8t, c16t] }, 5),
       { ts: _3_16, events: [c16, e8t] },
