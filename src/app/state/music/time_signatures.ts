@@ -59,3 +59,11 @@ export function simplifyTs(ts: TimeSignature): TimeSignature {
   }
   return simplifyTs([a / 2, incrementDuration(b)]);
 }
+
+export function tsToString(ts: TimeSignature): string {
+  const [a, b] = ts;
+  return `${a}/${b}`
+    .replace(Duration.Whole, "1")
+    .replace(Duration.Half, "2")
+    .replace(Duration.Quarter, "4");
+}

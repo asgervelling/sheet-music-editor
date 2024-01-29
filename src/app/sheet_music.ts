@@ -42,40 +42,20 @@ export function toStaveNote(e: MusicalEvent): VF.StaveNote {
  * Tie musical events together to signify
  * that they are one continuous sound.
  */
-export function createTies(bar: Bar, staveNotes: VF.StaveNote[]): VF.StaveTie[] {
+export function createTies(
+  bar: Bar,
+  staveNotes: VF.StaveNote[]
+): VF.StaveTie[] {
   const tiedIndices = bar.events
     .map((e, i) => (e.tiedToNext ? i : -1))
     .filter((i) => i !== -1);
-  console.log("Events:", fmtChunk(bar.events));
-  console.log("Tied indices:", tiedIndices);
-  const x = tiedIndices.map(
+  return tiedIndices.map(
     (i) =>
-      new VF.StaveTie({
-        first_note: i === 0 ? null : staveNotes[i],
-        last_note: staveNotes[i + 1],
-        first_indices: [0],
-        last_indices: [0],
-      })
-  );
-  console.log(
-    "Ties:",
-    JSON.stringify(
-      x.map(
-        (t) =>
-          `(${t.getNotes().first_note?.keys}, ${t.getNotes().last_note?.keys}, ${t.getNotes().first_indices, t.getNotes().last_indices})`
-      ),
-      null,
-      2
-    )
-  );
-  console.log("Events:", fmtChunk(bar.events));
-  return x;
-  return Array.from(
-    { length: staveNotes.length },
-    (_, i) =>
       new VF.StaveTie({
         first_note: staveNotes[i],
         last_note: staveNotes[i + 1],
+        first_indices: [0],
+        last_indices: [0],
       })
   );
 }

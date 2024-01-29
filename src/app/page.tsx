@@ -1,5 +1,4 @@
 "use client";
-import History from "@/components/History";
 import {
   DurationIndicatorGroup,
   EnterKeyIndicator,
@@ -9,50 +8,9 @@ import {
 import KeyDispatcher from "@/components/KeyDispatcher";
 import Piano from "@/components/Piano";
 import { SheetMusicSystem } from "@/components/scores";
-
-import { Bar, Duration, Note } from "./state/music";
 import { StateProvider } from "./state/StateContext";
-import VexFlowExample from "@/components/scores/VexFlowExample";
 
 export default function Home() {
-  const bars: Bar[] = [
-    {
-      ts: [4, Duration.Quarter],
-      events: [
-        {
-          notes: [Note.C, Note.E],
-          duration: Duration.Whole,
-          tiedToNext: false,
-        },
-      ],
-    },
-    {
-      ts: [4, Duration.Quarter],
-      events: [
-        {
-          notes: [Note.D],
-          duration: Duration.Quarter,
-          tiedToNext: false,
-        },
-        {
-          notes: [Note.C],
-          duration: Duration.Quarter,
-          tiedToNext: false,
-        },
-        {
-          notes: [Note.E, Note.G],
-          duration: Duration.Quarter,
-          tiedToNext: false,
-        },
-        {
-          notes: [Note.G],
-          duration: Duration.Quarter,
-          tiedToNext: false,
-        },
-      ],
-    },
-  ];
-
   return (
     <StateProvider>
       <KeyDispatcher />
@@ -77,9 +35,7 @@ export default function Home() {
         </div>
         {/* Bottom half */}
         <div className="py-20 px-32 col-span-2">
-          <History />
-          <SheetMusicSystem bars={bars} />
-          {/* <VexFlowExample /> */}
+          <SheetMusicSystem />
         </div>
       </div>
     </StateProvider>
