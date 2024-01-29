@@ -12,6 +12,7 @@ import { SheetMusicSystem } from "@/components/scores";
 
 import { Bar, Duration, Note } from "./state/music";
 import { StateProvider } from "./state/StateContext";
+import VexFlowExample from "@/components/scores/VexFlowExample";
 
 export default function Home() {
   const bars: Bar[] = [
@@ -78,6 +79,7 @@ export default function Home() {
         <div className="py-20 px-32 col-span-2">
           <History />
           <SheetMusicSystem bars={bars} />
+          {/* <VexFlowExample /> */}
         </div>
       </div>
     </StateProvider>

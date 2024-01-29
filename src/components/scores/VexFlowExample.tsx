@@ -12,20 +12,9 @@ import { StateContext } from "@/app/state/StateContext";
 import { Bar, MusicalEvent } from "@/app/state/music";
 import { createBars } from "@/app/state/music/bars";
 import { Duration } from "@/app/state/music/durations";
-import { c2, c4, c4t, e2, p2 } from "@/app/state/music/test_helpers";
+import { c4t, c8, e8, p2 } from "@/app/state/music/test_helpers";
 import { useContext, useEffect, useRef } from "react";
-import {
-  Accidental,
-  Beam,
-  Dot,
-  Formatter,
-  RenderContext,
-  Stave,
-  StaveNote,
-  StaveTie,
-  Vex,
-  Voice,
-} from "vexflow";
+import { Formatter, RenderContext, Stave, StaveTie, Vex, Voice } from "vexflow";
 
 const { Renderer } = Vex.Flow;
 
@@ -38,33 +27,10 @@ enum DIV_ID {
   ERROR = "error",
 }
 
-function drawBar(context: RenderContext, bar: Bar, x: number) {
-  const notes = bar.events.map(toStaveNote);
-  const stave = createStave(x);
-
-  // Add a clef and time signature.
-  stave.addClef("treble").addTimeSignature("4/4");
-
-  // Connect it to the rendering context and draw!
-  stave.setContext(context).draw();
-
-  const beams = Beam.generateBeams(notes);
-  Formatter.FormatAndDraw(context, stave, notes);
-  beams.forEach(function (b) {
-    b.setContext(context).draw();
-  });
-
-  const ties = createTies(bar, notes);
-  ties.forEach((t) => {
-    t.setContext(context).draw();
-  });
-}
-
 /**
- * A system of staves. Will be rendered as sheet music.
+ * VexFlow playground.
  */
-export default function SheetMusicSystem({ bars }: { bars: Bar[] }) {
-  const { state } = useContext(StateContext)!;
+export default function VexFlowExample() {
   const containerRef = useRef(null);
   const renderContextRef = useRef<RenderContext | null>(null);
 
@@ -72,11 +38,32 @@ export default function SheetMusicSystem({ bars }: { bars: Bar[] }) {
     const context = createRenderContext(DIV_ID.CONTAINER, DIV_ID.OUTPUT);
     renderContextRef.current = context;
 
-    const bars = createBars(state.history, [4, Duration.Quarter]);
-    bars.forEach((bar, i) => drawBar(context, bar, i * STAVE_WIDTH));
+    const bars: Bar[] = [
+      {
+        ts: [4, Duration.Quarter],
+        events: [c4t, c8, e8, p2],
+      }
+    ];
+
+    // As EasyScore notation:
+    // 
+
+    const VF = Vex.Flow;
+
+    // Create an SVG renderer and attach it to the DIV element named "boo".
+    var vf = new VF.Factory({renderer: {elementId: DIV_ID.OUTPUT, width: 1200, height: 600}});
+    var score = vf.EasyScore();
+    var system = vf.System();
+
+    system.addStave({
+      voices: [score.voice(score.notes('C#5/q, B4, A4, G#4'))]
+    }).addClef('treble').addTimeSignature('4/4');
+    
+    vf.draw();
+    
 
     return cleanUp;
-  }, [containerRef.current, state.history]);
+  }, [containerRef.current]);
 
   /**
    * Remove child elements of output and error divs.
@@ -114,7 +101,7 @@ function createRenderContext(containerId: string, outputId: string) {
   return renderer.getContext();
 }
 
-function createStave(x: number): Stave {
+function createStave(events: MusicalEvent[], x: number): Stave {
   const y = STAVE_HEIGHT;
   return new Stave(x, y, STAVE_WIDTH);
 }

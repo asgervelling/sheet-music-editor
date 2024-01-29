@@ -1,7 +1,7 @@
 import { Duration, MusicalEvent, Note } from ".";
 import { repeat } from "./arrays";
 
-export function note(notes: Note[], duration: Duration): MusicalEvent {
+export function event(notes: Note[], duration: Duration): MusicalEvent {
   return { notes, duration, tiedToNext: false };
 }
 
@@ -9,8 +9,8 @@ export function tiedToNext(e: MusicalEvent): MusicalEvent {
   return { ...e, tiedToNext: true };
 }
 
-export const c = (d: Duration) => note([Note.C], d);
-export const e = (d: Duration) => note([Note.E], d);
+export const c = (d: Duration) => event([Note.C], d);
+export const e = (d: Duration) => event([Note.E], d);
 export const D = Duration;
 
 export const e1 = e(D.Whole);
@@ -26,7 +26,7 @@ export const c8 = c(D.Eighth);
 export const c16 = c(D.Sixteenth);
 export const c32 = c(D.ThirtySecond);
 
-export const p = (d: Duration) => note([Note.PAUSE], d);
+export const p = (d: Duration) => event([Note.PAUSE], d);
 export const p1 = p(D.Whole);
 export const p2 = p(D.Half);
 export const p4 = p(D.Quarter);
