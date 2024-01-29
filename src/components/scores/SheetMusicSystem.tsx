@@ -115,9 +115,8 @@ function drawBar(context: RenderContext, bar: Bar, i: number, offset: number) {
 }
 
 function drawBars(context: RenderContext, bars: Bar[]) {
-  let offset = 0;
   bars.forEach((bar, i) => {
-    offset = bars.slice(0, i).map(staveWidth).reduce((acc, n) => acc + n, 0);
+    const offset = bars.slice(0, i).map(staveWidth).reduce((acc, n) => acc + n, 0);
     drawBar(context, bar, i, offset);
     console.log(`Drew bar with width ${staveWidth(bar)}. New offset: ${offset}`);
   })
