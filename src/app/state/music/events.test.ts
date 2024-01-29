@@ -30,29 +30,26 @@ import {
   p8,
   p16,
   p32,
+  c32t,
+  c16t,
+  c8t,
+  c4t,
+  c2t,
+  c1t,
+  e2t,
+  e16t,
+  e4t,
+  e8t,
+  e32t,
+  e1t,
+  p2t,
+  p4t,
+  p8t,
+  p16t,
 } from "./test_helpers";
 import { repeat } from "./arrays";
-
-const c1t = tiedToNext(c1);
-const c2t = tiedToNext(c2);
-const c4t = tiedToNext(c4);
-const c8t = tiedToNext(c8);
-const c16t = tiedToNext(c16);
-const c32t = tiedToNext(c32);
-
-const e1t = tiedToNext(e1);
-const e2t = tiedToNext(e2);
-const e4t = tiedToNext(e4);
-const e8t = tiedToNext(e8);
-const e16t = tiedToNext(e16);
-const e32t = tiedToNext(e32);
-
-const p1t = tiedToNext(p1);
-const p2t = tiedToNext(p2);
-const p4t = tiedToNext(p4);
-const p8t = tiedToNext(p8);
-const p16t = tiedToNext(p16);
-const p32t = tiedToNext(p32);
+import { createBars } from "./bars";
+import { Duration } from ".";
 
 describe("expandTo32nds", () => {
   it("should expand a 32nd note to an untied 32nd note", () => {

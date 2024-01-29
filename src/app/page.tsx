@@ -21,6 +21,7 @@ export default function Home() {
         {
           notes: [Note.C, Note.E],
           duration: Duration.Whole,
+          tiedToNext: false,
         },
       ],
     },
@@ -30,18 +31,22 @@ export default function Home() {
         {
           notes: [Note.D],
           duration: Duration.Quarter,
+          tiedToNext: false,
         },
         {
           notes: [Note.C],
           duration: Duration.Quarter,
+          tiedToNext: false,
         },
         {
           notes: [Note.E, Note.G],
           duration: Duration.Quarter,
+          tiedToNext: false,
         },
         {
           notes: [Note.G],
           duration: Duration.Quarter,
+          tiedToNext: false,
         },
       ],
     },

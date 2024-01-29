@@ -34,6 +34,27 @@ export const p8 = p(D.Eighth);
 export const p16 = p(D.Sixteenth);
 export const p32 = p(D.ThirtySecond);
 
+export const c1t = tiedToNext(c1);
+export const c2t = tiedToNext(c2);
+export const c4t = tiedToNext(c4);
+export const c8t = tiedToNext(c8);
+export const c16t = tiedToNext(c16);
+export const c32t = tiedToNext(c32);
+
+export const e1t = tiedToNext(e1);
+export const e2t = tiedToNext(e2);
+export const e4t = tiedToNext(e4);
+export const e8t = tiedToNext(e8);
+export const e16t = tiedToNext(e16);
+export const e32t = tiedToNext(e32);
+
+export const p1t = tiedToNext(p1);
+export const p2t = tiedToNext(p2);
+export const p4t = tiedToNext(p4);
+export const p8t = tiedToNext(p8);
+export const p16t = tiedToNext(p16);
+export const p32t = tiedToNext(p32);
+
 export const _32nds = (n: number): Duration.ThirtySecond[] =>
   repeat(D.ThirtySecond, n);
 

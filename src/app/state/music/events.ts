@@ -31,18 +31,6 @@ export type MusicalEvent = {
   tiedToNext: boolean;
 };
 
-function withNotes(notes: Note[]): (e: MusicalEvent) => MusicalEvent {
-  return (e: MusicalEvent) => ({ ...e, notes });
-}
-
-function withDuration(duration: Duration): (e: MusicalEvent) => MusicalEvent {
-  return (e: MusicalEvent) => ({ ...e, duration });
-}
-
-function withTiedToNext(tied: boolean): (e: MusicalEvent) => MusicalEvent {
-  return (e: MusicalEvent) => ({ ...e, tiedToNext: tied });
-}
-
 /**
  * Divide `events` into `chunkSizes.length` chunks,
  * where each chunk has a total duration of the same length
@@ -144,9 +132,12 @@ export function simplify(events_: MusicalEvent[]): MusicalEvent[] {
     .flat();
 }
 
+/**
+ * Tie the n-1 first events in the `group` together.
+ */
 function tieGroup(group: MusicalEvent[]) {
   const [b, ...a] = group.reverse();
-  return [b, ...a.map(withTiedToNext(true))].reverse();
+  return [b, ...a.map((e) => ({ ...e, tiedToNext: true }))].reverse();
 }
 
 /**
@@ -156,15 +147,12 @@ function tieGroup(group: MusicalEvent[]) {
  * would become eight events with notes C and E and 32nd duration.
  */
 export function expandTo32nds(e: MusicalEvent): MusicalEvent[] {
-  const _32nds = expandDuration(e.duration);
-  const tied: MusicalEvent[] = first(_32nds).map((_32nd) => ({
-    notes: e.notes,
-    duration: _32nd,
-    tiedToNext: true,
-  }));
-  const last_: MusicalEvent = { ...e, duration: Duration.ThirtySecond };
-
-  return [...tied, last_];
+  return tieGroup(
+    expandDuration(e.duration).map((_32nd) => ({
+      ...e,
+      duration: _32nd,
+    }))
+  );
 }
 
 function sortDecending(events: MusicalEvent[]): MusicalEvent[] {
@@ -182,11 +170,7 @@ function sortDecending(events: MusicalEvent[]): MusicalEvent[] {
  */
 export function groupTiedEvents(events_: MusicalEvent[]): MusicalEvent[][] {
   function firstGroup(events: MusicalEvent[]): MusicalEvent[] {
-    const n = events.length;
-    if (n === 0) {
-      return [];
-    }
-    if (n === 1) {
+    if (events.length < 2) {
       return [...events];
     }
     const [a, b, ...rest] = events;
@@ -201,7 +185,7 @@ export function groupTiedEvents(events_: MusicalEvent[]): MusicalEvent[][] {
   }
   const group = firstGroup(events_);
   const rest = events_.slice(group.length);
-  return [group, ...groupTiedEvents(rest)].filter((g) => g.length > 0);
+  return [group, ...groupTiedEvents(rest)];
 }
 
 /**
@@ -215,17 +199,8 @@ export function groupTiedEvents(events_: MusicalEvent[]): MusicalEvent[][] {
  *   ['q', 'h'] -> ['q', 'h']
  */
 export function simplifyPair(a: MusicalEvent, b: MusicalEvent): MusicalEvent[] {
-  if (!arrayEquals(a.notes, b.notes)) {
-    return [a, b];
+  if (arrayEquals(a.notes, b.notes) && a.duration !== Duration.Whole) {
+    return [{ ...b, duration: incrementDuration(b.duration) }];
   }
-
-  const lowToHigh: Duration[] = Object.values(Duration).reverse();
-  const i = lowToHigh.indexOf(a.duration);
-  if (a.duration !== Duration.Whole) {
-    // Simplify pair to a greater duration
-    return [withDuration(lowToHigh[i + 1])(b)];
-  } else {
-    // Pair cannot be simplified as they are both whole notes
-    return [a, b];
-  }
+  return [a, b];
 }
