@@ -134,10 +134,14 @@ export function simplify(events_: MusicalEvent[]): MusicalEvent[] {
 
 /**
  * Tie the n-1 first events in the `group` together.
+ * Do not tie pauses together.
  */
 function tieGroup(group: MusicalEvent[]) {
   const [b, ...a] = group.reverse();
-  return [b, ...a.map((e) => ({ ...e, tiedToNext: true }))].reverse();
+  return [
+    b,
+    ...a.map((e) => ({ ...e, tiedToNext: !e.notes.includes(Note.PAUSE) })),
+  ].reverse();
 }
 
 /**
@@ -174,7 +178,10 @@ export function groupTiedEvents(events_: MusicalEvent[]): MusicalEvent[][] {
       return [...events];
     }
     const [a, b, ...rest] = events;
-    if (a.tiedToNext && arrayEquals(a.notes, b.notes)) {
+    if (
+      arrayEquals(a.notes, b.notes) &&
+      (a.tiedToNext || a.notes.includes(Note.PAUSE))
+    ) {
       return [a, ...firstGroup([b, ...rest])];
     }
     return [a];

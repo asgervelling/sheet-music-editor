@@ -38,12 +38,14 @@ enum DIV_ID {
   ERROR = "error",
 }
 
-function drawBar(context: RenderContext, bar: Bar, x: number) {
+function drawBar(context: RenderContext, bar: Bar, i: number) {
   const notes = bar.events.map(toStaveNote);
+  const x = i * STAVE_WIDTH;
   const stave = createStave(x);
 
-  // Add a clef and time signature.
-  stave.addClef("treble").addTimeSignature("4/4");
+  if (i === 0) {
+    stave.addClef("treble").addTimeSignature("4/4");
+  }
 
   // Connect it to the rendering context and draw!
   stave.setContext(context).draw();
@@ -73,7 +75,7 @@ export default function SheetMusicSystem({ bars }: { bars: Bar[] }) {
     renderContextRef.current = context;
 
     const bars = createBars(state.history, [4, Duration.Quarter]);
-    bars.forEach((bar, i) => drawBar(context, bar, i * STAVE_WIDTH));
+    bars.forEach((bar, i) => drawBar(context, bar, i));
 
     return cleanUp;
   }, [containerRef.current, state.history]);

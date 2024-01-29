@@ -48,8 +48,6 @@ import {
   p16t,
 } from "./test_helpers";
 import { repeat } from "./arrays";
-import { createBars } from "./bars";
-import { Duration } from ".";
 
 describe("expandTo32nds", () => {
   it("should expand a 32nd note to an untied 32nd note", () => {
@@ -296,11 +294,11 @@ describe("reciprocalChunk", () => {
   });
 
   it("should fill up an empty chunk of 3/4", () => {
-    expect(reciprocalChunk([], 24)).toEqual([p2t, p4]);
+    expect(reciprocalChunk([], 24)).toEqual([p2, p4]);
   });
 
   it("should fill up an empty chunk of 15/32", () => {
-    expect(reciprocalChunk([], 15)).toEqual([p4t, p8t, p16t, p32]);
+    expect(reciprocalChunk([], 15)).toEqual([p4, p8, p16, p32]);
   });
 
   it("should not fill up a complete or overfull chunk", () => {
@@ -312,6 +310,6 @@ describe("reciprocalChunk", () => {
   it("should fill up semi-complete chunks of various lengths", () => {
     expect(reciprocalChunk([e32], 2)).toEqual([p32]);
     expect(reciprocalChunk([e32], 3)).toEqual([p16]);
-    expect(reciprocalChunk([c4t, c8, c8, e32t, e16], 34)).toEqual([p4t, p8t, p16t, p32]);
+    expect(reciprocalChunk([c4t, c8, c8, e32t, e16], 34)).toEqual([p4, p8, p16, p32]);
   })
 });
