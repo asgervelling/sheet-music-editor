@@ -38,6 +38,5 @@ export function repeat<T>(x: T, n: number): T[] {
  */
 export function rotate<T>(l: T[], n: number): T[] {
   const m = n % l.length;
-  console.log(`rotate([${l}], ${n}). m = ${n} % ${l.length} = ${m}`)
   return [...l.slice(m), ...l.slice(0, m)];
 }
