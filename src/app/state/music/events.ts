@@ -127,7 +127,7 @@ export function simplify(events_: MusicalEvent[]): MusicalEvent[] {
 
   return groupTiedEvents(events_)
     .map((g) => simplifyGroup(g, Duration.ThirtySecond))
-    .map(sortDecending)
+    .map(sortAscending)
     .map(tieGroup)
     .flat();
 }
@@ -165,6 +165,15 @@ function sortDecending(events: MusicalEvent[]): MusicalEvent[] {
     const aIndex = durations.indexOf(a.duration);
     const bIndex = durations.indexOf(b.duration);
     return aIndex - bIndex;
+  });
+}
+
+function sortAscending(events: MusicalEvent[]): MusicalEvent[] {
+  return [...events].sort((a, b) => {
+    const durations = Object.values(Duration);
+    const aIndex = durations.indexOf(a.duration);
+    const bIndex = durations.indexOf(b.duration);
+    return bIndex - aIndex;
   });
 }
 

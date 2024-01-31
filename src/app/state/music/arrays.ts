@@ -19,10 +19,25 @@ export const arrayEquals = <T>(l: T[], m: T[]): boolean => {
 }
 
 export function repeat<T>(x: T, n: number): T[] {
+  if (n <= 0 || isNaN(n)) return [];
   function createArray<T>(a: T[], n: number) {
     if (n === 1) return a;
     return createArray([...a, a[0]], n - 1);
   }
 
   return createArray([x], n);
+}
+
+/**
+ * Rotate `l` `n` steps.
+ * Use a negative `n` to rotate right.
+ * 
+ *   rotate([1, 2, 3, 4], 2) ->  [3, 4, 1, 2] \
+ *   rotate([1, 2, 3, 4], -2) -> [3, 4, 1, 2] \
+ *   rotate([1, 2, 3, 4], 6) ->  [3, 4, 1, 2]
+ */
+export function rotate<T>(l: T[], n: number): T[] {
+  const m = n % l.length;
+  console.log(`rotate([${l}], ${n}). m = ${n} % ${l.length} = ${m}`)
+  return [...l.slice(m), ...l.slice(0, m)];
 }

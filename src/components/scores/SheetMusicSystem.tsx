@@ -9,23 +9,17 @@
 "use client";
 import { createTies, toStaveNote } from "@/app/sheet_music";
 import { StateContext } from "@/app/state/StateContext";
-import { Bar, MusicalEvent } from "@/app/state/music";
+import { Bar } from "@/app/state/music";
 import { createBars } from "@/app/state/music/bars";
 import { Duration } from "@/app/state/music/durations";
-import { c2, c4, c4t, e2, p2 } from "@/app/state/music/test_helpers";
 import { tsToString } from "@/app/state/music/time_signatures";
 import { useContext, useEffect, useRef } from "react";
 import {
-  Accidental,
   Beam,
-  Dot,
   Formatter,
   RenderContext,
   Stave,
-  StaveNote,
-  StaveTie,
   Vex,
-  Voice,
 } from "vexflow";
 
 const { Renderer } = Vex.Flow;
@@ -84,7 +78,7 @@ function staveWidth(bar: Bar): number {
   const normal = 200;
   const notesPerStave = 6;
   const n = bar.events.length;
-  return Math.max(normal, Math.ceil(n / notesPerStave) * normal)
+  return Math.max(normal, Math.ceil(n / notesPerStave) * normal);
 }
 
 function drawBar(context: RenderContext, bar: Bar, i: number, offset: number) {
@@ -116,10 +110,15 @@ function drawBar(context: RenderContext, bar: Bar, i: number, offset: number) {
 
 function drawBars(context: RenderContext, bars: Bar[]) {
   bars.forEach((bar, i) => {
-    const offset = bars.slice(0, i).map(staveWidth).reduce((acc, n) => acc + n, 0);
+    const offset = bars
+      .slice(0, i)
+      .map(staveWidth)
+      .reduce((acc, n) => acc + n, 0);
     drawBar(context, bar, i, offset);
-    console.log(`Drew bar with width ${staveWidth(bar)}. New offset: ${offset}`);
-  })
+    console.log(
+      `Drew bar with width ${staveWidth(bar)}. New offset: ${offset}`
+    );
+  });
 }
 
 /**
