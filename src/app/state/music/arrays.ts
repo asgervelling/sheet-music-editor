@@ -32,7 +32,7 @@ export function repeat<T>(x: T, n: number): T[] {
  * Rotate `l` `n` steps.
  * Use a negative `n` to rotate right.
  * 
- *   rotate([1, 2, 3, 4], 2) ->  [3, 4, 1, 2] \
+ *   rotate([1, 2, 3, 4], 1) ->  [2, 3, 4, 1] \
  *   rotate([1, 2, 3, 4], -2) -> [3, 4, 1, 2] \
  *   rotate([1, 2, 3, 4], 6) ->  [3, 4, 1, 2]
  */

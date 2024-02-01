@@ -21,11 +21,22 @@ export enum NoteName {
 }
 
 /**
+ * The lowest note in MIDI is 0 (C/-1) \
+ * and the highest is 127 (G/9).
+ * 
+ * We stick to the convention that middle C is C/4
+ * and has the MIDI value 60.
+ * 
+ * Helpful chart that follows the same convention:
+ * https://syntheway.com/MIDI_Keyboards_Middle_C_MIDI_Note_Number_60_C4.htm
+ */
+
+/**
  * A note is the name of the note (or pause) and an octave.
  */
 export type Note = {
   name: NoteName;
-  octave: 3 | 4 | 5 | 6;
+  octave: number;
 };
 
 /**
