@@ -7,20 +7,18 @@
  */
 import * as VF from "vexflow";
 
-import { Bar, MusicalEvent, Note } from "./state/music";
-import { head } from "./state/music/arrays";
-import { fmtChunk } from "./state/music/test_helpers";
+import { Bar, MusicalEvent, NoteName } from "./state/music";
+import { Note } from "./state/music/events";
 
 /**
- * Convert a Note to the note name format used by VexFlow.
+ * Convert a NoteName to the note name format used by VexFlow.
  */
 export function toVexFlowName(note: Note): string {
-  const octave = "4";
-  if (note === Note.PAUSE) {
-    return `b/${octave}`;
+  if (note.name === NoteName.PAUSE) {
+    return `b/${note.octave}r`;
   } else {
-    const name = note.replace("♭", "b");
-    return `${name}/${octave}`;
+    const name = note.name.replace("♭", "b");
+    return `${name}/${note.octave}`;
   }
 }
 
@@ -29,7 +27,7 @@ export function toVexFlowName(note: Note): string {
  */
 export function toStaveNote(e: MusicalEvent): VF.StaveNote {
   const keys = e.notes.map(toVexFlowName);
-  const duration = e.notes.includes(Note.PAUSE) ? `${e.duration}r` : e.duration;
+  const duration = e.duration;
   const note = new VF.StaveNote({
     clef: "treble",
     keys: keys,

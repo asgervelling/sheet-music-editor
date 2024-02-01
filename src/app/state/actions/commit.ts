@@ -1,4 +1,5 @@
-import { MusicalEvent, Note } from "../music";
+import { MusicalEvent, NoteName } from "../music";
+import { Note } from "../music/events";
 import { State } from "../state";
 
 /**
@@ -10,7 +11,7 @@ export default function commit(state: State): State {
   const event = createMusicalEvent(state);
   return {
     ...state,
-    activeNotes: [],
+    activeNoteNames: [],
     undoStack: [],
     history: [...state.history, event],
   };
@@ -20,8 +21,13 @@ export default function commit(state: State): State {
  * Create a musical event from the state's active notes
  */
 function createMusicalEvent(state: State): MusicalEvent {
-  const noNotes = state.activeNotes.length === 0;
-  if (noNotes) return { notes: [Note.PAUSE], duration: state.currDuration, tiedToNext: false };
+  const noNotes = state.activeNoteNames.length === 0;
+  if (noNotes)
+    return {
+      notes: [{ name: NoteName.PAUSE, octave: state.currOctave }],
+      duration: state.currDuration,
+      tiedToNext: false,
+    };
   else return createNotesFromNames(state);
 }
 
@@ -29,14 +35,16 @@ function createMusicalEvent(state: State): MusicalEvent {
  * Create a sorted note array from the state's active notes.
  */
 function createNotesFromNames(state: State): MusicalEvent {
-  const compareFn = (a: Note, b: Note) => {
-    const notes = Object.values(Note);
+  const compareFn = (a: NoteName, b: NoteName) => {
+    const notes = Object.values(NoteName);
     const aIndex = notes.indexOf(a);
     const bIndex = notes.indexOf(b);
     return aIndex - bIndex;
-  }
+  };
   return {
-    notes: [...state.activeNotes].sort(compareFn),
+    notes: [...state.activeNoteNames]
+      .sort(compareFn)
+      .map((n) => ({ name: n, octave: state.currOctave })),
     duration: state.currDuration,
     tiedToNext: false,
   };

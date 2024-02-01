@@ -1,5 +1,5 @@
 import { Message } from "../messages";
-import { Duration, Note } from "../music";
+import { Duration, NoteName } from "../music";
 
 export { default as setDuration } from "./setDuration";
 export { default as toggleActiveNote } from "./toggleActiveNote";
@@ -13,7 +13,7 @@ export { default as keyRelease } from "./keyRelease";
  */
 export type Action =
   | { type: Message.SET_DURATION; payload: { duration: Duration } }
-  | { type: Message.TOGGLE_ACTIVE_NOTE; payload: { note: Note } }
+  | { type: Message.TOGGLE_ACTIVE_NOTE_NAME; payload: { name: NoteName } }
   | { type: Message.COMMIT }
   | { type: Message.KEY_PRESS; payload: { key: string } }
   | { type: Message.KEY_RELEASE; payload: { key: string } };

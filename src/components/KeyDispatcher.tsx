@@ -28,7 +28,7 @@ export default function KeyDispatcher() {
       }
       else if (isPianoKey(event.key)) {
         dispatch({
-          type: Message.TOGGLE_ACTIVE_NOTE,
+          type: Message.TOGGLE_ACTIVE_NOTE_NAME,
           payload: { note: KeyToNote[event.key] },
         });
       }

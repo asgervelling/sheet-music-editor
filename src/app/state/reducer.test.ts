@@ -3,13 +3,15 @@ import { describe, it, expect } from "@jest/globals";
 import reducer from "./reducer";
 import { Action } from "./actions";
 import { State } from "./state";
-import { Duration, Note, MusicalEvent } from "./music";
+import { Duration, NoteName, MusicalEvent } from "./music";
 import { Message } from "./messages";
+import { D, c4, db4, event } from "./music/test_helpers";
 
 function createState(): State {
   return {
     currDuration: Duration.Quarter,
-    activeNotes: [],
+    currOctave: 4, // HARDCODED
+    activeNoteNames: [],
     history: [],
     undoStack: [],
     keysBeingHeld: [],
@@ -28,39 +30,34 @@ describe("Reducer Tests", () => {
     expect(s0.currDuration).toBe(Duration.Eighth);
   });
 
-  it("should handle TOGGLE_ACTIVE_NOTE action", () => {
+  it("should handle TOGGLE_ACTIVE_NOTE_NAME action", () => {
     const initialState = createState();
 
     // Toggle on some notes
     const actions: Action[] = [
-      { type: Message.TOGGLE_ACTIVE_NOTE, payload: { note: Note.Db } },
-      { type: Message.TOGGLE_ACTIVE_NOTE, payload: { note: Note.F } },
-      { type: Message.TOGGLE_ACTIVE_NOTE, payload: { note: Note.Ab } },
+      { type: Message.TOGGLE_ACTIVE_NOTE_NAME, payload: { name: NoteName.Db } },
+      { type: Message.TOGGLE_ACTIVE_NOTE_NAME, payload: { name: NoteName.F } },
+      { type: Message.TOGGLE_ACTIVE_NOTE_NAME, payload: { name: NoteName.Ab } },
     ];
     const s0 = actions.reduce(reducer, initialState);
-    expect(s0.activeNotes).toEqual([Note.Db, Note.F, Note.Ab]);
+    expect(s0.activeNoteNames).toEqual([NoteName.Db, NoteName.F, NoteName.Ab]);
 
     // Toggle off a note
     const action: Action = {
-      type: Message.TOGGLE_ACTIVE_NOTE,
-      payload: { note: Note.F },
+      type: Message.TOGGLE_ACTIVE_NOTE_NAME,
+      payload: { name: NoteName.F },
     };
     const s1 = reducer(s0, action);
-    expect(s1.activeNotes).toEqual([Note.Db, Note.Ab]);
+    expect(s1.activeNoteNames).toEqual([NoteName.Db, NoteName.Ab]);
   });
 
   it("should handle COMMIT action", () => {
     // Create a state with some active notes and an undo stack
     const s0: State = {
       currDuration: Duration.Quarter,
-      activeNotes: [Note.Db, Note.F, Note.Ab],
-      history: [
-        {
-          notes: [Note.C],
-          duration: Duration.Quarter,
-          tiedToNext: false,
-        },
-      ],
+      currOctave: 4, // HARDCODED
+      activeNoteNames: [NoteName.Db, NoteName.F, NoteName.Ab],
+      history: [c4],
       undoStack: [],
       keysBeingHeld: [],
     };
@@ -69,26 +66,16 @@ describe("Reducer Tests", () => {
     // add the new MusicalEvent to the end of the history,
     // and clear the undo stack
     const s1 = reducer(s0, { type: Message.COMMIT });
-    expect(s1.activeNotes).toEqual([]);
-    expect(s1.history).toEqual([
-      {
-        notes: [Note.C],
-        duration: Duration.Quarter,
-        tiedToNext: false,
-      },
-      {
-        notes: [Note.Db, Note.F, Note.Ab],
-        duration: Duration.Quarter,
-        tiedToNext: false,
-      },
-    ]);
+    expect(s1.activeNoteNames).toEqual([]);
+    expect(s1.history).toEqual([c4, event([NoteName.Db, NoteName.F, NoteName.Ab], D.Quarter)]);
   });
 
   it("should handle KEY_PRESS action", () => {
     // Create a state with some active notes
     const s0: State = {
       currDuration: Duration.Quarter,
-      activeNotes: [Note.Db, Note.F, Note.Ab],
+      currOctave: 4, // HARDCODED
+      activeNoteNames: [NoteName.Db, NoteName.F, NoteName.Ab],
       history: [],
       undoStack: [],
       keysBeingHeld: [],
@@ -105,13 +92,7 @@ describe("Reducer Tests", () => {
 
   it("should do an undo operation when the undo key combination is pressed", () => {
     // Create a state with some active notes and a history
-    const initialHistory: MusicalEvent[] = [
-      {
-        notes: [Note.Db],
-        duration: Duration.Quarter,
-        tiedToNext: false,
-      },
-    ];
+    const initialHistory: MusicalEvent[] = [db4];
     const s0: State = {
       ...createState(),
       history: initialHistory,
@@ -142,13 +123,7 @@ describe("Reducer Tests", () => {
     /*
     Redo operation
     */
-    const initialUndoStack: MusicalEvent[] = [
-      {
-        notes: [Note.Db],
-        duration: Duration.Quarter,
-        tiedToNext: false,
-      },
-    ];
+    const initialUndoStack: MusicalEvent[] = [db4];
     const s0: State = {
       ...createState(),
       undoStack: initialUndoStack,
@@ -178,7 +153,8 @@ describe("Reducer Tests", () => {
     // Create a state with some active notes
     const s0: State = {
       currDuration: Duration.Quarter,
-      activeNotes: [Note.Db, Note.F, Note.Ab],
+      currOctave: 4, // HARDCODED
+      activeNoteNames: [NoteName.Db, NoteName.F, NoteName.Ab],
       history: [],
       undoStack: [],
       keysBeingHeld: ["a", "b", "c"],

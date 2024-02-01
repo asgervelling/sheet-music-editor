@@ -1,5 +1,5 @@
 export {
-  Note,
+  NoteName,
   Duration,
   NoteToKey,
   KeyToNote,

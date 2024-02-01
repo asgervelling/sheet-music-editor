@@ -7,6 +7,7 @@ import {
   reciprocalChunk,
   simplify,
   simplifyPair,
+  tieGroup,
 } from "./events";
 import {
   c1,
@@ -15,15 +16,11 @@ import {
   c8,
   c16,
   c32,
-  tiedToNext,
-  e1,
   e2,
   e4,
   e16,
   e8,
   e32,
-  fmtChunk,
-  fmtChunks,
   p1,
   p2,
   p4,
@@ -42,10 +39,6 @@ import {
   e8t,
   e32t,
   e1t,
-  p2t,
-  p4t,
-  p8t,
-  p16t,
 } from "./test_helpers";
 import { repeat } from "./arrays";
 
@@ -93,7 +86,7 @@ describe("chunk", () => {
     expect(chunk([e2], [16])).toEqual([[e2]]);
   });
 
-  it("should divide two events into two chunks", () => {
+  it("should divide two events into two chunks no matter their tied status", () => {
     expect(chunk([e2, c2], [16, 16])).toEqual([[e2], [c2]]);
     expect(chunk([e2t, c2], [16, 16])).toEqual([[e2t], [c2]]);
     expect(chunk([e2, c2t], [16, 16])).toEqual([[e2], [c2t]]);
@@ -102,17 +95,17 @@ describe("chunk", () => {
 
   it("should divide two events into three chunks", () => {
     expect(chunk([e2, c2], [10, 12, 10])).toEqual([
-      [e4t, e16t],
-      [e8t, e16, c8t, c16t],
-      [c4t, c16],
+      [e16t, e4t],
+      [e16t, e8, c16t, c8t],
+      [c16t, c4],
     ]);
   });
 
   it("should divide events into weirdly sized chunks", () => {
     expect(chunk([e2, c2], [7, 12, 13])).toEqual([
-      [e8t, e16t, e32t],
-      [e4t, e32, c16t, c32t],
-      [c4t, c8t, c32],
+      [e32t, e16t, e8t],
+      [e32t, e4, c32t, c16t],
+      [c32t, c8t, c4],
     ]);
   });
 
@@ -124,25 +117,25 @@ describe("chunk", () => {
     expect(chunk([e4, c4, e4], [11, 13])).toEqual([
       // Three quarter notes, E, C and E,
       // split into two measures of 11/32 and 13/32
-      [e4, c16t, c32t],
-      [c8t, c32, e4],
+      [e4, c32t, c16t],
+      [c32t, c8, e4],
     ]);
   });
 
   it("should do some uneven splits", () => {
     expect(chunk([e32, c2], [2, 3, 5, 7])).toEqual([
       [e32, c32t],
-      [c16t, c32t],
-      [c8t, c32t],
-      [c8t, c16t, c32],
+      [c32t, c16t],
+      [c32t, c8t],
+      [c32t, c16t, c8],
     ]);
   });
 
   it("more weird splits", () => {
     expect(chunk([c1], [11, 11, 10])).toEqual([
-      [c4t, c16t, c32t],
-      [c4t, c16t, c32t],
-      [c4t, c16],
+      [c32t, c16t, c4t],
+      [c32t, c16t, c4t],
+      [c16t, c4],
     ]);
   });
 });
@@ -234,6 +227,35 @@ describe("simplifyPair", () => {
   });
 });
 
+describe("tieGroup", () => {
+  it("should tie together events that are all tied", () => {
+    expect(tieGroup([c1t, c2t])).toEqual([c1t, c2t]);
+  });
+  
+  it("should set all events except the last to tied, if the last one is not tied", () => {
+    expect(tieGroup([c1, c2])).toEqual([c1t, c2]);
+    expect(tieGroup([c1t, c2])).toEqual([c1t, c2]);
+    expect(tieGroup([e8t, e16])).toEqual([e8t, e16]);
+  });
+
+  it("should not fail when group is empty", () => {
+    expect(tieGroup([])).toEqual([]);
+  });
+
+  // [([C], 16, t), ([C], 8, t), ([C], q, t), ([C], h, t), ([C], w, t), ([C], w, t), ([C], w, t)]
+  it("should tie together events that are all tied", () => {
+    expect(tieGroup([c16t, c8t, c4t, c2t, c1t, c1t, c1t])).toEqual([
+      c16t,
+      c8t,
+      c4t,
+      c2t,
+      c1t,
+      c1t,
+      c1t,
+    ]);
+  });
+});
+
 describe("simplify", () => {
   it("should not simplify whole notes", () => {
     expect(simplify([c1t, c1])).toEqual([c1t, c1]);
@@ -244,7 +266,7 @@ describe("simplify", () => {
   });
 
   it("should simplify three tied 32nd notes", () => {
-    expect(simplify([c32t, c32t, c32t])).toEqual([c16t, c32t]);
+    expect(simplify([c32t, c32t, c32t])).toEqual([c32t, c16t]);
   });
 
   it("should simplify four tied 32nd notes", () => {
@@ -256,25 +278,26 @@ describe("simplify", () => {
   });
 
   it("should simplify a pair of each duration", () => {
+    expect(simplify([c32t, c32t, c16t, c16t])).toEqual([c16t, c8t]);
     expect(
       simplify([c32t, c32, c16t, c16, c8t, c8, c4t, c4, c2t, c2, c1t, c1t])
     ).toEqual([c16, c8, c4, c2, c1, c1t, c1t]);
     expect(
       simplify([c32t, c32t, c16t, c16t, c8t, c8t, c4t, c4t, c2t, c2t, c1t, c1t])
-    ).toEqual([c1t, c1t, c1t, c2t, c4t, c8t, c16t]);
+    ).toEqual([c16t, c8t, c4t, c2t, c1t, c1t, c1t]);
   });
 
   it("should simplify tied events to the same, no matter the order", () => {
-    expect(simplify([c4t, c8t, c8t, c8t])).toEqual([c2t, c8t]);
-    expect(simplify([c8t, c4t, c8t, c8t])).toEqual([c2t, c8t]);
-    expect(simplify([c8t, c8t, c4t, c8t])).toEqual([c2t, c8t]);
-    expect(simplify([c8t, c8t, c8t, c4t])).toEqual([c2t, c8t]);
+    expect(simplify([c4t, c8t, c8t, c8t])).toEqual([c8t, c2t]);
+    expect(simplify([c8t, c4t, c8t, c8t])).toEqual([c8t, c2t]);
+    expect(simplify([c8t, c8t, c4t, c8t])).toEqual([c8t, c2t]);
+    expect(simplify([c8t, c8t, c8t, c4t])).toEqual([c8t, c2t]);
   });
 
   it("should simplify many tied events in jumbled order", () => {
     expect(
       simplify([c8t, c1t, c2t, c32t, c16t, c1t, c8t, c4t, c32t, c4t, c2t, c16t])
-    ).toEqual([c1t, c1t, c1t, c2t, c4t, c8t, c16t]);
+    ).toEqual([c16t, c8t, c4t, c2t, c1t, c1t, c1t]);
   });
 
   it("should simplify many events to a single event", () => {
@@ -282,9 +305,9 @@ describe("simplify", () => {
   });
 
   it("should simplify three groups I was having trouble with", () => {
-    expect(simplify(repeat(e32t, 10))).toEqual([e4t, e16t]);
-    expect(simplify([...repeat(e32t, 5), e32])).toEqual([e8t, e16]);
-    expect(simplify([...repeat(c32t, 9), c32])).toEqual([c4t, c16]);
+    expect(simplify(repeat(e32t, 10))).toEqual([e16t, e4t]);
+    expect(simplify([...repeat(e32t, 5), e32])).toEqual([e16t, e8]);
+    expect(simplify([...repeat(c32t, 9), c32])).toEqual([c16t, c4]);
   });
 });
 
@@ -294,22 +317,27 @@ describe("reciprocalChunk", () => {
   });
 
   it("should fill up an empty chunk of 3/4", () => {
-    expect(reciprocalChunk([], 24)).toEqual([p2, p4]);
+    expect(reciprocalChunk([], 24)).toEqual([p4, p2]);
   });
 
   it("should fill up an empty chunk of 15/32", () => {
-    expect(reciprocalChunk([], 15)).toEqual([p4, p8, p16, p32]);
+    expect(reciprocalChunk([], 15)).toEqual([p32, p16, p8, p4]);
   });
 
   it("should not fill up a complete or overfull chunk", () => {
     expect(reciprocalChunk([c32], 1)).toEqual([]);
     expect(reciprocalChunk([c1], 32)).toEqual([]);
     expect(reciprocalChunk([c1], 31)).toEqual([]);
-  })
+  });
 
   it("should fill up semi-complete chunks of various lengths", () => {
     expect(reciprocalChunk([e32], 2)).toEqual([p32]);
     expect(reciprocalChunk([e32], 3)).toEqual([p16]);
-    expect(reciprocalChunk([c4t, c8, c8, e32t, e16], 34)).toEqual([p4, p8, p16, p32]);
-  })
+    expect(reciprocalChunk([c4t, c8, c8, e32t, e16], 34)).toEqual([
+      p32,
+      p16,
+      p8,
+      p4,
+    ]);
+  });
 });

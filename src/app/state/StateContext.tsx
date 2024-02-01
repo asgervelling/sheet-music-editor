@@ -8,7 +8,7 @@ import reducer from "./reducer";
 
 const initialState: State = {
   currDuration: Duration.Quarter,
-  activeNotes: [],
+  activeNoteNames: [],
   history: [],
   undoStack: [],
   keysBeingHeld: [],

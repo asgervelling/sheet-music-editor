@@ -16,8 +16,8 @@ export default function reducer(state: State, action: Action): State {
     case Message.SET_DURATION:
       return setDuration(state, action.payload.duration);
 
-    case Message.TOGGLE_ACTIVE_NOTE:
-      return toggleActiveNote(state, action.payload.note);
+    case Message.TOGGLE_ACTIVE_NOTE_NAME:
+      return toggleActiveNote(state, action.payload.name);
 
     case Message.COMMIT:
       return commit(state);

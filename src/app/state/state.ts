@@ -1,8 +1,9 @@
-import { MusicalEvent, Duration, Note } from "./music";
+import { MusicalEvent, Duration, NoteName } from "./music";
 
 export type State = {
   currDuration: Duration;
-  activeNotes: Note[];
+  currOctave: 4; // HARDCODED
+  activeNoteNames: NoteName[];
   history: MusicalEvent[];
   undoStack: MusicalEvent[];
   keysBeingHeld: string[];

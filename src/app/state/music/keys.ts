@@ -1,5 +1,6 @@
-import { Note } from ".";
+import { NoteName } from ".";
 import { rotate } from "./arrays";
+import { Note } from "./events";
 
 export type ScaleStep = "1" | "b2" | "2" | "b3" | "3" | "4" | "b5" | "5" | "b6" | "6" | "b7" | "7";
 
@@ -12,22 +13,23 @@ export enum Accidental {
 /**
  * Get `note` as a step in the `key` major scale
  */
-export function stepInKey(note: Note, key: Note): ScaleStep {
+export function stepInKey(note: Note, key: NoteName): ScaleStep {
   const majorScale: ScaleStep[] = ["1", "b2", "2", "b3", "3", "4", "b5", "5", "b6", "6", "b7", "7"];
-  const N = Note;
+  const N = NoteName;
   const cMajor = [N.C, N.Db, N.D, N.Eb, N.E, N.F, N.Gb, N.G, N.Ab, N.A, N.Bb, N.B];
 
   const keyIndex = cMajor.indexOf(key);
   const keyNotes = rotate(cMajor, keyIndex);
-  const noteIndex = keyNotes.indexOf(note);
+  const noteIndex = keyNotes.indexOf(note.name);
   return majorScale[noteIndex];
 }
 
 export function interval(a: Note, b: Note): ScaleStep {
-  return stepInKey(b, a);
+  throw new Error("Not implemented");
+  // return stepInKey(b, a);
 }
 
-function isDiatonic(note: Note, key: Note): boolean {
+function isDiatonic(note: Note, key: NoteName): boolean {
   return stepInKey(note, key).includes("b");
 }
 
@@ -36,7 +38,7 @@ function isDiatonic(note: Note, key: Note): boolean {
 //  * to be ascending, if b is less than three semitones
 //  * 
 //  */
-// function isAscending(a: Note, b: Note): boolean {
+// function isAscending(a: NoteName, b: NoteName): boolean {
 
 // }
 
@@ -53,10 +55,10 @@ function isDiatonic(note: Note, key: Note): boolean {
  *   the accidental will be sharp (#) when the sequence is ascending \
  *   and flat (b) when the sequence is descending.
  */
-// export function inferAccidental(note: Note, previousNote: Note | null, key: Note): Accidental {
+// export function inferAccidental(note: NoteName, previousNote: NoteName | null, key: NoteName): Accidental {
 
 // }
 
-// function isAscendingSequence(note: Note, previousNote: Note | null): boolean {
+// function isAscendingSequence(note: NoteName, previousNote: NoteName | null): boolean {
 
 // }

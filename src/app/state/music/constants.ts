@@ -1,4 +1,4 @@
-export enum Note {
+export enum NoteName {
   C = "C",
   Db = "D♭",
   D = "D",
@@ -27,26 +27,26 @@ export enum Duration {
 }
 
 /**
- * Mapping from Note to keyboard key.
+ * Mapping from NoteName to keyboard key.
  */
-export const NoteToKey: Record<Note, string> = {
-  [Note.C]: "a",
-  [Note.Db]: "w",
-  [Note.D]: "s",
-  [Note.Eb]: "e",
-  [Note.E]: "d",
-  [Note.F]: "f",
-  [Note.Gb]: "t",
-  [Note.G]: "g",
-  [Note.Ab]: "y",
-  [Note.A]: "h",
-  [Note.Bb]: "u",
-  [Note.B]: "j",
-  [Note.PAUSE]: "p",
+export const NoteToKey: Record<NoteName, string> = {
+  [NoteName.C]: "a",
+  [NoteName.Db]: "w",
+  [NoteName.D]: "s",
+  [NoteName.Eb]: "e",
+  [NoteName.E]: "d",
+  [NoteName.F]: "f",
+  [NoteName.Gb]: "t",
+  [NoteName.G]: "g",
+  [NoteName.Ab]: "y",
+  [NoteName.A]: "h",
+  [NoteName.Bb]: "u",
+  [NoteName.B]: "j",
+  [NoteName.PAUSE]: "p",
 };
 
 /**
- * Mapping from keyboard key to Note.
+ * Mapping from keyboard key to NoteName.
  */
 export const KeyToNote = flipRecord(NoteToKey);
 
