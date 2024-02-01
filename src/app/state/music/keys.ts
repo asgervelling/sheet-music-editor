@@ -31,14 +31,14 @@ function isDiatonic(note: Note, key: Note): boolean {
   return stepInKey(note, key).includes("b");
 }
 
-/**
- * True if 
- * @param a The first note
- * @param b The second note
- */
-function isAscending(a: Note, b: Note): boolean {
+// /**
+//  * For the moment, we only consider the sequence a, b
+//  * to be ascending, if b is less than three semitones
+//  * 
+//  */
+// function isAscending(a: Note, b: Note): boolean {
 
-}
+// }
 
 /**
  * Infer which accidental should be given to a note \
