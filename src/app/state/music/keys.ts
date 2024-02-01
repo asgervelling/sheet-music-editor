@@ -13,14 +13,14 @@ export enum Accidental {
 /**
  * Get `note` as a step in the `key` major scale
  */
-export function stepInKey(note: Note, key: NoteName): ScaleStep {
+export function stepInKey(noteName: NoteName, key: NoteName): ScaleStep {
   const majorScale: ScaleStep[] = ["1", "b2", "2", "b3", "3", "4", "b5", "5", "b6", "6", "b7", "7"];
   const N = NoteName;
   const cMajor = [N.C, N.Db, N.D, N.Eb, N.E, N.F, N.Gb, N.G, N.Ab, N.A, N.Bb, N.B];
 
   const keyIndex = cMajor.indexOf(key);
   const keyNotes = rotate(cMajor, keyIndex);
-  const noteIndex = keyNotes.indexOf(note.name);
+  const noteIndex = keyNotes.indexOf(noteName);
   return majorScale[noteIndex];
 }
 
@@ -29,8 +29,8 @@ export function interval(a: Note, b: Note): ScaleStep {
   // return stepInKey(b, a);
 }
 
-function isDiatonic(note: Note, key: NoteName): boolean {
-  return stepInKey(note, key).includes("b");
+function isDiatonic(noteName: NoteName, key: NoteName): boolean {
+  return stepInKey(noteName, key).includes("b");
 }
 
 // /**

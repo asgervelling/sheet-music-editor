@@ -2,6 +2,7 @@ import { describe, it, expect } from "@jest/globals";
 
 import { interval, stepInKey } from "./keys";
 import { NoteName } from ".";
+import { Note } from "./events";
 
 describe("stepInKey", () => {
   it("should give the correct step", () => {
@@ -16,22 +17,26 @@ describe("stepInKey", () => {
 });
 
 describe("interval", () => {
-  it("should give the correct interval", () => {
-    expect(interval(NoteName.A, NoteName.Db)).toEqual("3");
-    expect(interval(NoteName.E, NoteName.F)).toEqual("b2");
-    expect(interval(NoteName.G, NoteName.Gb)).toEqual("7");
-    expect(interval(NoteName.G, NoteName.F)).toEqual("b7");
+  // HARDCODED octave
+  const note = (name: NoteName): Note => ({ name, octave: 4 });
+  const NN = NoteName;
 
-    expect(interval(NoteName.F, NoteName.Gb)).toEqual("b2");
-    expect(interval(NoteName.F, NoteName.G)).toEqual("2");
-    expect(interval(NoteName.F, NoteName.Ab)).toEqual("b3");
-    expect(interval(NoteName.F, NoteName.A)).toEqual("3");
-    expect(interval(NoteName.F, NoteName.Bb)).toEqual("4");
-    expect(interval(NoteName.F, NoteName.B)).toEqual("b5");
-    expect(interval(NoteName.F, NoteName.C)).toEqual("5");
-    expect(interval(NoteName.F, NoteName.Db)).toEqual("b6");
-    expect(interval(NoteName.F, NoteName.D)).toEqual("6");
-    expect(interval(NoteName.F, NoteName.Eb)).toEqual("b7");
-    expect(interval(NoteName.F, NoteName.E)).toEqual("7");
+  it("should give the correct interval", () => {
+    expect(interval(note(NN.A), note(NN.Db))).toEqual("3");
+    expect(interval(note(NN.E), note(NN.F))).toEqual("b2");
+    expect(interval(note(NN.G), note(NN.Gb))).toEqual("7");
+    expect(interval(note(NN.G), note(NN.F))).toEqual("b7");
+
+    expect(interval(note(NN.F), note(NN.Gb))).toEqual("b2");
+    expect(interval(note(NN.F), note(NN.G))).toEqual("2");
+    expect(interval(note(NN.F), note(NN.Ab))).toEqual("b3");
+    expect(interval(note(NN.F), note(NN.A))).toEqual("3");
+    expect(interval(note(NN.F), note(NN.Bb))).toEqual("4");
+    expect(interval(note(NN.F), note(NN.B))).toEqual("b5");
+    expect(interval(note(NN.F), note(NN.C))).toEqual("5");
+    expect(interval(note(NN.F), note(NN.Db))).toEqual("b6");
+    expect(interval(note(NN.F), note(NN.D))).toEqual("6");
+    expect(interval(note(NN.F), note(NN.Eb))).toEqual("b7");
+    expect(interval(note(NN.F), note(NN.E))).toEqual("7");
   });
 });
