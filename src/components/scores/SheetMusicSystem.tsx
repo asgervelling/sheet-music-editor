@@ -7,7 +7,7 @@
  * and let this component use VexFlow instead.
  */
 "use client";
-import { createTies, toStaveNote } from "@/app/sheet_music";
+import { createTies, staveNote } from "@/app/sheet_music";
 import { StateContext } from "@/app/state/StateContext";
 import { Bar } from "@/app/state/music";
 import { createBars } from "@/app/state/music/bars";
@@ -82,7 +82,7 @@ function staveWidth(bar: Bar): number {
 }
 
 function drawBar(context: RenderContext, bar: Bar, i: number, offset: number) {
-  const notes = bar.events.map(toStaveNote);
+  const notes = bar.events.map(staveNote);
   const x = i + offset;
   const y = 0;
   const stave = new Stave(x, y, staveWidth(bar));

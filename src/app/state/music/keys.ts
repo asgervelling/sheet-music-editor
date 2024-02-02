@@ -70,7 +70,7 @@ export function stepInKey(noteName: NoteName, key: NoteName): ScaleStep {
  * The MIDI value is a number between 0 and 127. \
  * If the note falls outside that range, it will be clamped. \
  */
-export function toMIDIValue(note: Note): number {
+export function midiValue(note: Note): number {
   if (note.name === NoteName.PAUSE) {
     // Pauses still benefit from having a MIDI value.
     // We can use it to render a pause in a suitable position.
@@ -87,7 +87,7 @@ export function toMIDIValue(note: Note): number {
  * Return the interval between `a` and `b` as a number of semitones.
  */
 export function interval(a: Note, b: Note): number {
-  return Math.abs(toMIDIValue(a) - toMIDIValue(b));
+  return Math.abs(midiValue(a) - midiValue(b));
 }
 
 /**
@@ -99,13 +99,11 @@ export function isDiatonic(noteName: NoteName, key: NoteName): boolean {
   return !stepInKey(noteName, key).includes("b");
 }
 
-// /**
-//  * For the moment, we only consider the sequence a, b
-//  * to be ascending, if b is less than three semitones
-//  *
-//  */
-// function isAscending(a: NoteName, b: NoteName): boolean {
-
+/**
+ * True if `b` is a higher note than `a`
+ */
+// function isAscending(a: Note, b: Note): boolean {
+//   return 
 // }
 
 /**

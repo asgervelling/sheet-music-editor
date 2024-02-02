@@ -13,7 +13,7 @@ import { Note } from "./state/music/events";
 /**
  * Convert a NoteName to the note name format used by VexFlow.
  */
-export function toVexFlowName(note: Note): string {
+export function vexFlowName(note: Note): string {
   if (note.name === NoteName.PAUSE) {
     return `b/${note.octave}r`;
   } else {
@@ -25,8 +25,8 @@ export function toVexFlowName(note: Note): string {
 /**
  * Convert a MusicalEvent to a VexFlow StaveNote.
  */
-export function toStaveNote(e: MusicalEvent): VF.StaveNote {
-  const keys = e.notes.map(toVexFlowName);
+export function staveNote(e: MusicalEvent): VF.StaveNote {
+  const keys = e.notes.map(vexFlowName);
   const duration = e.duration;
   const note = new VF.StaveNote({
     clef: "treble",

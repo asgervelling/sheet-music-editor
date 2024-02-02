@@ -1,6 +1,6 @@
 import { describe, it, expect } from "@jest/globals";
 
-import { interval, isDiatonic, stepInKey, toMIDIValue } from "./keys";
+import { interval, isDiatonic, stepInKey, midiValue } from "./keys";
 import { NoteName } from ".";
 import { Note } from "./events";
 import { rotate } from "./arrays";
@@ -63,15 +63,15 @@ describe.only("interval", () => {
   });
 });
 
-describe("toMIDIValue", () => {
+describe("midiValue", () => {
   it("should have C4 as the middle C", () => {
     const middleC = 60;
-    expect(toMIDIValue({ name: NN.C, octave: 4 })).toEqual(middleC);
+    expect(midiValue({ name: NN.C, octave: 4 })).toEqual(middleC);
   });
 
   it("should have 12 semitones between each C", () => {
     for (let i = -1; i <= 9; i++) {
-      expect(toMIDIValue({ name: NN.C, octave: i })).toEqual(12 * (i + 1));
+      expect(midiValue({ name: NN.C, octave: i })).toEqual(12 * (i + 1));
     }
   });
 
@@ -81,11 +81,11 @@ describe("toMIDIValue", () => {
       const octave = Math.floor(i / 12) - 1;
       const note: Note = { name, octave };
       if (i < 0) {
-        expect(toMIDIValue(note)).toEqual(0);
+        expect(midiValue(note)).toEqual(0);
       } else if (i > 127) {
-        expect(toMIDIValue(note)).toEqual(127);
+        expect(midiValue(note)).toEqual(127);
       } else {
-        expect(toMIDIValue(note));
+        expect(midiValue(note));
       }
     }
   });
