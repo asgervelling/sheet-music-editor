@@ -102,14 +102,14 @@ export function isDiatonic(noteName: NoteName, key: NoteName): boolean {
 /**
  * True if `b` is a higher note than `a`
  */
-function isAscending(a: Note, b: Note): boolean {
+export function isAscending(a: Note, b: Note): boolean {
   return midiValue(b) > midiValue(a);
 }
 
 /**
  * True if `b` is a lower note than `a`
  */
-function isDecending(a: Note, b: Note): boolean {
+export function isDescending(a: Note, b: Note): boolean {
   return midiValue(b) < midiValue(a);
 }
 
@@ -122,14 +122,21 @@ function isDecending(a: Note, b: Note): boolean {
  *   Otherwise, it will be Flat.
  *
  * - If `note` is played right after another note \
- *   with an interval less than or equal to three semitones, \
+ *   with an interval less than or equal to two semitones, \
  *   the accidental will be sharp (#) when the sequence is ascending \
  *   and flat (b) when the sequence is descending.
  */
-// export function inferAccidental(note: NoteName, previousNote: NoteName | null, key: NoteName): Accidental {
-
-// }
-
-// function isAscendingSequence(note: NoteName, previousNote: NoteName | null): boolean {
-
-// }
+export function inferAccidental(
+  note: Note,
+  previousNote: Note | null,
+  key: NoteName
+): Accidental {
+  if (isDiatonic(note.name, key)) return Accidental.Natural;
+  if (
+    previousNote &&
+    isAscending(previousNote, note) &&
+    interval(previousNote, note) <= 2
+  )
+    return Accidental.Sharp;
+  return Accidental.Flat;
+}

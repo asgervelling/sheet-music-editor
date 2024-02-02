@@ -11,8 +11,7 @@ describe("staveNote", () => {
     expect(note.getDuration()).toEqual(duration);
   }
   it("should create a stave note of the right format", () => {
-    const staveNote = staveNote(e8);
-    assertNoteHas(staveNote, ["E/4"], "8");
+    assertNoteHas(staveNote(e8), ["E/4"], "8");
     assertNoteHas(staveNote(e16), ["E/4"], "16");
     assertNoteHas(staveNote(event([NoteName.B], D.Sixteenth)), ["B/4"], "16");
     assertNoteHas(staveNote(event([NoteName.Ab], D.ThirtySecond)), ["Ab/4"], "32");
