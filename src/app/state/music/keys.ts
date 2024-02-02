@@ -87,7 +87,7 @@ export function toMIDIValue(note: Note): number {
  * Return the interval between `a` and `b` as a number of semitones.
  */
 export function interval(a: Note, b: Note): number {
-  throw new Error("Not implemented");
+  return Math.abs(toMIDIValue(a) - toMIDIValue(b));
 }
 
 /**

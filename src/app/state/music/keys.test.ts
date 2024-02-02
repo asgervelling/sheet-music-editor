@@ -36,24 +36,30 @@ describe("stepInKey", () => {
   });
 });
 
-describe.skip("interval", () => {
-  it("should give the correct interval", () => {
-    expect(interval(note(NN.A), note(NN.Db))).toEqual("3");
-    expect(interval(note(NN.E), note(NN.F))).toEqual("b2");
-    expect(interval(note(NN.G), note(NN.Gb))).toEqual("7");
-    expect(interval(note(NN.G), note(NN.F))).toEqual("b7");
+describe.only("interval", () => {
+  const n = (name: NoteName, octave: number): Note => ({ name, octave });
 
-    expect(interval(note(NN.F), note(NN.Gb))).toEqual("b2");
-    expect(interval(note(NN.F), note(NN.G))).toEqual("2");
-    expect(interval(note(NN.F), note(NN.Ab))).toEqual("b3");
-    expect(interval(note(NN.F), note(NN.A))).toEqual("3");
-    expect(interval(note(NN.F), note(NN.Bb))).toEqual("4");
-    expect(interval(note(NN.F), note(NN.B))).toEqual("b5");
-    expect(interval(note(NN.F), note(NN.C))).toEqual("5");
-    expect(interval(note(NN.F), note(NN.Db))).toEqual("b6");
-    expect(interval(note(NN.F), note(NN.D))).toEqual("6");
-    expect(interval(note(NN.F), note(NN.Eb))).toEqual("b7");
-    expect(interval(note(NN.F), note(NN.E))).toEqual("7");
+  it("should give the correct interval", () => {
+    expect(interval(n(NN.A, 4), n(NN.Db, 5))).toEqual(4);
+    expect(interval(n(NN.A, 4), n(NN.Db, 4))).toEqual(8);
+    expect(interval(n(NN.A, 4), n(NN.Db, 3))).toEqual(20);
+    expect(interval(n(NN.E, 4), n(NN.F, 4))).toEqual(1);
+    expect(interval(n(NN.G, 4), n(NN.Gb, 4))).toEqual(1);
+    expect(interval(n(NN.G, 4), n(NN.F, 4))).toEqual(2);
+    expect(interval(n(NN.F, 4), n(NN.G, 4))).toEqual(2);
+
+    expect(interval(n(NN.F, 4), n(NN.F, 4))).toEqual(0);
+    expect(interval(n(NN.F, 4), n(NN.Gb, 4))).toEqual(1);
+    expect(interval(n(NN.F, 4), n(NN.G, 4))).toEqual(2);
+    expect(interval(n(NN.F, 4), n(NN.Ab, 4))).toEqual(3);
+    expect(interval(n(NN.F, 4), n(NN.A, 4))).toEqual(4);
+    expect(interval(n(NN.F, 4), n(NN.Bb, 4))).toEqual(5);
+    expect(interval(n(NN.F, 4), n(NN.B, 4))).toEqual(6);
+    expect(interval(n(NN.F, 4), n(NN.C, 5))).toEqual(7);
+    expect(interval(n(NN.F, 4), n(NN.Db, 5))).toEqual(8);
+    expect(interval(n(NN.F, 4), n(NN.D, 5))).toEqual(9);
+    expect(interval(n(NN.F, 4), n(NN.Eb, 5))).toEqual(10);
+    expect(interval(n(NN.F, 4), n(NN.E, 5))).toEqual(11);
   });
 });
 
@@ -112,5 +118,5 @@ describe("isDiatonic", () => {
       const [key, nextKey] = [noteNames[i], noteNames[i + 1]];
       expect(diatonics(key)).toEqual(rotate(diatonics(nextKey), 1));
     }
-  })
+  });
 });
