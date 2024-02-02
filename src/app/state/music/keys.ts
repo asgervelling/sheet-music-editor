@@ -102,9 +102,16 @@ export function isDiatonic(noteName: NoteName, key: NoteName): boolean {
 /**
  * True if `b` is a higher note than `a`
  */
-// function isAscending(a: Note, b: Note): boolean {
-//   return 
-// }
+function isAscending(a: Note, b: Note): boolean {
+  return midiValue(b) > midiValue(a);
+}
+
+/**
+ * True if `b` is a lower note than `a`
+ */
+function isDecending(a: Note, b: Note): boolean {
+  return midiValue(b) < midiValue(a);
+}
 
 /**
  * Infer which accidental should be given to a note \
