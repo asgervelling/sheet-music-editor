@@ -9,6 +9,9 @@ import * as VF from "vexflow";
 
 import { Bar, MusicalEvent, NoteName } from "./state/music";
 import { Note } from "./state/music/events";
+import { first, mapPairs } from "./state/music/arrays";
+import { fmtChunk, fmtEvent } from "./state/music/test_helpers";
+import { inferAccidental } from "./state/music/keys";
 
 /**
  * Convert a NoteName to the note name format used by VexFlow.
@@ -35,6 +38,16 @@ export function staveNote(e: MusicalEvent): VF.StaveNote {
   });
   return note;
 }
+
+// export function staveNotes(events: MusicalEvent[], key: NoteName): VF.StaveNote[] {
+//   const l = [null, ...events]
+//   mapPairs(l, (a, b): VF.StaveNote => {
+//     if (b) {
+//       const sNote = staveNote(b);
+//       if (isDiatonic)
+//     }
+//   })
+// }
 
 /**
  * Tie musical events together to signify

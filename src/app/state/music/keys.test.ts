@@ -5,14 +5,16 @@ import {
   isDiatonic,
   stepInKey,
   midiValue,
-  inferAccidental,
+  // inferAccidental,
+  inferAccidentals,
   Accidental,
   isAscending,
   isDescending,
 } from "./keys";
-import { NoteName } from ".";
-import { Note } from "./events";
-import { rotate } from "./arrays";
+import { Duration, NoteName } from ".";
+import { MusicalEvent, Note } from "./events";
+import { head, rotate, tail } from "./arrays";
+import { c4, db4, e4, e8, event, fmtEvent } from "./test_helpers";
 
 // HARDCODED octave
 const n = (name: NoteName, octave: number): Note => ({ name, octave });
@@ -140,7 +142,7 @@ describe("isAscending", () => {
     expect(isAscending(n(NN.C, 2), n(NN.C, 3))).toBe(true);
     expect(isAscending(n(NN.C, 2), n(NN.C, -1))).toBe(false);
   });
-})
+});
 
 describe("isDescending", () => {
   it("should return true if note b is higher than note a", () => {
@@ -153,66 +155,172 @@ describe("isDescending", () => {
     expect(isDescending(n(NN.C, 2), n(NN.C, 3))).toBe(false);
     expect(isDescending(n(NN.C, 2), n(NN.C, -1))).toBe(true);
   });
-})
+});
 
-describe("inferAccidental", () => {
-  it("should infer natural if the note is diatonic", () => {
-    // The key of G has the pitches G, A, B, C, D, E, and F♯
-    expect(inferAccidental(note(NN.G), null, NN.G)).toEqual(Accidental.Natural);
-    expect(inferAccidental(note(NN.A), null, NN.G)).toEqual(Accidental.Natural);
-    expect(inferAccidental(note(NN.B), null, NN.G)).toEqual(Accidental.Natural);
-    expect(inferAccidental(note(NN.C), null, NN.G)).toEqual(Accidental.Natural);
-    expect(inferAccidental(note(NN.D), null, NN.G)).toEqual(Accidental.Natural);
-    expect(inferAccidental(note(NN.E), null, NN.G)).toEqual(Accidental.Natural);
-    expect(inferAccidental(note(NN.Gb), null, NN.G)).toEqual(
-      Accidental.Natural
+// describe("inferAccidental", () => {
+//   it("should infer natural if the note is diatonic", () => {
+//     // The key of G has the pitches G, A, B, C, D, E, and F♯
+//     expect(inferAccidental(note(NN.G), null, NN.G)).toEqual(Accidental.Natural);
+//     expect(inferAccidental(note(NN.A), null, NN.G)).toEqual(Accidental.Natural);
+//     expect(inferAccidental(note(NN.B), null, NN.G)).toEqual(Accidental.Natural);
+//     expect(inferAccidental(note(NN.C), null, NN.G)).toEqual(Accidental.Natural);
+//     expect(inferAccidental(note(NN.D), null, NN.G)).toEqual(Accidental.Natural);
+//     expect(inferAccidental(note(NN.E), null, NN.G)).toEqual(Accidental.Natural);
+//     expect(inferAccidental(note(NN.Gb), null, NN.G)).toEqual(
+//       Accidental.Natural
+//     );
+//   });
+
+//   it("should infer flat if the previous note is null and the note is not diatonic", () => {
+//     // The key of Ab has the pitches A♭, B♭, C, D♭, E♭, F and G.
+//     expect(inferAccidental(note(NN.A), null, NN.Ab)).toEqual(Accidental.Flat);
+//     expect(inferAccidental(note(NN.B), null, NN.Ab)).toEqual(Accidental.Flat);
+//     expect(inferAccidental(note(NN.D), null, NN.Ab)).toEqual(Accidental.Flat);
+//     expect(inferAccidental(note(NN.E), null, NN.Ab)).toEqual(Accidental.Flat);
+//     expect(inferAccidental(note(NN.Gb), null, NN.Ab)).toEqual(Accidental.Flat);
+//   });
+
+//   it("should infer natural if the note is diatonic, even if the sequence is ascending", () => {
+//     expect(inferAccidental(note(NN.G), note(NN.Gb), NN.G)).toEqual(
+//       Accidental.Natural
+//     );
+//   });
+
+//   it("should infer sharp for a non-diatonic note in an ascending sequence with an interval of one semitone", () => {
+//     // The pitches B, C♯, D♯, E, F♯, G♯, and A♯ are all part of the B major scale
+//     expect(inferAccidental(n(NN.C, 4), n(NN.B, 3), NN.B)).toEqual(Accidental.Sharp);
+//     expect(inferAccidental(note(NN.Db), note(NN.C), NN.B)).toEqual(Accidental.Natural);
+//     expect(inferAccidental(note(NN.D), note(NN.Db), NN.B)).toEqual(Accidental.Sharp);
+//     expect(inferAccidental(note(NN.Eb), note(NN.D), NN.B)).toEqual(Accidental.Natural);
+//     expect(inferAccidental(note(NN.E), note(NN.Eb), NN.B)).toEqual(Accidental.Natural);
+//     expect(inferAccidental(note(NN.F), note(NN.E), NN.B)).toEqual(Accidental.Sharp);
+//     expect(inferAccidental(note(NN.Gb), note(NN.F), NN.B)).toEqual(Accidental.Natural);
+//     expect(inferAccidental(note(NN.G), note(NN.Gb), NN.B)).toEqual(Accidental.Sharp);
+//     expect(inferAccidental(note(NN.Ab), note(NN.G), NN.B)).toEqual(Accidental.Natural);
+//     expect(inferAccidental(note(NN.A), note(NN.Ab), NN.B)).toEqual(Accidental.Sharp);
+//     expect(inferAccidental(note(NN.Bb), note(NN.A), NN.B)).toEqual(Accidental.Natural);
+//     expect(inferAccidental(note(NN.B), note(NN.Bb), NN.B)).toEqual(Accidental.Natural);
+//   });
+
+//   it("should infer sharp for a non-diatonic note in an ascending sequence with an interval of two semitones", () => {
+//     // The pitches B, C♯, D♯, E, F♯, G♯, and A♯ are all part of the B major scale
+//     expect(inferAccidental(n(NN.Db, 4), n(NN.B, 3), NN.B)).toEqual(Accidental.Natural);
+//     expect(inferAccidental(note(NN.D), note(NN.C), NN.B)).toEqual(Accidental.Sharp);
+//     expect(inferAccidental(note(NN.Eb), note(NN.Db), NN.B)).toEqual(Accidental.Natural);
+//     expect(inferAccidental(note(NN.E), note(NN.D), NN.B)).toEqual(Accidental.Natural);
+//     expect(inferAccidental(note(NN.F), note(NN.Eb), NN.B)).toEqual(Accidental.Sharp);
+//     expect(inferAccidental(note(NN.Gb), note(NN.E), NN.B)).toEqual(Accidental.Natural);
+//     expect(inferAccidental(note(NN.G), note(NN.F), NN.B)).toEqual(Accidental.Sharp);
+//     expect(inferAccidental(note(NN.Ab), note(NN.Gb), NN.B)).toEqual(Accidental.Natural);
+//     expect(inferAccidental(note(NN.A), note(NN.G), NN.B)).toEqual(Accidental.Sharp);
+//     expect(inferAccidental(note(NN.Bb), note(NN.Ab), NN.B)).toEqual(Accidental.Natural);
+//     expect(inferAccidental(note(NN.B), note(NN.A), NN.B)).toEqual(Accidental.Natural);
+//     expect(inferAccidental(n(NN.C, 7), n(NN.Bb, 6), NN.B)).toEqual(Accidental.Sharp);
+//   });
+// });
+
+describe("inferAccidentals", () => {
+  const e = (names: NoteName[]) => event(names, Duration.Quarter);
+
+  it("should let diatonics be naturals", () => {
+    expect(inferAccidentals(c4, db4, NN.C)).toEqual([Accidental.Natural]);
+    expect(inferAccidentals(c4, e8, NN.C)).toEqual([Accidental.Natural]);
+    expect(inferAccidentals(c4, e8, NN.G)).toEqual([Accidental.Natural]);
+    expect(inferAccidentals(e([NN.Ab]), e([NN.G, NN.A]), NN.A)).toEqual([
+      Accidental.Natural,
+    ]);
+    expect(inferAccidentals(e([NN.E]), e([NN.Eb, NN.G]), NN.E)).toEqual([
+      Accidental.Natural,
+    ]);
+    expect(inferAccidentals(e([NN.E]), e([NN.Eb, NN.F]), NN.E)).toEqual([
+      Accidental.Natural,
+    ]);
+  });
+
+  it("should prefer flats over sharps", () => {
+    expect(inferAccidentals(e([NN.Ab]), e([NN.G, NN.A]), NN.G)).toEqual([
+      Accidental.Flat,
+    ]);
+    expect(inferAccidentals(e([NN.E]), e([NN.Eb, NN.Gb]), NN.Eb)).toEqual([
+      Accidental.Flat,
+    ]);
+  });
+
+  it("should use sharps when sequence is ascending and not descending and interval < 3", () => {
+    expect(inferAccidentals(e([NN.E]), e([NN.Eb, NN.G]), NN.Eb)).toEqual([
+      Accidental.Sharp,
+    ]);
+  });
+
+  it("should apply to multiple notes in any order", () => {
+    function permutations<T>(arr: T[]): T[][] {
+      if (arr.length === 1) {
+        return [arr];
+      }
+
+      return arr.reduce((acc: T[][], current, index) => {
+        const rest = [...arr.slice(0, index), ...arr.slice(index + 1)];
+        const permutationsOfRest = permutations(rest);
+        const permutationsWithCurrent = permutationsOfRest.map((perm) => [
+          current,
+          ...perm,
+        ]);
+        return [...acc, ...permutationsWithCurrent];
+      }, []);
+    }
+
+    const zip = (...arr: any[][]): any[][] =>
+      Array(Math.max(...arr.map((a) => a.length)))
+        .fill(undefined)
+        .map((_, i) => arr.map((a) => a[i]));
+
+    function testPermutations(
+      testValues: [MusicalEvent, MusicalEvent, Accidental[]],
+      key: NoteName
+    ) {
+      const [event, prevEvent, accidentals] = testValues;
+      const perms: MusicalEvent[] = permutations(event.notes).map((notes) => ({
+        ...event,
+        notes,
+      }));
+      const previousPerms: MusicalEvent[] = permutations(prevEvent.notes).map(
+        (notes) => ({ ...prevEvent, notes })
+      );
+      const accidentalPerms: Accidental[][] = permutations(accidentals);
+
+      let i = 0;
+      zip(perms, accidentalPerms).forEach((tuple) => {
+        const [event, accidentals] = tuple;
+        previousPerms.forEach((prevEvent) => {
+          console.log(
+            `inferAccidentals(${fmtEvent(event)}, ${fmtEvent(
+              prevEvent
+            )}, ${key}) = [${inferAccidentals(event, prevEvent, key)
+              .map((a) => (a === Accidental.Natural ? '""' : a))
+              .join(", ")}] (${i})`
+          );
+          i++;
+          expect(inferAccidentals(event, prevEvent, key)).toEqual(accidentals);
+        });
+      });
+    }
+
+    testPermutations(
+      [
+        e([NN.E, NN.G, NN.B]),
+        e([NN.Db, NN.Eb, NN.Gb]),
+        [Accidental.Natural, Accidental.Sharp, Accidental.Natural],
+      ],
+      NN.B
     );
-  });
 
-  it("should infer flat if the previous note is null and the note is not diatonic", () => {
-    // The key of Ab has the pitches A♭, B♭, C, D♭, E♭, F and G.
-    expect(inferAccidental(note(NN.A), null, NN.Ab)).toEqual(Accidental.Flat);
-    expect(inferAccidental(note(NN.B), null, NN.Ab)).toEqual(Accidental.Flat);
-    expect(inferAccidental(note(NN.D), null, NN.Ab)).toEqual(Accidental.Flat);
-    expect(inferAccidental(note(NN.E), null, NN.Ab)).toEqual(Accidental.Flat);
-    expect(inferAccidental(note(NN.Gb), null, NN.Ab)).toEqual(Accidental.Flat);
-  });
-
-  it("should infer natural if the note is diatonic, even if the sequence is ascending", () => {
-    expect(inferAccidental(note(NN.G), note(NN.Gb), NN.G)).toEqual(
-      Accidental.Natural
+    testPermutations(
+      [
+        e([NN.C, NN.E, NN.G]),
+        e([NN.Db, NN.Eb, NN.Gb]),
+        [Accidental.Flat, Accidental.Natural, Accidental.Sharp],
+      ],
+      NN.B
     );
-  });
-
-  it("should infer sharp for a non-diatonic note in an ascending sequence with an interval of one semitone", () => {
-    // The pitches B, C♯, D♯, E, F♯, G♯, and A♯ are all part of the B major scale
-    expect(inferAccidental(n(NN.C, 4), n(NN.B, 3), NN.B)).toEqual(Accidental.Sharp);
-    expect(inferAccidental(note(NN.Db), note(NN.C), NN.B)).toEqual(Accidental.Natural);
-    expect(inferAccidental(note(NN.D), note(NN.Db), NN.B)).toEqual(Accidental.Sharp);
-    expect(inferAccidental(note(NN.Eb), note(NN.D), NN.B)).toEqual(Accidental.Natural);
-    expect(inferAccidental(note(NN.E), note(NN.Eb), NN.B)).toEqual(Accidental.Natural);
-    expect(inferAccidental(note(NN.F), note(NN.E), NN.B)).toEqual(Accidental.Sharp);
-    expect(inferAccidental(note(NN.Gb), note(NN.F), NN.B)).toEqual(Accidental.Natural);
-    expect(inferAccidental(note(NN.G), note(NN.Gb), NN.B)).toEqual(Accidental.Sharp);
-    expect(inferAccidental(note(NN.Ab), note(NN.G), NN.B)).toEqual(Accidental.Natural);
-    expect(inferAccidental(note(NN.A), note(NN.Ab), NN.B)).toEqual(Accidental.Sharp);
-    expect(inferAccidental(note(NN.Bb), note(NN.A), NN.B)).toEqual(Accidental.Natural);
-    expect(inferAccidental(note(NN.B), note(NN.Bb), NN.B)).toEqual(Accidental.Natural);
-  });
-
-  it("should infer sharp for a non-diatonic note in an ascending sequence with an interval of two semitones", () => {
-    // The pitches B, C♯, D♯, E, F♯, G♯, and A♯ are all part of the B major scale
-    expect(inferAccidental(n(NN.Db, 4), n(NN.B, 3), NN.B)).toEqual(Accidental.Natural);
-    expect(inferAccidental(note(NN.D), note(NN.C), NN.B)).toEqual(Accidental.Sharp);
-    expect(inferAccidental(note(NN.Eb), note(NN.Db), NN.B)).toEqual(Accidental.Natural);
-    expect(inferAccidental(note(NN.E), note(NN.D), NN.B)).toEqual(Accidental.Natural);
-    expect(inferAccidental(note(NN.F), note(NN.Eb), NN.B)).toEqual(Accidental.Sharp);
-    expect(inferAccidental(note(NN.Gb), note(NN.E), NN.B)).toEqual(Accidental.Natural);
-    expect(inferAccidental(note(NN.G), note(NN.F), NN.B)).toEqual(Accidental.Sharp);
-    expect(inferAccidental(note(NN.Ab), note(NN.Gb), NN.B)).toEqual(Accidental.Natural);
-    expect(inferAccidental(note(NN.A), note(NN.G), NN.B)).toEqual(Accidental.Sharp);
-    expect(inferAccidental(note(NN.Bb), note(NN.Ab), NN.B)).toEqual(Accidental.Natural);
-    expect(inferAccidental(note(NN.B), note(NN.A), NN.B)).toEqual(Accidental.Natural);
-    expect(inferAccidental(n(NN.C, 7), n(NN.Bb, 6), NN.B)).toEqual(Accidental.Sharp);
   });
 });

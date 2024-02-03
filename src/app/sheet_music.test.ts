@@ -1,7 +1,7 @@
 import { describe, it, expect } from "@jest/globals";
-import { staveNote, createTies } from "./sheet_music";
+import { staveNote, createTies, staveNotes } from "./sheet_music";
 import { Duration } from "./state/music/durations";
-import { D, e, e16, e8, e8t, event } from "./state/music/test_helpers";
+import { D, c16t, c32, e, e16, e4t, e8, e8t, event } from "./state/music/test_helpers";
 import { StaveNote } from "vexflow";
 import { NoteName } from "./state/music";
 
@@ -14,7 +14,11 @@ describe("staveNote", () => {
     assertNoteHas(staveNote(e8), ["E/4"], "8");
     assertNoteHas(staveNote(e16), ["E/4"], "16");
     assertNoteHas(staveNote(event([NoteName.B], D.Sixteenth)), ["B/4"], "16");
-    assertNoteHas(staveNote(event([NoteName.Ab], D.ThirtySecond)), ["Ab/4"], "32");
+    assertNoteHas(
+      staveNote(event([NoteName.Ab], D.ThirtySecond)),
+      ["Ab/4"],
+      "32"
+    );
     assertNoteHas(staveNote(event([NoteName.Gb], D.Whole)), ["Gb/4"], "w");
   });
 
@@ -23,11 +27,8 @@ describe("staveNote", () => {
   });
 });
 
-// describe("createTies", () => {
-//   it("should tie two notes inside a bar together", () => {
-//     expect(createTies({
-//       ts: [4, Duration.Quarter],
-//       events: [e]
-//     }))
-//   })
-// })
+describe.only("", () => {
+  it("", () => {
+    staveNotes([e4t, e8, c16t, c16t, c32]);
+  });
+});

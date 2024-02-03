@@ -1,5 +1,5 @@
 import { rotate } from "./arrays";
-import { Note, NoteName } from "./events";
+import { MusicalEvent, Note, NoteName } from "./events";
 
 export type ScaleStep =
   | "1"
@@ -126,17 +126,48 @@ export function isDescending(a: Note, b: Note): boolean {
  *   the accidental will be sharp (#) when the sequence is ascending \
  *   and flat (b) when the sequence is descending.
  */
-export function inferAccidental(
-  note: Note,
-  previousNote: Note | null,
+// export function inferAccidental(
+//   note: Note,
+//   previousNote: Note | null,
+//   key: NoteName
+// ): Accidental {
+//   if (isDiatonic(note.name, key)) return Accidental.Natural;
+//   if (
+//     previousNote &&
+//     isAscending(previousNote, note) &&
+//     interval(previousNote, note) <= 2
+//   )
+//     return Accidental.Sharp;
+//   return Accidental.Flat;
+// }
+
+export function inferAccidentals(
+  event: MusicalEvent,
+  previousEvent: MusicalEvent | null,
   key: NoteName
-): Accidental {
-  if (isDiatonic(note.name, key)) return Accidental.Natural;
-  if (
-    previousNote &&
-    isAscending(previousNote, note) &&
-    interval(previousNote, note) <= 2
-  )
-    return Accidental.Sharp;
-  return Accidental.Flat;
+): Accidental[] {
+  // return an array of Accidentals with same length as b.notes
+  if (!previousEvent) {
+    return event.notes.map((note) =>
+      isDiatonic(note.name, key) ? Accidental.Natural : Accidental.Flat
+    );
+  }
+  const n0 = previousEvent.notes;
+  const n1 = event.notes;
+  // for every note in n1, if it is part of any descending sequence, give it a flat.
+  // else, if it is part of any ascending sequence, give it a sharp.
+  // else, give it a natural.
+  let accidentals = [];
+  for (const b of n1) {
+    if (isDiatonic(b.name, key)) {
+      accidentals.push(Accidental.Natural);
+    }
+    else if (n0.some((prev) => isDescending(prev, b) && interval(prev, b) < 3)) {
+      accidentals.push(Accidental.Flat);
+    }
+    else if (n0.some((prev) => isAscending(prev, b) && interval(prev, b) < 3)) {
+      accidentals.push(Accidental.Sharp);
+    }
+  }
+  return accidentals;
 }
