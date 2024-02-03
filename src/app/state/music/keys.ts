@@ -114,39 +114,22 @@ export function isDescending(a: Note, b: Note): boolean {
 }
 
 /**
- * Infer which accidental should be given to a note \
- * based on the previous note and the key in which the user is playing.
+ * Infer which accidental should be given to a the event notes \
+ * based on the notes in the previous events and the key in which the user is playing.
  *
- * - By default, the accidental should be Natural \
- *   if `note` is diatonic in `key`. \
- *   Otherwise, it will be Flat.
- *
- * - If `note` is played right after another note \
- *   with an interval less than or equal to two semitones, \
- *   the accidental will be sharp (#) when the sequence is ascending \
- *   and flat (b) when the sequence is descending.
+ * - The accidentals should be naturals \
+ *   for all diatonic notes. 
+ * 
+ * - Non-diatonic notes should be flat (b), except when \
+ *   the previous event has notes that are less than three semitones \
+ *   below a given note and no notes that are less than three semitones \
+ *   above the given note. In those cases, the accidentals should be sharp (#).
  */
-// export function inferAccidental(
-//   note: Note,
-//   previousNote: Note | null,
-//   key: NoteName
-// ): Accidental {
-//   if (isDiatonic(note.name, key)) return Accidental.Natural;
-//   if (
-//     previousNote &&
-//     isAscending(previousNote, note) &&
-//     interval(previousNote, note) <= 2
-//   )
-//     return Accidental.Sharp;
-//   return Accidental.Flat;
-// }
-
 export function inferAccidentals(
   event: MusicalEvent,
   previousEvent: MusicalEvent | null,
   key: NoteName
 ): Accidental[] {
-  // return an array of Accidentals with same length as b.notes
   if (!previousEvent) {
     return event.notes.map((note) =>
       isDiatonic(note.name, key) ? Accidental.Natural : Accidental.Flat
@@ -154,20 +137,12 @@ export function inferAccidentals(
   }
   const n0 = previousEvent.notes;
   const n1 = event.notes;
-  // for every note in n1, if it is part of any descending sequence, give it a flat.
-  // else, if it is part of any ascending sequence, give it a sharp.
-  // else, give it a natural.
-  let accidentals = [];
-  for (const b of n1) {
-    if (isDiatonic(b.name, key)) {
-      accidentals.push(Accidental.Natural);
-    }
-    else if (n0.some((prev) => isDescending(prev, b) && interval(prev, b) < 3)) {
-      accidentals.push(Accidental.Flat);
-    }
-    else if (n0.some((prev) => isAscending(prev, b) && interval(prev, b) < 3)) {
-      accidentals.push(Accidental.Sharp);
-    }
-  }
-  return accidentals;
+  return n1.map((note) => {
+    if (isDiatonic(note.name, key)) return Accidental.Natural;
+    else if (
+      n0.some((prev) => isDescending(prev, note) && interval(prev, note) < 3)
+    )
+      return Accidental.Flat;
+    else return Accidental.Sharp;
+  });
 }

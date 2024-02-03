@@ -48,17 +48,3 @@ export function mapPairs<T, U>(list: T[], callback: (a: T, b: T) => U): U[] {
     return callback(current, next);
   });
 }
-
-const excluding =
-  (i: number) =>
-  <T>(xs: T[]) =>
-    [...xs.slice(0, i), ...xs.slice(i + 1)];
-
-const permutations: any = (xs: any[]) =>
-  xs.length == 0
-    ? [[]]
-    : xs.flatMap((x, i) =>
-        permutations(excluding(i)(xs)).map((p: any) => [x, p])
-      );
-
-console.log(permutations(["5", "6", "7"]));
