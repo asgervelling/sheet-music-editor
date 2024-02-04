@@ -37,9 +37,9 @@ export function chunk<T>(l: T[], chunkSizes: number[]): T[][] {
  * Rotate `l` `n` steps.
  * Use a negative `n` to rotate right.
  *
- *   rotate([1, 2, 3, 4], 1) ->  [2, 3, 4, 1] \
- *   rotate([1, 2, 3, 4], -2) -> [3, 4, 1, 2] \
- *   rotate([1, 2, 3, 4], 6) ->  [3, 4, 1, 2]
+ *   `rotate([1, 2, 3, 4], 1)  -> [2, 3, 4, 1]` \
+ *   `rotate([1, 2, 3, 4], -1) -> [4, 1, 2, 3]` \
+ *   `rotate([1, 2, 3, 4], -5) -> [4, 1, 2, 3]`
  */
 export function rotate<T>(l: T[], n: number): T[] {
   const m = n % l.length;
