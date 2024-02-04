@@ -28,12 +28,10 @@ export function vexFlowName(note: Note): string {
  * Convert a MusicalEvent to a VexFlow StaveNote.
  */
 export function staveNote(e: MusicalEvent): VF.StaveNote {
-  const keys = e.notes.map(vexFlowName);
-  const duration = e.duration;
   return new VF.StaveNote({
     clef: "treble",
-    keys: keys,
-    duration: isPause(e) ? `${duration}r` : duration,
+    keys: e.notes.map(vexFlowName),
+    duration: isPause(e) ? `${e.duration}r` : e.duration,
   });
 }
 

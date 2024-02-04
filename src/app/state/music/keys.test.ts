@@ -50,11 +50,11 @@ describe("stepInKey", () => {
 describe("interval", () => {
   it("should give the correct interval", () => {
     expect(interval(n(NN.A, 4), n(NN.Db, 5))).toEqual(4);
-    expect(interval(n(NN.A, 4), n(NN.Db, 4))).toEqual(8);
-    expect(interval(n(NN.A, 4), n(NN.Db, 3))).toEqual(20);
+    expect(interval(n(NN.A, 4), n(NN.Db, 4))).toEqual(-8);
+    expect(interval(n(NN.A, 4), n(NN.Db, 3))).toEqual(-20);
     expect(interval(n(NN.E, 4), n(NN.F, 4))).toEqual(1);
-    expect(interval(n(NN.G, 4), n(NN.Gb, 4))).toEqual(1);
-    expect(interval(n(NN.G, 4), n(NN.F, 4))).toEqual(2);
+    expect(interval(n(NN.G, 4), n(NN.Gb, 4))).toEqual(-1);
+    expect(interval(n(NN.G, 4), n(NN.F, 4))).toEqual(-2);
     expect(interval(n(NN.F, 4), n(NN.G, 4))).toEqual(2);
 
     expect(interval(n(NN.F, 4), n(NN.F, 4))).toEqual(0);

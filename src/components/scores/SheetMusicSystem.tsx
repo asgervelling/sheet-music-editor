@@ -89,10 +89,12 @@ export default function SheetMusicSystem() {
 function createSheetMusicBars(bars: Bar[]): SheetMusicBar[] {
   if (bars.length === 0) return [];
 
+  let previous: MusicalEvent | null = null;
   return bars.map((bar, i): SheetMusicBar => {
     const key = NoteName.C; // HARDCODED key
     const stave = createStave(bars, i);
-    const notes = applyAccidentals(bar.events, null, key);
+    const notes = applyAccidentals(bar.events, previous, key);
+    previous = last(bar.events) || null;
     const beams = VF.Beam.generateBeams(notes);
     const ties = createTies(bar, notes);
 

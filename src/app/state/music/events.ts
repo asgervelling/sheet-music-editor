@@ -282,3 +282,14 @@ export function simplifyPair(a: MusicalEvent, b: MusicalEvent): MusicalEvent[] {
   }
   return [a, b];
 }
+
+/**
+ * Return a note one semi-tone lower than `note`.
+ */
+export function lowerNote(note: Note): Note {
+  const i = pitches.indexOf(note.name);
+  if (i === 0) {
+    return { name: last(pitches), octave: note.octave - 1 };
+  }
+  return { name: pitches[i - 1], octave: note.octave };
+}

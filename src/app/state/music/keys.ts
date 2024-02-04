@@ -1,7 +1,7 @@
 import * as VF from "vexflow";
 
-import { head, pair, rotate } from "./arrays";
-import { MusicalEvent, Note, NoteName } from "./events";
+import { first, head, pair, rotate } from "./arrays";
+import { MusicalEvent, Note, NoteName, lowerNote, pitches } from "./events";
 import { staveNote } from "../../sheet_music";
 import { fmtEvent } from "./test_helpers";
 
@@ -88,10 +88,11 @@ export function midiValue(note: Note): number {
 }
 
 /**
- * Return the interval between `a` and `b` as a number of semitones.
+ * Return the number of semitones `b` is higher than `a`. \
+ * It may be negative.
  */
 export function interval(a: Note, b: Note): number {
-  return Math.abs(midiValue(a) - midiValue(b));
+  return midiValue(b) - midiValue(a);
 }
 
 /**
@@ -144,10 +145,16 @@ export function inferAccidentals(
   const x = n1.map((note) => {
     if (isDiatonic(note.name, key)) return Accidental.Natural;
     else if (
-      n0.some((prev) => isDescending(prev, note) && interval(prev, note) < 3)
-    )
+      n0.some((prev) => isDescending(prev, note) && interval(prev, note) > -3)
+    ) {
       return Accidental.Flat;
-    else return Accidental.Sharp;
+    } else if (
+      n0.some((prev) => isAscending(prev, note) && interval(prev, note) < 3)
+    ) {
+      return Accidental.Sharp;
+    } else {
+      return Accidental.Flat;
+    }
   });
   return x;
 }
@@ -163,15 +170,39 @@ export function applyAccidentals(
     e: MusicalEvent,
     previous: MusicalEvent | null
   ): VF.StaveNote {
-    const sNote = staveNote(e);
+    const withAccidental =
+      (note: VF.StaveNote, ac: Accidental) => (i: number) =>
+        note.addModifier(new VF.Accidental(ac), i);
 
-    inferAccidentals(e, previous, key).forEach((ac, i) => {
-      if (ac !== Accidental.Natural) {
-        sNote.addModifier(new VF.Accidental(ac), i);
+    return inferAccidentals(e, previous, key).reduce(
+      (acc, ac, i) => {
+        switch (ac) {
+          case Accidental.Natural:
+            return acc;
+          case Accidental.Flat:
+            return {
+              event: e,
+              note: withAccidental(acc.note, ac)(i),
+            };
+          case Accidental.Sharp:
+            const note = lowerNote(lowerNote(e.notes[i]));
+            const notes = [
+              ...e.notes.slice(0, i),
+              note,
+              ...e.notes.slice(i + 1),
+            ];
+            const event: MusicalEvent = { ...e, notes };
+            return {
+              event: event,
+              note: withAccidental(acc.note, ac)(i),
+            };
+        }
+      },
+      {
+        event: e,
+        note: staveNote(e),
       }
-    });
-
-    return sNote;
+    ).note;
   }
 
   return [createNote(head(events), previous)].concat(
