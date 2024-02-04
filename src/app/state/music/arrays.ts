@@ -33,22 +33,6 @@ export function rotate<T>(l: T[], n: number): T[] {
   return [...l.slice(m), ...l.slice(0, m)];
 }
 
-/**
- * Map over pairs of T's like dominoes, such as
- *
- *   [(1, 2), (2, 3)]
- *
- * for the array
- *
- *   [1, 2, 3]
- */
-export function mapPairs<T, U>(list: T[], callback: (a: T, b: T) => U): U[] {
-  return list.slice(0, -1).map((current, index) => {
-    const next = list[index + 1];
-    return callback(current, next);
-  });
-}
-
 export function pair<T>(l: T[]): [T | null, T][] {
   const n = l.length;
   if (n === 0) return [];

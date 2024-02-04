@@ -10,12 +10,11 @@
 import { createTies, staveNote } from "@/app/sheet_music";
 import { StateContext } from "@/app/state/StateContext";
 import { Bar } from "@/app/state/music";
-import { mapPairs, pair } from "@/app/state/music/arrays";
+import { pair } from "@/app/state/music/arrays";
 import { createBars } from "@/app/state/music/bars";
 import { Duration } from "@/app/state/music/durations";
-import { MusicalEvent, NoteName, isPause } from "@/app/state/music/events";
+import { NoteName } from "@/app/state/music/events";
 import { Accidental, inferAccidentals } from "@/app/state/music/keys";
-import { fmtChunk } from "@/app/state/music/test_helpers";
 import { tsToString } from "@/app/state/music/time_signatures";
 import { useContext, useEffect, useRef } from "react";
 import * as VF from "vexflow";
@@ -41,7 +40,7 @@ export default function SheetMusicSystem() {
     renderContextRef.current = context;
 
     try {
-      const bars = createBars(state.history, [4, Duration.Quarter]);
+      const bars = createBars(state.history, [4, Duration.Quarter]); // HARDCODED time signature
       drawBars(context, bars);
     } catch (e) {
       displayError(e);
@@ -139,8 +138,8 @@ function drawBars(context: VF.RenderContext, bars: Bar[]) {
 function createRenderContext(containerId: string, outputId: string) {
   const renderer = new Renderer(outputId, Renderer.Backends.SVG);
   const parentDiv = document.getElementById(containerId);
-  const parentWidth = parentDiv ? parentDiv.offsetWidth : 500;
-  const parentHeight = parentDiv ? parentDiv.offsetHeight : 200;
+  const parentWidth = parentDiv ? parentDiv.offsetWidth : 500;   // HARDCODED
+  const parentHeight = parentDiv ? parentDiv.offsetHeight : 200; // HARDCODED
   renderer.resize(parentWidth, parentHeight);
   return renderer.getContext();
 }
