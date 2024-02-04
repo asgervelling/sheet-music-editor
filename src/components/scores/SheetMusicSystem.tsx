@@ -10,10 +10,10 @@
 import { createTies } from "@/app/sheet_music";
 import { StateContext } from "@/app/state/StateContext";
 import { Bar } from "@/app/state/music";
-import { last } from "@/app/state/music/arrays";
+import { first, last } from "@/app/state/music/arrays";
 import { createBars } from "@/app/state/music/bars";
 import { Duration } from "@/app/state/music/durations";
-import { MusicalEvent, NoteName } from "@/app/state/music/events";
+import { MusicalEvent, NoteName, isPause } from "@/app/state/music/events";
 import { applyAccidentals } from "@/app/state/music/keys";
 import { tsToString } from "@/app/state/music/time_signatures";
 import { useContext, useEffect, useRef } from "react";
@@ -21,7 +21,7 @@ import * as VF from "vexflow";
 
 /**
  * This type bridges the gap between our own music theory \
- * code and the VexFlow sheet music rendering library.
+ * code and the VexFlow sheet music rendering library. \
  * It represents a Bar as something that can easily be drawn \
  * on the screen.
  */
@@ -89,12 +89,10 @@ export default function SheetMusicSystem() {
 function createSheetMusicBars(bars: Bar[]): SheetMusicBar[] {
   if (bars.length === 0) return [];
 
-  let previous: MusicalEvent | null = null;
   return bars.map((bar, i): SheetMusicBar => {
     const key = NoteName.C; // HARDCODED key
     const stave = createStave(bars, i);
-    const notes = applyAccidentals(bar.events, previous, key);
-    previous = last(bar.events) ? last(bar.events) : null;
+    const notes = applyAccidentals(bar.events, null, key);
     const beams = VF.Beam.generateBeams(notes);
     const ties = createTies(bar, notes);
 
@@ -141,7 +139,7 @@ function drawSMBars(context: VF.RenderContext, bars: SheetMusicBar[]) {
 
 /**
  * Create a VexFlow renderer and return its context.
- * @param containerId The ID of the container element.
+ * @param containerId The ID of the output element's parent element.
  * @param outputId The ID of the output element.
  */
 function createRenderContext(containerId: string, outputId: string) {

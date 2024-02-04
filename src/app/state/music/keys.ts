@@ -3,6 +3,7 @@ import * as VF from "vexflow";
 import { head, pair, rotate } from "./arrays";
 import { MusicalEvent, Note, NoteName } from "./events";
 import { staveNote } from "../../sheet_music";
+import { fmtEvent } from "./test_helpers";
 
 export type ScaleStep =
   | "1"
@@ -169,6 +170,7 @@ export function applyAccidentals(
         sNote.addModifier(new VF.Accidental(ac), i);
       }
     });
+
     return sNote;
   }
 
