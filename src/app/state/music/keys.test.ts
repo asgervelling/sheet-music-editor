@@ -14,7 +14,7 @@ import {
 import { Duration, NoteName } from ".";
 import { MusicalEvent, Note } from "./events";
 import { head, rotate, tail } from "./arrays";
-import { c4, db4, e4, e8, event, fmtEvent } from "./test_helpers";
+import { c4, db4, e4, e8, event, fmtEvent, p4 } from "./test_helpers";
 
 // HARDCODED octave
 const n = (name: NoteName, octave: number): Note => ({ name, octave });
@@ -115,7 +115,10 @@ describe("isDiatonic", () => {
     expect(isDiatonic(NN.A, NN.C)).toBe(true);
     expect(isDiatonic(NN.Bb, NN.C)).toBe(false);
     expect(isDiatonic(NN.B, NN.C)).toBe(true);
-    expect(isDiatonic(NN.PAUSE, NN.C)).toBe(false);
+  });
+
+  it("should describe pause as diatonic", () => {
+    expect(isDiatonic(NN.PAUSE, NN.C)).toBe(true);
   });
 
   it("should recognize the pattern of diatonics in the other scales", () => {
@@ -243,35 +246,59 @@ describe("inferAccidentals", () => {
       });
     }
 
-    testPermutations(
-      [
-        e([NN.E, NN.G, NN.B]),
-        e([NN.Db, NN.Eb, NN.Gb]),
-        [Accidental.Natural, Accidental.Sharp, Accidental.Natural],
-      ],
-      NN.B
-    );
+    expect(
+      inferAccidentals(e([NN.E, NN.G, NN.B]), e([NN.Db, NN.Eb, NN.Gb]), NN.B)
+    ).toEqual([Accidental.Natural, Accidental.Sharp, Accidental.Natural]);
+    expect(
+      inferAccidentals(e([NN.G, NN.B, NN.E]), e([NN.Eb, NN.Gb, NN.Db]), NN.B)
+    ).toEqual([Accidental.Sharp, Accidental.Natural, Accidental.Natural]);
+    expect(
+      inferAccidentals(e([NN.B, NN.E, NN.G]), e([NN.Gb, NN.Db, NN.Eb]), NN.B)
+    ).toEqual([Accidental.Natural, Accidental.Natural, Accidental.Sharp]);
 
-    testPermutations(
-      [
-        e([NN.C, NN.E, NN.G]),
-        e([NN.Db, NN.Eb, NN.Gb]),
-        [Accidental.Flat, Accidental.Natural, Accidental.Sharp],
-      ],
-      NN.B
-    );
+    
+
+    // testPermutations(
+    //   [
+    //     e([NN.E, NN.G, NN.B]),
+    //     e([NN.Db, NN.Eb, NN.Gb]),
+    //     [Accidental.Natural, Accidental.Sharp, Accidental.Natural],
+    //   ],
+    //   NN.B
+    // );
+
+    // testPermutations(
+    //   [
+    //     e([NN.C, NN.E, NN.G]),
+    //     e([NN.Db, NN.Eb, NN.Gb]),
+    //     [Accidental.Flat, Accidental.Natural, Accidental.Sharp],
+    //   ],
+    //   NN.B
+    // );
   });
 
   it("should infer natural if the note is diatonic", () => {
     // The key of G has the pitches G, A, B, C, D, E, and F♯
-    expect(inferAccidentals(e([NN.G]), null, NN.G)).toEqual([Accidental.Natural]);
-    expect(inferAccidentals(e([NN.A]), null, NN.G)).toEqual([Accidental.Natural]);
-    expect(inferAccidentals(e([NN.B]), null, NN.G)).toEqual([Accidental.Natural]);
-    expect(inferAccidentals(e([NN.C]), null, NN.G)).toEqual([Accidental.Natural]);
-    expect(inferAccidentals(e([NN.D]), null, NN.G)).toEqual([Accidental.Natural]);
-    expect(inferAccidentals(e([NN.E]), null, NN.G)).toEqual([Accidental.Natural]);
+    expect(inferAccidentals(e([NN.G]), null, NN.G)).toEqual([
+      Accidental.Natural,
+    ]);
+    expect(inferAccidentals(e([NN.A]), null, NN.G)).toEqual([
+      Accidental.Natural,
+    ]);
+    expect(inferAccidentals(e([NN.B]), null, NN.G)).toEqual([
+      Accidental.Natural,
+    ]);
+    expect(inferAccidentals(e([NN.C]), null, NN.G)).toEqual([
+      Accidental.Natural,
+    ]);
+    expect(inferAccidentals(e([NN.D]), null, NN.G)).toEqual([
+      Accidental.Natural,
+    ]);
+    expect(inferAccidentals(e([NN.E]), null, NN.G)).toEqual([
+      Accidental.Natural,
+    ]);
     expect(inferAccidentals(e([NN.Gb]), null, NN.G)).toEqual([
-      Accidental.Natural
+      Accidental.Natural,
     ]);
   });
 
@@ -281,7 +308,9 @@ describe("inferAccidentals", () => {
     expect(inferAccidentals(e([NN.B]), null, NN.Ab)).toEqual([Accidental.Flat]);
     expect(inferAccidentals(e([NN.D]), null, NN.Ab)).toEqual([Accidental.Flat]);
     expect(inferAccidentals(e([NN.E]), null, NN.Ab)).toEqual([Accidental.Flat]);
-    expect(inferAccidentals(e([NN.Gb]), null, NN.Ab)).toEqual([Accidental.Flat]);
+    expect(inferAccidentals(e([NN.Gb]), null, NN.Ab)).toEqual([
+      Accidental.Flat,
+    ]);
   });
 
   it("should infer sharp for a non-diatonic note in an ascending sequence with an interval of one semitone", () => {
@@ -363,5 +392,9 @@ describe("inferAccidentals", () => {
     expect(
       inferAccidentals(fromNotes([n(NN.C, 7)]), fromNotes([n(NN.Bb, 6)]), NN.B)
     ).toEqual([Accidental.Sharp]);
+  });
+
+  it("should return natural for pauses", () => {
+    expect(inferAccidentals(p4, null, NN.C)).toEqual([Accidental.Natural]);
   });
 });

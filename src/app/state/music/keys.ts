@@ -95,7 +95,7 @@ export function interval(a: Note, b: Note): number {
  * All the white notes are diatonic in the key of C.
  */
 export function isDiatonic(noteName: NoteName, key: NoteName): boolean {
-  if ([noteName, key].includes(NoteName.PAUSE)) return false;
+  if ([noteName, key].includes(NoteName.PAUSE)) return true;
   return !stepInKey(noteName, key).includes("b");
 }
 

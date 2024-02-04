@@ -10,25 +10,17 @@
 import { createTies, staveNote } from "@/app/sheet_music";
 import { StateContext } from "@/app/state/StateContext";
 import { Bar } from "@/app/state/music";
-import { mapPairs } from "@/app/state/music/arrays";
+import { mapPairs, pair } from "@/app/state/music/arrays";
 import { createBars } from "@/app/state/music/bars";
 import { Duration } from "@/app/state/music/durations";
-import { MusicalEvent, NoteName } from "@/app/state/music/events";
-import { inferAccidentals } from "@/app/state/music/keys";
+import { MusicalEvent, NoteName, isPause } from "@/app/state/music/events";
+import { Accidental, inferAccidentals } from "@/app/state/music/keys";
 import { fmtChunk } from "@/app/state/music/test_helpers";
 import { tsToString } from "@/app/state/music/time_signatures";
 import { useContext, useEffect, useRef } from "react";
-import {
-  Accidental,
-  Beam,
-  Formatter,
-  RenderContext,
-  Stave,
-  StaveNote,
-  Vex,
-} from "vexflow";
+import * as VF from "vexflow";
 
-const { Renderer } = Vex.Flow;
+const { Renderer } = VF.Vex.Flow;
 
 enum DIV_ID {
   CONTAINER = "sheet-music-container",
@@ -42,7 +34,7 @@ enum DIV_ID {
 export default function SheetMusicSystem() {
   const { state } = useContext(StateContext)!;
   const containerRef = useRef(null);
-  const renderContextRef = useRef<RenderContext | null>(null);
+  const renderContextRef = useRef<VF.RenderContext | null>(null);
 
   useEffect(() => {
     const context = createRenderContext(DIV_ID.CONTAINER, DIV_ID.OUTPUT);
@@ -87,49 +79,26 @@ function staveWidth(bar: Bar): number {
   return Math.max(normal, Math.ceil(n / notesPerStave) * normal);
 }
 
-function drawBar(context: RenderContext, bar: Bar, i: number, offset: number) {
-  const notes = bar.events.map(staveNote);
+function drawBar(
+  context: VF.RenderContext,
+  bar: Bar,
+  i: number,
+  offset: number
+) {
+  const notes = pair(bar.events).map(([a, b]) => {
+    const sNote = staveNote(b);
 
-  function pair<T>(l: T[]): [T | null, T][] {
-    if (l.length < 2) return [];
-    const [a, b, ...rest] = l;
-    return [[a, b], ...pair(rest)];
-  }
-  
-  const x = mapPairs([null, ...bar.events], (a, b) => {
-    if (b) {
-      const sNote = staveNote(b);
-      const accidentals = inferAccidentals(b, a, NoteName.C); // HARDCODED
-      
-      accidentals.forEach((a, i) => {
-        sNote.addModifier(new Accidental(a), i);
-      });
+    inferAccidentals(b, a, NoteName.C).forEach((ac, i) => {
+      if (ac !== Accidental.Natural) {
+        sNote.addModifier(new VF.Accidental(ac), i);
+      }
+    });
+    return sNote;
+  });
 
-      return sNote;
-    } else {
-      return staveNote(a);
-    }
-  })
-
-  if (notes.length > 2 && notes[1].getKeys().length > 1) {
-    notes[1].addModifier(new Accidental("#"), 0);
-    notes[1].addModifier(new Accidental("b"), 1);
-  }
-
-  const fmtVFNote = (n: StaveNote) => {
-    return `${n.getKeys()}`;
-  }
-
-  const fmtVFNotes = (notes: StaveNote[]) => {
-    return notes.map(fmtVFNote).join(", ");
-  }
-
-  console.log("Events:", fmtChunk(bar.events));
-  console.log("Notes: ", fmtVFNotes(notes))
-  
   const x = i + offset;
   const y = 0;
-  const stave = new Stave(x, y, staveWidth(bar));
+  const stave = new VF.Stave(x, y, staveWidth(bar));
 
   if (i === 0) {
     stave.addClef("treble").addTimeSignature(tsToString(bar.ts));
@@ -139,8 +108,8 @@ function drawBar(context: RenderContext, bar: Bar, i: number, offset: number) {
   stave.setContext(context).draw();
 
   // Draw beams ♫
-  const beams = Beam.generateBeams(notes);
-  Formatter.FormatAndDraw(context, stave, notes);
+  const beams = VF.Beam.generateBeams(notes);
+  VF.Formatter.FormatAndDraw(context, stave, notes);
   beams.forEach(function (b) {
     b.setContext(context).draw();
   });
@@ -152,7 +121,7 @@ function drawBar(context: RenderContext, bar: Bar, i: number, offset: number) {
   });
 }
 
-function drawBars(context: RenderContext, bars: Bar[]) {
+function drawBars(context: VF.RenderContext, bars: Bar[]) {
   bars.forEach((bar, i) => {
     const offset = bars
       .slice(0, i)

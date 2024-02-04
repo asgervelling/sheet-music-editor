@@ -1,6 +1,5 @@
 import { describe, it, expect } from "@jest/globals";
-import { staveNote, createTies, staveNotes } from "./sheet_music";
-import { Duration } from "./state/music/durations";
+import { staveNote, createTies } from "./sheet_music";
 import { D, c16t, c32, e, e16, e4t, e8, e8t, event } from "./state/music/test_helpers";
 import { StaveNote } from "vexflow";
 import { NoteName } from "./state/music";
@@ -27,8 +26,3 @@ describe("staveNote", () => {
   });
 });
 
-describe.only("", () => {
-  it("", () => {
-    staveNotes([e4t, e8, c16t, c16t, c32]);
-  });
-});
