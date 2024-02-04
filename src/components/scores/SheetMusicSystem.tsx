@@ -13,7 +13,7 @@ import { Bar } from "@/app/state/music";
 import { head, last, pair, tail } from "@/app/state/music/arrays";
 import { createBars } from "@/app/state/music/bars";
 import { Duration, expandDuration } from "@/app/state/music/durations";
-import { MusicalEvent, NoteName, simplify } from "@/app/state/music/events";
+import { MusicalEvent, NoteName, isPause, simplify } from "@/app/state/music/events";
 import {
   Accidental,
   applyAccidentals,
@@ -27,6 +27,20 @@ import {
 } from "@/app/state/music/time_signatures";
 import { useContext, useEffect, useRef } from "react";
 import * as VF from "vexflow";
+
+/**
+ * This type bridges the gap between our own music theory \
+ * code and the VexFlow sheet music rendering library.
+ * It represents a Bar as something that can easily be drawn \
+ * on the screen.
+ */
+type SheetMusicBar = {
+  key: NoteName;
+  stave: VF.Stave;
+  notes: VF.StaveNote[];
+  beams: VF.Beam[];
+  ties: VF.StaveTie[];
+};
 
 const { Renderer } = VF.Vex.Flow;
 
@@ -50,7 +64,8 @@ export default function SheetMusicSystem() {
 
     try {
       const bars = createBars(state.history, [4, Duration.Quarter]); // HARDCODED time signature
-      drawBars(context, bars);
+      // drawBars(context, bars);
+      drawSMBars(context, createSheetMusicBars(bars));
     } catch (e) {
       displayError(e);
     }
@@ -99,53 +114,60 @@ function fmtNotes(notes: VF.StaveNote[]) {
   );
 }
 
-function drawBar(
-  context: VF.RenderContext,
-  bar: Bar,
-  i: number,
-  offset: number
-) {
-  // const notes = pair(bar.events).map(([a, b], i) => {
-  //   const sNote = staveNote(b);
+function createSheetMusicBars(bars: Bar[]): SheetMusicBar[] {
+  if (bars.length === 0) return [];
 
-  //   inferAccidentals(b, a, NoteName.C).forEach((ac, i) => {
-  //     if (ac !== Accidental.Natural) {
-  //       sNote.addModifier(new VF.Accidental(ac), i);
-  //     }
-  //   });
-  //   return sNote;
-  // });
+  let smBars: SheetMusicBar[] = [];
+  let previous: MusicalEvent | null = null;
+  bars.forEach((bar, i) => {
+    // Create key (HARDCODED)
+    const key = NoteName.C;
 
-  const notes = applyAccidentals(bar.events, null, NoteName.C); // HARDCODED key
+    // Create stave
+    const x = bars
+      .slice(0, i)
+      .map(staveWidth)
+      .reduce((acc, n) => acc + n, 0);
+    const y = 0;
+    const stave = new VF.Stave(x, y, staveWidth(bar));
+    if (i === 0) {
+      // HARDCODED clef
+      stave.addClef("treble").addTimeSignature(tsToString(bar.ts));
+    }
 
-  // console.log(`${fmtBars([bar])} ->\n${fmtNotes(notes)}`);
-  // const ifso = (e: MusicalEvent | null) => (e ? fmtEvent(e) : "null");
-  // console.log("Pairs:", "[" + pair([null, ...bar.events]).map(([a, b]) => {
-  //   return `(${ifso(a)}, ${ifso(b)})`;
-  // }).join(", ") + "]");
+    // Create notes
+    const notes = applyAccidentals(bar.events, previous, key);
+    previous = last(bar.events) ? last(bar.events) : null;
+    
+    // Create beams ♫
+    const beams = VF.Beam.generateBeams(notes);
 
-  const x = offset;
-  const y = 0;
-  const stave = new VF.Stave(x, y, staveWidth(bar));
+    // Create ties ♪‿♪
+    const ties = createTies(bar, notes)
 
-  if (i === 0) {
-    stave.addClef("treble").addTimeSignature(tsToString(bar.ts));
-  }
-
-  // Draw stave
-  stave.setContext(context).draw();
-
-  // Draw beams ♫
-  const beams = VF.Beam.generateBeams(notes);
-  VF.Formatter.FormatAndDraw(context, stave, notes);
-  beams.forEach(function (b) {
-    b.setContext(context).draw();
+    smBars.push({ key, stave, notes, beams, ties });
   });
+  // smBars.forEach((bar) => {
+  //   console.log("Bar------------");
+  //   console.log("Key:", bar.key);
+  //   console.log("Notes:", fmtNotes(bar.notes));
+  // });
+  return smBars;
+}
 
-  // Draw ties ♪‿♪
-  const ties = createTies(bar, notes);
-  ties.forEach((t) => {
-    t.setContext(context).draw();
+function drawSMBars(context: VF.RenderContext, bars: SheetMusicBar[]) {
+  bars.forEach((bar) => {
+    // Draw stave
+    bar.stave.setContext(context).draw();
+
+    // Draw notes
+    VF.Formatter.FormatAndDraw(context, bar.stave, bar.notes);
+
+    // Draw beams ♫
+    bar.beams.forEach((b) => b.setContext(context).draw());
+
+    // Draw ties ♪‿♪
+    bar.ties.forEach((t) => t.setContext(context).draw());
   });
 }
 
@@ -154,33 +176,14 @@ function drawBars(context: VF.RenderContext, bars: Bar[]) {
     return [];
   }
 
-  // const notess = tail(bars).map((bar, i) => {
-  //   const previous = last(bars[i - 1].events) ?? null;
-  //   // HARDCODED key
-  //   return applyAccidentals(bar.events, previous, NoteName.C)
-  // });
-
-  // const notesInFirstBar = tail(head(bars).events).map((e, i) => {
-  //   return applyAccidentals(e)
-  // })
-
   let previous: MusicalEvent | null = null;
   bars.forEach((bar, i) => {
     const offset = bars
       .slice(0, i)
       .map(staveWidth)
       .reduce((acc, n) => acc + n, 0);
-    // drawBar(context, bar, i, offset);
-    
+
     const notes = applyAccidentals(bar.events, previous, NoteName.C); // HARDCODED key
-    console.log(
-      "Notes:",
-      "[" + notes.map((n) => `(${n.getKeys()}, ${n.getDuration()})`) + "]"
-    );
-    console.log("Previous:", previous ? fmtEvent(previous) : "null");
-    console.log("Bar:", fmtBars([bar]), "last:", fmtEvent(last(bar.events)))
-    console.log();
-    
     previous = last(bar.events) ? last(bar.events) : null;
 
     const x = offset;

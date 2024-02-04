@@ -1,7 +1,7 @@
 import * as VF from "vexflow";
 
 import { head, pair, rotate } from "./arrays";
-import { MusicalEvent, Note, NoteName } from "./events";
+import { MusicalEvent, Note, NoteName, isPause } from "./events";
 import { staveNote } from "../../sheet_music";
 import { fmtEvent } from "./test_helpers";
 
