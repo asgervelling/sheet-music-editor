@@ -1,5 +1,5 @@
 import { Duration, expandDuration, incrementDuration } from "./durations";
-import { arrayEquals, first, head, last, repeat, tail } from "./arrays";
+import * as A from "./arrays";
 
 /**
  * All the pitch classes C, Db, ..., B as well as PAUSE.
@@ -36,15 +36,15 @@ export const pitches: NoteName[] = [
   NoteName.A,
   NoteName.Bb,
   NoteName.B,
-]
+];
 
 /**
  * The lowest note in MIDI is 0 (C/-1) \
  * and the highest is 127 (G/9).
- * 
+ *
  * We stick to the convention that middle C is C/4
  * and has the MIDI value 60.
- * 
+ *
  * Helpful chart that follows the same convention:
  * https://syntheway.com/MIDI_Keyboards_Middle_C_MIDI_Note_Number_60_C4.htm
  */
@@ -88,19 +88,7 @@ export function chunk(
   events: MusicalEvent[],
   chunkSizes: number[]
 ): MusicalEvent[][] {
-  function chunk32nds(
-    events: MusicalEvent[],
-    chunkSizes: number[]
-  ): MusicalEvent[][] {
-    if (chunkSizes.length === 0) {
-      return [];
-    }
-    const n = head(chunkSizes);
-    const [c, rest] = [events.slice(0, n), events.slice(n)];
-    return [c, ...chunk32nds(rest, tail(chunkSizes))];
-  }
-
-  return chunk32nds(events.flatMap(expandTo32nds), chunkSizes).map(simplify);
+  return A.chunk(events.flatMap(expandTo32nds), chunkSizes).map(simplify);
 }
 
 /**
@@ -121,7 +109,7 @@ export function reciprocalChunk(
     return [];
   }
   // HARDCODED octave
-  const _32ndPauses: MusicalEvent[] = repeat(
+  const _32ndPauses: MusicalEvent[] = A.repeat(
     {
       notes: [{ name: NoteName.PAUSE, octave: 4 }],
       duration: Duration.ThirtySecond,
@@ -181,9 +169,9 @@ export function simplify(events_: MusicalEvent[]): MusicalEvent[] {
       if (g.length === 0) {
         return [];
       }
-      const tied = last(g).tiedToNext;
+      const tied = A.last(g).tiedToNext;
       const sorted = tieGroup(sortDescending(g));
-      return [...first(sorted), { ...last(sorted), tiedToNext: tied }]
+      return [...A.first(sorted), { ...A.last(sorted), tiedToNext: tied }];
     })
     .flat();
 }
@@ -195,7 +183,9 @@ export function simplify(events_: MusicalEvent[]): MusicalEvent[] {
  */
 export function tieGroup(group: MusicalEvent[]) {
   const [b, ...a] = [...group].reverse();
-  return [...[b, ...a.map((e) => ({ ...e, tiedToNext: !isPause(e) }))]].reverse();
+  return [
+    ...[b, ...a.map((e) => ({ ...e, tiedToNext: !isPause(e) }))],
+  ].reverse();
 }
 
 /**
@@ -236,7 +226,7 @@ export function groupTiedEvents(events_: MusicalEvent[]): MusicalEvent[][] {
     }
     const [a, b, ...rest] = events;
     const shouldTie =
-      arrayEquals(
+      A.arrayEquals(
         a.notes.map((n) => n.name),
         b.notes.map((n) => n.name)
       ) &&
@@ -289,7 +279,7 @@ export function simplifyPair(a: MusicalEvent, b: MusicalEvent): MusicalEvent[] {
 export function lowerNote(note: Note): Note {
   const i = pitches.indexOf(note.name);
   if (i === 0) {
-    return { name: last(pitches), octave: note.octave - 1 };
+    return { name: A.last(pitches), octave: note.octave - 1 };
   }
   return { name: pitches[i - 1], octave: note.octave };
 }

@@ -18,6 +18,13 @@ export function repeat<T>(x: T, n: number): T[] {
   return createArray([x], n);
 }
 
+export function chunk<T>(l: T[], chunkSizes: number[]): T[][] {
+  if (chunkSizes.length === 0) return []
+  const n = head(chunkSizes);
+  const [c, rest] = [l.slice(0, n), l.slice(n)];
+  return [c, ...chunk(rest, tail(chunkSizes))];
+}
+
 /**
  * Rotate `l` `n` steps.
  * Use a negative `n` to rotate right.
