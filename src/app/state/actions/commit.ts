@@ -1,5 +1,4 @@
 import { MusicalEvent, NoteName } from "../music";
-import { Note } from "../music/events";
 import { State } from "../state";
 
 /**
@@ -8,7 +7,6 @@ import { State } from "../state";
  * Reset the active notes and the undo stack.
  */
 export default function commit(state: State): State {
-  console.log("Octave:", state.currOctave);
   const event = createMusicalEvent(state);
   return {
     ...state,

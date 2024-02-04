@@ -1,6 +1,13 @@
 import { describe, it, expect } from "@jest/globals";
 import { Duration } from "./durations";
-import { TimeSignature, _32ndsToTs, canSimplify, simplifyTs, tsTo32nds } from "./time_signatures";
+import {
+  TimeSignature,
+  _32ndsToTs,
+  beatValue,
+  canSimplify,
+  simplifyTs,
+  tsTo32nds,
+} from "./time_signatures";
 import { repeat } from "./arrays";
 
 const _3_4: TimeSignature = [3, Duration.Quarter];
@@ -29,20 +36,38 @@ describe("tsTo32nds", () => {
 
 describe("_32ndsToTs", () => {
   it("should turn an array of 32nd notes into a valid time signature", () => {
-    expect(_32ndsToTs(repeat(Duration.ThirtySecond, 24))).toStrictEqual(simplifyTs(_3_4));
-    expect(_32ndsToTs(repeat(Duration.ThirtySecond, 32))).toStrictEqual(simplifyTs(_4_4));
-    expect(_32ndsToTs(repeat(Duration.ThirtySecond, 20))).toStrictEqual(simplifyTs(_5_8));
-    expect(_32ndsToTs(repeat(Duration.ThirtySecond, 26))).toStrictEqual(simplifyTs(_13_16));
-    expect(_32ndsToTs(repeat(Duration.ThirtySecond, 27))).toStrictEqual(simplifyTs(_27_32));
-    expect(_32ndsToTs(repeat(Duration.ThirtySecond, 32))).toStrictEqual(simplifyTs(_32_32));
-    expect(_32ndsToTs(repeat(Duration.ThirtySecond, 36))).toStrictEqual(simplifyTs(_18_16));
-    expect(_32ndsToTs(repeat(Duration.ThirtySecond, 48))).toStrictEqual(simplifyTs(_12_8));
-    expect(_32ndsToTs(repeat(Duration.ThirtySecond, 32))).toStrictEqual(simplifyTs(_1_1));
+    expect(_32ndsToTs(repeat(Duration.ThirtySecond, 24))).toStrictEqual(
+      simplifyTs(_3_4)
+    );
+    expect(_32ndsToTs(repeat(Duration.ThirtySecond, 32))).toStrictEqual(
+      simplifyTs(_4_4)
+    );
+    expect(_32ndsToTs(repeat(Duration.ThirtySecond, 20))).toStrictEqual(
+      simplifyTs(_5_8)
+    );
+    expect(_32ndsToTs(repeat(Duration.ThirtySecond, 26))).toStrictEqual(
+      simplifyTs(_13_16)
+    );
+    expect(_32ndsToTs(repeat(Duration.ThirtySecond, 27))).toStrictEqual(
+      simplifyTs(_27_32)
+    );
+    expect(_32ndsToTs(repeat(Duration.ThirtySecond, 32))).toStrictEqual(
+      simplifyTs(_32_32)
+    );
+    expect(_32ndsToTs(repeat(Duration.ThirtySecond, 36))).toStrictEqual(
+      simplifyTs(_18_16)
+    );
+    expect(_32ndsToTs(repeat(Duration.ThirtySecond, 48))).toStrictEqual(
+      simplifyTs(_12_8)
+    );
+    expect(_32ndsToTs(repeat(Duration.ThirtySecond, 32))).toStrictEqual(
+      simplifyTs(_1_1)
+    );
   });
 });
 
 describe("canSimplify", () => {
-  it("should return true if the time signature can be simplified", () => {    
+  it("should return true if the time signature can be simplified", () => {
     expect(canSimplify(_3_4)).toBe(false);
     expect(canSimplify(_4_4)).toBe(true);
     expect(canSimplify(_5_8)).toBe(false);
@@ -66,5 +91,16 @@ describe("simplifyTs", () => {
     expect(simplifyTs(_18_16)).toEqual([9, Duration.Eighth]);
     expect(simplifyTs(_12_8)).toEqual([3, Duration.Half]);
     expect(simplifyTs(_1_1)).toEqual([1, Duration.Whole]);
+  });
+});
+
+describe("beatValue", () => {
+  it("should return the beat value of a time signature", () => {
+    expect(beatValue([4, Duration.Whole])).toBe(1);
+    expect(beatValue([4, Duration.Half])).toBe(2);
+    expect(beatValue([4, Duration.Quarter])).toBe(4);
+    expect(beatValue([4, Duration.Eighth])).toBe(8);
+    expect(beatValue([4, Duration.Sixteenth])).toBe(16);
+    expect(beatValue([4, Duration.ThirtySecond])).toBe(32);
   });
 })

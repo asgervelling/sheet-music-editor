@@ -21,6 +21,24 @@ export enum NoteName {
 }
 
 /**
+ * All the pitch classes C, Db, ..., B.
+ */
+export const pitches: NoteName[] = [
+  NoteName.C,
+  NoteName.Db,
+  NoteName.D,
+  NoteName.Eb,
+  NoteName.E,
+  NoteName.F,
+  NoteName.Gb,
+  NoteName.G,
+  NoteName.Ab,
+  NoteName.A,
+  NoteName.Bb,
+  NoteName.B,
+]
+
+/**
  * The lowest note in MIDI is 0 (C/-1) \
  * and the highest is 127 (G/9).
  * 

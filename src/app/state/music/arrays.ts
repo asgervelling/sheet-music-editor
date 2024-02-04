@@ -2,9 +2,7 @@ export const head = <T>(l: T[]) => l[0];
 export const tail = <T>(l: T[]) => l.slice(1);
 
 export const last = <T>(l: T[]) => l[l.length - 1];
-export const first = <T>(l: T[]) => {
-  return l.slice(0, -1);
-};
+export const first = <T>(l: T[]) => l.slice(0, -1);
 
 export const arrayEquals = <T>(l: T[], m: T[]): boolean => {
   return l.length === m.length && l.every((e, i) => e === m[i]);
@@ -33,6 +31,14 @@ export function rotate<T>(l: T[], n: number): T[] {
   return [...l.slice(m), ...l.slice(0, m)];
 }
 
+/**
+ * Create an array of pairs from `l` like dominoes, e.g.
+ * 
+ *   `pair([1, 2, 3]) = [[1, 2], [2, 3]]`
+ * 
+ * If `l` has a length of 1, the first and only pair
+ * will have a first element of `null`.
+ */
 export function pair<T>(l: T[]): [T | null, T][] {
   const n = l.length;
   if (n === 0) return [];

@@ -1,5 +1,9 @@
-import { rotate } from "./arrays";
+import * as VF from "vexflow";
+
+import { head, pair, rotate } from "./arrays";
 import { MusicalEvent, Note, NoteName } from "./events";
+import { staveNote } from "../../sheet_music";
+import { fmtEvent } from "./test_helpers";
 
 export type ScaleStep =
   | "1"
@@ -118,8 +122,8 @@ export function isDescending(a: Note, b: Note): boolean {
  * based on the notes in the previous events and the key in which the user is playing.
  *
  * - The accidentals should be naturals \
- *   for all diatonic notes. 
- * 
+ *   for all diatonic notes.
+ *
  * - Non-diatonic notes should be flat (b), except when \
  *   the previous event has notes that are less than three semitones \
  *   below a given note and no notes that are less than three semitones \
@@ -137,7 +141,7 @@ export function inferAccidentals(
   }
   const n0 = previousEvent.notes;
   const n1 = event.notes;
-  return n1.map((note) => {
+  const x = n1.map((note) => {
     if (isDiatonic(note.name, key)) return Accidental.Natural;
     else if (
       n0.some((prev) => isDescending(prev, note) && interval(prev, note) < 3)
@@ -145,4 +149,31 @@ export function inferAccidentals(
       return Accidental.Flat;
     else return Accidental.Sharp;
   });
+  return x;
+}
+
+export function applyAccidentals(
+  events: MusicalEvent[],
+  previous: MusicalEvent | null,
+  key: NoteName
+): VF.StaveNote[] {
+  if (events.length === 0) return [];
+
+  function createNote(
+    e: MusicalEvent,
+    previous: MusicalEvent | null
+  ): VF.StaveNote {
+    const sNote = staveNote(e);
+
+    inferAccidentals(e, previous, key).forEach((ac, i) => {
+      if (ac !== Accidental.Natural) {
+        sNote.addModifier(new VF.Accidental(ac), i);
+      }
+    });
+    return sNote;
+  }
+
+  return [createNote(head(events), previous)].concat(
+    pair(events).map(([a, b]) => createNote(b, a))
+  );
 }

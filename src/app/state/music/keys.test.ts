@@ -5,7 +5,6 @@ import {
   isDiatonic,
   stepInKey,
   midiValue,
-  // inferAccidentals,
   inferAccidentals,
   Accidental,
   isAscending,

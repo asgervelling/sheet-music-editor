@@ -17,6 +17,16 @@ export function validateTimeSignature(ts: TimeSignature): boolean {
   return a !== 0 && Number.isInteger(a);
 }
 
+export function beatValue(ts: TimeSignature): number {
+  const [_, b] = ts;
+  return parseInt(
+    b
+      .replace(Duration.Whole, "1")
+      .replace(Duration.Half, "2")
+      .replace(Duration.Quarter, "4")
+  );
+}
+
 /**
  * Create an array of 32nd notes from a time signature.
  */
