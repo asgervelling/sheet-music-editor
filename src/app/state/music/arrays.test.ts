@@ -1,6 +1,6 @@
 import { describe, it, expect } from "@jest/globals";
 
-import { head, tail, first, last, arrayEquals, repeat, rotate } from "./arrays";
+import { head, tail, first, last, arrayEquals, repeat, rotate, pair } from "./arrays";
 
 describe("head", () => {
   it("should return element 0 of a non-empty array", () => {
@@ -123,3 +123,14 @@ describe("rotate", () => {
     expect(rotate([1, 2, 3, 4], -9)).toEqual([4, 1, 2, 3]);
   });
 });
+
+describe("pair", () => {
+  it("should pair arrays of different lengths, including a null if uneven", () => {
+    expect(pair([])).toEqual([]);
+    expect(pair([1])).toEqual([[null, 1]]);
+    expect(pair([1, 2])).toEqual([[1, 2]]);
+    expect(pair([1, 2, 3])).toEqual([[1, 2], [2, 3]]);
+    expect(pair([1, 2, 3, 4])).toEqual([[1, 2], [2, 3], [3, 4]]);
+    expect(pair([1, 2, 3, 4, 5])).toEqual([[1, 2], [2, 3], [3, 4], [4, 5]]);
+  })
+})

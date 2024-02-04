@@ -48,3 +48,16 @@ export function mapPairs<T, U>(list: T[], callback: (a: T, b: T) => U): U[] {
     return callback(current, next);
   });
 }
+
+export function pair<T>(l: T[]): [T | null, T][] {
+  const n = l.length;
+  if (n === 0) return [];
+  if (n === 1) return [[null, head(l)]];
+  if (n % 2 !== 0) {
+    return [
+      [head(l), head(tail(l))],
+      ...first(tail(l)).map((t, i) => [t, tail(l)[i + 1]] as [T, T]),
+    ];
+  }
+  return first(l).map((t, i) => [t, l[i + 1]]);
+}

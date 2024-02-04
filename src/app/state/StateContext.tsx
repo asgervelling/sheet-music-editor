@@ -8,6 +8,7 @@ import reducer from "./reducer";
 
 const initialState: State = {
   currDuration: Duration.Quarter,
+  currOctave: 4, // HARDCODED
   activeNoteNames: [],
   history: [],
   undoStack: [],

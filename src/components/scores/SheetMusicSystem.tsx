@@ -10,15 +10,21 @@
 import { createTies, staveNote } from "@/app/sheet_music";
 import { StateContext } from "@/app/state/StateContext";
 import { Bar } from "@/app/state/music";
+import { mapPairs } from "@/app/state/music/arrays";
 import { createBars } from "@/app/state/music/bars";
 import { Duration } from "@/app/state/music/durations";
+import { MusicalEvent, NoteName } from "@/app/state/music/events";
+import { inferAccidentals } from "@/app/state/music/keys";
+import { fmtChunk } from "@/app/state/music/test_helpers";
 import { tsToString } from "@/app/state/music/time_signatures";
 import { useContext, useEffect, useRef } from "react";
 import {
+  Accidental,
   Beam,
   Formatter,
   RenderContext,
   Stave,
+  StaveNote,
   Vex,
 } from "vexflow";
 
@@ -83,6 +89,44 @@ function staveWidth(bar: Bar): number {
 
 function drawBar(context: RenderContext, bar: Bar, i: number, offset: number) {
   const notes = bar.events.map(staveNote);
+
+  function pair<T>(l: T[]): [T | null, T][] {
+    if (l.length < 2) return [];
+    const [a, b, ...rest] = l;
+    return [[a, b], ...pair(rest)];
+  }
+  
+  const x = mapPairs([null, ...bar.events], (a, b) => {
+    if (b) {
+      const sNote = staveNote(b);
+      const accidentals = inferAccidentals(b, a, NoteName.C); // HARDCODED
+      
+      accidentals.forEach((a, i) => {
+        sNote.addModifier(new Accidental(a), i);
+      });
+
+      return sNote;
+    } else {
+      return staveNote(a);
+    }
+  })
+
+  if (notes.length > 2 && notes[1].getKeys().length > 1) {
+    notes[1].addModifier(new Accidental("#"), 0);
+    notes[1].addModifier(new Accidental("b"), 1);
+  }
+
+  const fmtVFNote = (n: StaveNote) => {
+    return `${n.getKeys()}`;
+  }
+
+  const fmtVFNotes = (notes: StaveNote[]) => {
+    return notes.map(fmtVFNote).join(", ");
+  }
+
+  console.log("Events:", fmtChunk(bar.events));
+  console.log("Notes: ", fmtVFNotes(notes))
+  
   const x = i + offset;
   const y = 0;
   const stave = new Stave(x, y, staveWidth(bar));
@@ -115,9 +159,6 @@ function drawBars(context: RenderContext, bars: Bar[]) {
       .map(staveWidth)
       .reduce((acc, n) => acc + n, 0);
     drawBar(context, bar, i, offset);
-    console.log(
-      `Drew bar with width ${staveWidth(bar)}. New offset: ${offset}`
-    );
   });
 }
 

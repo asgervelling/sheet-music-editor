@@ -8,17 +8,16 @@
 import * as VF from "vexflow";
 
 import { Bar, MusicalEvent, NoteName } from "./state/music";
-import { Note } from "./state/music/events";
-import { first, mapPairs } from "./state/music/arrays";
-import { fmtChunk, fmtEvent } from "./state/music/test_helpers";
-import { inferAccidental } from "./state/music/keys";
+import { Note, isPause } from "./state/music/events";
+import { mapPairs } from "./state/music/arrays";
+import { inferAccidentals } from "./state/music/keys";
 
 /**
  * Convert a NoteName to the note name format used by VexFlow.
  */
 export function vexFlowName(note: Note): string {
   if (note.name === NoteName.PAUSE) {
-    return `b/${note.octave}r`;
+    return `b/${note.octave}`;
   } else {
     const name = note.name.replace("♭", "b");
     return `${name}/${note.octave}`;
@@ -31,23 +30,12 @@ export function vexFlowName(note: Note): string {
 export function staveNote(e: MusicalEvent): VF.StaveNote {
   const keys = e.notes.map(vexFlowName);
   const duration = e.duration;
-  const note = new VF.StaveNote({
+  return new VF.StaveNote({
     clef: "treble",
     keys: keys,
-    duration: duration,
+    duration: isPause(e) ? `${duration}r` : duration,
   });
-  return note;
 }
-
-// export function staveNotes(events: MusicalEvent[], key: NoteName): VF.StaveNote[] {
-//   const l = [null, ...events]
-//   mapPairs(l, (a, b): VF.StaveNote => {
-//     if (b) {
-//       const sNote = staveNote(b);
-//       if (isDiatonic)
-//     }
-//   })
-// }
 
 /**
  * Tie musical events together to signify

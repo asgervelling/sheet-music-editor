@@ -68,7 +68,7 @@ export const _32nds = (n: number): Duration.ThirtySecond[] =>
 
 export function fmtEvent(e: MusicalEvent) {
   const tiedStatus = e.tiedToNext ? "t" : "";
-  return `([${e.notes.map((n) => n.name).join(", ")}], ${
+  return `([${e.notes.map((n) => n.name + "/" + n.octave).join(", ")}], ${
     e.duration
   }, ${tiedStatus})`;
 }

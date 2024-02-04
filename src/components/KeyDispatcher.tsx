@@ -29,7 +29,7 @@ export default function KeyDispatcher() {
       else if (isPianoKey(event.key)) {
         dispatch({
           type: Message.TOGGLE_ACTIVE_NOTE_NAME,
-          payload: { note: KeyToNote[event.key] },
+          payload: { name: KeyToNote[event.key] },
         });
       }
       else if (isDurationKey(event.key)) {
