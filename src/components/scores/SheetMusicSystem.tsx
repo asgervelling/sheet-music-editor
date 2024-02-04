@@ -13,16 +13,9 @@ import { Bar } from "@/app/state/music";
 import { last } from "@/app/state/music/arrays";
 import { createBars } from "@/app/state/music/bars";
 import { Duration } from "@/app/state/music/durations";
-import {
-  MusicalEvent,
-  NoteName,
-} from "@/app/state/music/events";
-import {
-  applyAccidentals,
-} from "@/app/state/music/keys";
-import {
-  tsToString,
-} from "@/app/state/music/time_signatures";
+import { MusicalEvent, NoteName } from "@/app/state/music/events";
+import { applyAccidentals } from "@/app/state/music/keys";
+import { tsToString } from "@/app/state/music/time_signatures";
 import { useContext, useEffect, useRef } from "react";
 import * as VF from "vexflow";
 
