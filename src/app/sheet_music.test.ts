@@ -1,6 +1,6 @@
 import { describe, it, expect } from "@jest/globals";
-import { staveNote, createTies } from "./sheet_music";
-import { D, c16t, c32, e, e16, e4t, e8, e8t, event } from "./state/music/test_helpers";
+import { staveNote } from "./sheet_music";
+import { D, e16, e8, e8t, event } from "./state/music/test_helpers";
 import { StaveNote } from "vexflow";
 import { NoteName } from "./state/music";
 
@@ -10,19 +10,19 @@ describe("staveNote", () => {
     expect(note.getDuration()).toEqual(duration);
   }
   it("should create a stave note of the right format", () => {
-    assertNoteHas(staveNote(e8), ["E/4"], "8");
-    assertNoteHas(staveNote(e16), ["E/4"], "16");
-    assertNoteHas(staveNote(event([NoteName.B], D.Sixteenth)), ["B/4"], "16");
+    assertNoteHas(staveNote(e8), ["e/4"], "8");
+    assertNoteHas(staveNote(e16), ["e/4"], "16");
+    assertNoteHas(staveNote(event([NoteName.B], D.Sixteenth)), ["b/4"], "16");
     assertNoteHas(
       staveNote(event([NoteName.Ab], D.ThirtySecond)),
-      ["Ab/4"],
+      ["ab/4"],
       "32"
     );
-    assertNoteHas(staveNote(event([NoteName.Gb], D.Whole)), ["Gb/4"], "w");
+    assertNoteHas(staveNote(event([NoteName.Gb], D.Whole)), ["gb/4"], "w");
   });
 
   it("should not care about events being tied", () => {
-    assertNoteHas(staveNote(e8t), ["E/4"], "8");
+    assertNoteHas(staveNote(e8t), ["e/4"], "8");
   });
 });
 

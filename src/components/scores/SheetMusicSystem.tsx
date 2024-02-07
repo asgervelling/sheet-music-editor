@@ -7,31 +7,15 @@
  * and let this component use VexFlow instead.
  */
 "use client";
-import { createTies } from "@/app/sheet_music";
+import { createTies, staveNote } from "@/app/sheet_music";
 import { StateContext } from "@/app/state/StateContext";
 import { Bar } from "@/app/state/music";
-import { first, last } from "@/app/state/music/arrays";
 import { createBars } from "@/app/state/music/bars";
 import { Duration } from "@/app/state/music/durations";
-import { MusicalEvent, NoteName, isPause } from "@/app/state/music/events";
-import { applyAccidentals } from "@/app/state/music/keys";
+import { NoteName } from "@/app/state/music/events";
 import { tsToString } from "@/app/state/music/time_signatures";
 import { useContext, useEffect, useRef } from "react";
 import * as VF from "vexflow";
-
-/**
- * This type bridges the gap between our own music theory \
- * code and the VexFlow sheet music rendering library. \
- * It represents a Bar as something that can easily be drawn \
- * on the screen.
- */
-type SheetMusicBar = {
-  key: NoteName;
-  stave: VF.Stave;
-  notes: VF.StaveNote[];
-  beams: VF.Beam[];
-  ties: VF.StaveTie[];
-};
 
 const { Renderer } = VF.Vex.Flow;
 
@@ -55,8 +39,8 @@ export default function SheetMusicSystem() {
 
     try {
       const bars = createBars(state.history, [4, Duration.Quarter]); // HARDCODED time signature
-      // drawBars(context, bars);
-      drawSMBars(context, createSheetMusicBars(bars));
+      // drawSMBars(context, createSheetMusicBars(bars));
+      drawBars(context, bars);
     } catch (e) {
       displayError(e);
     }
@@ -86,57 +70,59 @@ export default function SheetMusicSystem() {
   );
 }
 
-function createSheetMusicBars(bars: Bar[]): SheetMusicBar[] {
-  if (bars.length === 0) return [];
+function drawBars(context: VF.RenderContext, bars: Bar[]) {
+  
+  function draw(bars: Bar[], i: number, x: number, y: number) {
+    if (bars.length === 0) return;
 
-  let previous: MusicalEvent | null = null;
-  return bars.map((bar, i): SheetMusicBar => {
+    const [bar, ...rest] = bars;
     const key = NoteName.C; // HARDCODED key
-    const stave = createStave(bars, i);
-    const notes = applyAccidentals(bar.events, previous, key);
-    previous = last(bar.events) || null;
+    const notes = bar.events.map(staveNote);
+
+    // Voice
+    const voice = new VF.Voice({ num_beats: 4, beat_value: 4 }); // HARDCODED
+    voice.addTickables(notes);
+    VF.Accidental.applyAccidentals([voice], key);
+    new VF.Formatter().joinVoices([voice]).format([voice]);
+    const vWidth = voiceWidth(voice);
+    new VF.Formatter().joinVoices([voice]).format([voice], vWidth);
+    
+    // Stave
+    const stave = new VF.Stave(x, y, vWidth);
+    if (i === 0) {
+      // HARDCODED clef
+      stave.addClef("treble").addTimeSignature(tsToString(bars[i].ts));
+    }
+    const staveWidth = (vWidth + stave.getModifierXShift()) * 1.25;
+    console.log(`${staveWidth} = ${stave.getWidth()} + ${stave.getModifierXShift()}`)
+    stave.setWidth(staveWidth);
+    
+    // Beams ♫
     const beams = VF.Beam.generateBeams(notes);
+    
+    // Ties ♪‿♪
     const ties = createTies(bar, notes);
 
-    return { key, stave, notes, beams, ties };
-  });
-}
+    // Draw bar
+    stave.setContext(context).draw();
+    voice.draw(context, stave);
+    beams.forEach((b) => b.setContext(context).draw());
+    ties.forEach((t) => t.setContext(context).draw());
 
-function createStave(bars: Bar[], i: number): VF.Stave {
-  const x = bars
-    .slice(0, i)
-    .map(staveWidth)
-    .reduce((acc, n) => acc + n, 0);
-  const y = 0;
-  const stave = new VF.Stave(x, y, staveWidth(bars[i]));
-  if (i === 0) {
-    // HARDCODED clef
-    stave.addClef("treble").addTimeSignature(tsToString(bars[i].ts));
+    // Draw the next bars
+    draw(rest, i + 1, x + staveWidth, y);
   }
-  return stave;
+
+  const [x, y] = [0, 0];
+  draw(bars, 0, x, y);
 }
 
-function staveWidth(bar: Bar): number {
-  const normal = 200;
-  const notesPerStave = 6;
-  const n = bar.events.length;
-  return Math.max(normal, Math.ceil(n / notesPerStave) * normal);
-}
-
-function drawSMBars(context: VF.RenderContext, bars: SheetMusicBar[]) {
-  bars.forEach((bar) => {
-    // Draw stave
-    bar.stave.setContext(context).draw();
-
-    // Draw notes
-    VF.Formatter.FormatAndDraw(context, bar.stave, bar.notes);
-
-    // Draw beams ♫
-    bar.beams.forEach((b) => b.setContext(context).draw());
-
-    // Draw ties ♪‿♪
-    bar.ties.forEach((t) => t.setContext(context).draw());
-  });
+function voiceWidth(voice: VF.Voice) {
+  return voice.getTickables().reduce((acc, t) => {
+    const smallestXShift = t.getModifiers().reduce((acc, m) => Math.min(acc, m.getXShift()), 0);
+    console.log(t.getWidth() + Math.abs(smallestXShift));
+    return acc + t.getWidth() + Math.abs(smallestXShift);
+  }, 0)
 }
 
 /**

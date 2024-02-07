@@ -34,12 +34,6 @@ const steps: ScaleStep[] = [
   "7",
 ];
 
-export enum Accidental {
-  Sharp = "#",
-  Flat = "b",
-  Natural = "",
-}
-
 /**
  * Get `note` as a step in the `key` major scale. Ex:
  *
@@ -116,96 +110,4 @@ export function isAscending(a: Note, b: Note): boolean {
  */
 export function isDescending(a: Note, b: Note): boolean {
   return midiValue(b) < midiValue(a);
-}
-
-/**
- * Infer which accidental should be given to a the event notes \
- * based on the notes in the previous events and the key in which the user is playing.
- *
- * - The accidentals should be naturals \
- *   for all diatonic notes.
- *
- * - Non-diatonic notes should be flat (b), except when \
- *   the previous event has notes that are less than three semitones \
- *   below a given note and no notes that are less than three semitones \
- *   above the given note. In those cases, the accidentals should be sharp (#).
- */
-export function inferAccidentals(
-  event: MusicalEvent,
-  previousEvent: MusicalEvent | null,
-  key: NoteName
-): Accidental[] {
-  if (!previousEvent) {
-    return event.notes.map((note) =>
-      isDiatonic(note.name, key) ? Accidental.Natural : Accidental.Flat
-    );
-  }
-  const n0 = previousEvent.notes;
-  const n1 = event.notes;
-  const x = n1.map((note) => {
-    if (isDiatonic(note.name, key)) return Accidental.Natural;
-    else if (
-      n0.some((prev) => isDescending(prev, note) && interval(prev, note) > -3)
-    ) {
-      return Accidental.Flat;
-    } else if (
-      n0.some((prev) => isAscending(prev, note) && interval(prev, note) < 3)
-    ) {
-      return Accidental.Sharp;
-    } else {
-      return Accidental.Flat;
-    }
-  });
-  return x;
-}
-
-export function applyAccidentals(
-  events: MusicalEvent[],
-  previous: MusicalEvent | null,
-  key: NoteName
-): VF.StaveNote[] {
-  if (events.length === 0) return [];
-
-  function createNote(
-    e: MusicalEvent,
-    previous: MusicalEvent | null
-  ): VF.StaveNote {
-    const withAccidental =
-      (note: VF.StaveNote, ac: Accidental) => (i: number) =>
-        note.addModifier(new VF.Accidental(ac), i);
-
-    return inferAccidentals(e, previous, key).reduce(
-      (acc, ac, i) => {
-        switch (ac) {
-          case Accidental.Natural:
-            return acc;
-          case Accidental.Flat:
-            return {
-              event: e,
-              note: withAccidental(acc.note, ac)(i),
-            };
-          case Accidental.Sharp:
-            const note = lowerNote(lowerNote(e.notes[i]));
-            const notes = [
-              ...e.notes.slice(0, i),
-              note,
-              ...e.notes.slice(i + 1),
-            ];
-            const event: MusicalEvent = { ...e, notes };
-            return {
-              event: event,
-              note: withAccidental(acc.note, ac)(i),
-            };
-        }
-      },
-      {
-        event: e,
-        note: staveNote(e),
-      }
-    ).note;
-  }
-
-  return [createNote(head(events), previous)].concat(
-    pair(events).map(([a, b]) => createNote(b, a))
-  );
 }
