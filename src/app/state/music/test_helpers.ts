@@ -1,4 +1,6 @@
-import { Duration, MusicalEvent, NoteName } from ".";
+import { Duration } from "./durations";
+import { MusicalEvent } from "./events";
+import { NoteName } from "./events";
 import { repeat } from "./arrays";
 
 export function event(names: NoteName[], duration: Duration): MusicalEvent {

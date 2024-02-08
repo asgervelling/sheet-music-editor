@@ -12,10 +12,7 @@ import { StateContext } from "@/app/state/StateContext";
 import { Bar } from "@/app/state/music";
 import {
   chunk,
-  head,
-  last,
   partitionToMaxSum,
-  tail,
   zip,
 } from "@/app/state/music/arrays";
 import { createBars } from "@/app/state/music/bars";
@@ -56,7 +53,7 @@ export default function SheetMusicSystem() {
     renderContextRef.current = context;
 
     try {
-      const bars = createBars(state.history, [4, Duration.Quarter], NoteName.C); // HARDCODED time and key signature
+      const bars = createBars(state.history, [4, Duration.Quarter], NoteName.Bb); // HARDCODED time and key signature
       drawBars(context, sheetMusicBars(bars));
     } catch (e) {
       displayError(e);
@@ -103,6 +100,8 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
     const [bar, ...rest] = bars;
     const notes = bar.events.map(staveNote);
 
+    const stave = new VF.Stave(x, y, 0).addKeySignature(bar.keySig);
+
     // Voice
     const voice = new VF.Voice({
       num_beats: bar.timeSig[0],
@@ -114,7 +113,7 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
     const vWidth = voiceWidth(voice);
 
     // Stave
-    const stave = new VF.Stave(x, y, vWidth);
+    
     if (i === 0) {
       // HARDCODED clef
       stave.addClef("treble").addTimeSignature(tsToString(bars[i].timeSig));

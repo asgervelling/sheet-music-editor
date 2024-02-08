@@ -1,10 +1,4 @@
-export {
-  NoteName,
-  Duration,
-  NoteToKey,
-  KeyToNote,
-  DurationToKey,
-  KeyToDuration,
-} from "./constants";
 export type { Bar } from "./bars";
 export type { MusicalEvent } from "./events";
+export { NoteName } from "./events";
+export { Duration } from "./durations";

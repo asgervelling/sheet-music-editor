@@ -8,10 +8,9 @@ import {
   isAscending,
   isDescending,
 } from "./keys";
-import { Duration, NoteName } from ".";
-import { MusicalEvent, Note } from "./events";
-import { head, rotate, tail } from "./arrays";
-import { c4, db4, e4, e8, event, fmtEvent, p4 } from "./test_helpers";
+import { NoteName } from "./events";
+import { Note } from "./events";
+import { head, rotate } from "./arrays";
 
 // HARDCODED octave
 const n = (name: NoteName, octave: number): Note => ({ name, octave });

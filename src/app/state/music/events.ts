@@ -6,16 +6,16 @@ import * as A from "./arrays";
  */
 export enum NoteName {
   C = "C",
-  Db = "D♭",
+  Db = "Db",
   D = "D",
-  Eb = "E♭",
+  Eb = "Eb",
   E = "E",
   F = "F",
-  Gb = "G♭",
+  Gb = "Gb",
   G = "G",
-  Ab = "A♭",
+  Ab = "Ab",
   A = "A",
-  Bb = "B♭",
+  Bb = "Bb",
   B = "B",
   PAUSE = "PAUSE",
 }
