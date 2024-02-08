@@ -131,6 +131,13 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
     return [b, ...create(rest, i + 1, x + staveWidth, y)];
   }
 
+  // function voice(bar: Bar) {
+  //   const voice = new VF.Voice({ num_beats: 4, beat_value: 4 }); // HARDCODED
+  //   const voices = [voice.addTickables(bar.events.map(staveNote))];
+  //   VF.Accidental.applyAccidentals(voices, key);
+  //   new VF.Formatter().joinVoices(voices).format(voices);
+  // }
+
   const [i, x, y] = [0, 0, 0];
   return create(bars, i, x, y);
 }
