@@ -10,7 +10,13 @@
 import { createTies, staveNote } from "@/app/sheet_music";
 import { StateContext } from "@/app/state/StateContext";
 import { Bar } from "@/app/state/music";
-import { partitionToMaxSum, zip } from "@/app/state/music/arrays";
+import {
+  chunk,
+  head,
+  partitionToMaxSum,
+  tail,
+  zip,
+} from "@/app/state/music/arrays";
 import { createBars } from "@/app/state/music/bars";
 import { Duration } from "@/app/state/music/durations";
 import { NoteName } from "@/app/state/music/events";
@@ -19,6 +25,16 @@ import { useContext, useEffect, useRef } from "react";
 import * as VF from "vexflow";
 
 const { Renderer } = VF.Vex.Flow;
+
+/**
+ * The VexFlow representation of a `Bar`.
+ */
+type SheetMusicBar = {
+  stave: VF.Stave;
+  voices: VF.Voice[];
+  beams: VF.Beam[];
+  ties: VF.StaveTie[];
+};
 
 enum DIV_ID {
   CONTAINER = "sheet-music-container",
@@ -65,19 +81,16 @@ export default function SheetMusicSystem() {
   return (
     <div>
       <div id={DIV_ID.ERROR}></div>
-      <div id={DIV_ID.CONTAINER} ref={containerRef} className="h-[900px] w-[700px]">
+      <div
+        id={DIV_ID.CONTAINER}
+        ref={containerRef}
+        className="h-[900px] w-[700px]"
+      >
         <div id={DIV_ID.OUTPUT}></div>
       </div>
     </div>
   );
 }
-
-type SheetMusicBar = {
-  stave: VF.Stave;
-  voices: VF.Voice[];
-  beams: VF.Beam[];
-  ties: VF.StaveTie[];
-};
 
 function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
   function create(
@@ -94,11 +107,11 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
 
     // Voice
     const voice = new VF.Voice({ num_beats: 4, beat_value: 4 }); // HARDCODED
-    voice.addTickables(notes);
-    VF.Accidental.applyAccidentals([voice], key);
-    new VF.Formatter().joinVoices([voice]).format([voice]);
+    const voices = [voice.addTickables(notes)];
+    VF.Accidental.applyAccidentals(voices, key);
+    new VF.Formatter().joinVoices(voices).format(voices);
     const vWidth = voiceWidth(voice);
-    new VF.Formatter().joinVoices([voice]).format([voice], vWidth);
+    new VF.Formatter().joinVoices(voices).format(voices, vWidth);
 
     // Stave
     const stave = new VF.Stave(x, y, vWidth);
@@ -115,13 +128,7 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
     // Ties ♪‿♪
     const ties = createTies(bar, notes);
 
-    const b: SheetMusicBar = {
-      stave,
-      voices: [voice],
-      beams,
-      ties,
-    };
-
+    const b: SheetMusicBar = { stave, voices, beams, ties };
     return [b, ...create(rest, i + 1, x + staveWidth, y)];
   }
 
@@ -129,6 +136,10 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
   return create(bars, i, x, y);
 }
 
+/**
+ * Create rows of widths, where each row has a sum \
+ * smaller than or equal to the size of the container.
+ */
 function staveWidths(bars: SheetMusicBar[]): number[][] {
   let container = document.getElementById(DIV_ID.CONTAINER);
   let containerWidth = container?.offsetWidth ?? 1300; // HARDCODED
@@ -137,60 +148,27 @@ function staveWidths(bars: SheetMusicBar[]): number[][] {
   return partitionToMaxSum(widths, containerWidth);
 }
 
-function print2DArray(arr: any[][]): void {
-  console.log(`[${arr.map(row => `[${row.join(", ")}]`).join(", ")}]`);
-}
-
-function drawBars(context: VF.RenderContext, bars: SheetMusicBar[]) {
-  let container = document.getElementById(DIV_ID.CONTAINER);
-  let containerWidth = container?.offsetWidth ?? 1300; // HARDCODED
-
-  let i = 0;
-  const sums = staveWidths(bars).map((row) => row.reduce((acc, n) => acc + n, i));
-  console.log("Max:", containerWidth, ", ", "Sums:", sums)
-  staveWidths(bars).forEach((group, row) => {
-    let x = 0;
-    group.forEach((width) => {
-      const bar = bars[i];
+function drawBars(context: VF.RenderContext, bars: SheetMusicBar[]): void {
+  function drawRow(row: [number[], SheetMusicBar[]], i: number): void {
+    zip(...row).reduce((x, [width, bar]) => {
       bar.stave.setX(x);
-      bar.stave.setY(row * bar.stave.getHeight());
+      bar.stave.setY(i * bar.stave.getHeight());
 
-      // console.log(`Set bar ${i}'s x and y: (${x}, ${row * bar.stave.getHeight()})`);
-      
       bar.stave.setContext(context).draw();
       bar.voices.forEach((v) => v.draw(context, bar.stave));
       bar.beams.forEach((b) => b.setContext(context).draw());
       bar.ties.forEach((t) => t.setContext(context).draw());
 
-      x += width;
-      i++;
-    })
-  })
+      return x + width;
+    }, 0);
+  }
 
-  // let x = 0;
-  // let y = 0;
-  // let row = 0;
-  // for (let i = 0; i < bars.length; i++) {
-  //   const bar = bars[i];
-  //   bar.stave.setX(x % containerWidth);
-    
-  //   const width = bar.stave.getWidth();
-  //   const height = bar.stave.getHeight();
-  //   const newRow = Math.floor((x + width + width) / containerWidth);
-  //   if (newRow > row) {
-  //     row = newRow;
-  //     x = newRow * containerWidth;
-  //     bar.stave.setX(x % containerWidth);
-  //   } else {
-  //     x += width;
-  //   }
-  //   bar.stave.setY(row * height);
-  //   bar.stave.setContext(context).draw();
-  //   bar.voices.forEach((v) => v.draw(context, bar.stave));
-  //   bar.beams.forEach((b) => b.setContext(context).draw());
-  //   bar.ties.forEach((t) => t.setContext(context).draw());
-  // }
-  console.log();
+  const widthRows = staveWidths(bars);
+  const barRows = chunk(
+    bars,
+    widthRows.map((r) => r.length)
+  );
+  zip(widthRows, barRows).forEach((row, i) => drawRow(row, i));
 }
 
 function voiceWidth(voice: VF.Voice) {
