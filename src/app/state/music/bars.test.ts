@@ -36,15 +36,15 @@ describe("createBars", () => {
   it("should fill the last bar with pauses", () => {
     expect(createBars([c1, e1], [3, D.Quarter])).toEqual([
       {
-        ts: _3_4,
+        timeSig: _3_4,
         events: [c4t, c2t],
       },
       {
-        ts: _3_4,
+        timeSig: _3_4,
         events: [c4, e2t],
       },
       {
-        ts: _3_4,
+        timeSig: _3_4,
         events: [e2, p4],
       },
     ]);
@@ -56,17 +56,17 @@ describe("createBars", () => {
 
   it("should split an event over multiple bars", () => {
     expect(createBars([c1], _3_16)).toEqual([
-      ...repeat({ ts: _3_16, events: [c16t, c8t] }, 5),
-      { ts: _3_16, events: [c16, p8] },
+      ...repeat({ timeSig: _3_16, events: [c16t, c8t] }, 5),
+      { timeSig: _3_16, events: [c16, p8] },
     ]);
   });
 
   it("should split multiple events over multiple bars", () => {
     expect(createBars([c1, e1t, e1t, e1], _3_16)).toEqual([
-      ...repeat({ ts: _3_16, events: [c16t, c8t] }, 5),
-      { ts: _3_16, events: [c16, e8t] },
-      ...repeat({ ts: _3_16, events: [e16t, e8t] }, 15),
-      { ts: _3_16, events: [e16, p8] },
+      ...repeat({ timeSig: _3_16, events: [c16t, c8t] }, 5),
+      { timeSig: _3_16, events: [c16, e8t] },
+      ...repeat({ timeSig: _3_16, events: [e16t, e8t] }, 15),
+      { timeSig: _3_16, events: [e16, p8] },
     ]);
   });
 });

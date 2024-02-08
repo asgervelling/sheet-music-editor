@@ -6,19 +6,19 @@ import { TimeSignature, tsTo32nds } from "./time_signatures";
  * A bar has a time signature and some musical events.
  */
 export type Bar = {
-  ts: TimeSignature;
+  timeSig: TimeSignature;
   events: MusicalEvent[];
 };
 
 /**
- * Distribute the `events` into bars based on the time signature `ts`. \
+ * Distribute the `events` into bars based on the time signature `timeSig`. \
  * If the last bar is missing some events, add pauses to it.
  */
-export function createBars(events_: MusicalEvent[], ts: TimeSignature): Bar[] {
+export function createBars(events_: MusicalEvent[], timeSig: TimeSignature): Bar[] {
   if (events_.length === 0) {
     return [];
   }
-  const chunkSize = tsTo32nds(ts).length;
+  const chunkSize = tsTo32nds(timeSig).length;
   const total32nds = events_.flatMap(expandTo32nds).length;
   const numBars = Math.ceil(total32nds / chunkSize);
   const chunkSizes = Array(numBars).fill(chunkSize);
@@ -26,6 +26,6 @@ export function createBars(events_: MusicalEvent[], ts: TimeSignature): Bar[] {
   return [
     ...first(chunks),
     [...last(chunks), ...reciprocalChunk(last(chunks), chunkSize)],
-  ].map((events) => ({ ts, events }));
+  ].map((events) => ({ timeSig, events }));
 
 }

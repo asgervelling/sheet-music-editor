@@ -12,13 +12,13 @@ export type TimeSignature = [number, Duration];
  * - the denominator is a power of 2
  * - the numerator is not 0
  */
-export function validateTimeSignature(ts: TimeSignature): boolean {
-  const [a, _] = ts;
+export function validateTimeSignature(timeSig: TimeSignature): boolean {
+  const [a, _] = timeSig;
   return a !== 0 && Number.isInteger(a);
 }
 
-export function beatValue(ts: TimeSignature): number {
-  const [_, b] = ts;
+export function beatValue(timeSig: TimeSignature): number {
+  const [_, b] = timeSig;
   return parseInt(
     b
       .replace(Duration.Whole, "1")
@@ -30,11 +30,11 @@ export function beatValue(ts: TimeSignature): number {
 /**
  * Create an array of 32nd notes from a time signature.
  */
-export function tsTo32nds(ts: TimeSignature): Duration.ThirtySecond[] {
-  if (!validateTimeSignature(ts)) {
-    throw new Error(`Invalid time signature: ${ts}`);
+export function tsTo32nds(timeSig: TimeSignature): Duration.ThirtySecond[] {
+  if (!validateTimeSignature(timeSig)) {
+    throw new Error(`Invalid time signature: ${timeSig}`);
   }
-  const [a, b] = ts;
+  const [a, b] = timeSig;
   const bExpanded = expandDuration(b);
   return Array(a * bExpanded.length).fill(Duration.ThirtySecond);
 }
@@ -54,24 +54,24 @@ export function _32ndsToTs(_32nds: Duration.ThirtySecond[]): TimeSignature {
  * A time signature can be simplified if both
  * the numerator and denominator are even.
  */
-export function canSimplify(ts: TimeSignature): boolean {
-  const [a, b] = ts;
+export function canSimplify(timeSig: TimeSignature): boolean {
+  const [a, b] = timeSig;
   return b !== Duration.Whole && a % 2 === 0;
 }
 
 /**
  * Simplify a time signature to irreducible form.
  */
-export function simplifyTs(ts: TimeSignature): TimeSignature {
-  const [a, b] = ts;
-  if (!canSimplify(ts)) {
-    return ts;
+export function simplifyTs(timeSig: TimeSignature): TimeSignature {
+  const [a, b] = timeSig;
+  if (!canSimplify(timeSig)) {
+    return timeSig;
   }
   return simplifyTs([a / 2, incrementDuration(b)]);
 }
 
-export function tsToString(ts: TimeSignature): string {
-  const [a, b] = ts;
+export function tsToString(timeSig: TimeSignature): string {
+  const [a, b] = timeSig;
   return `${a}/${b}`
     .replace(Duration.Whole, "1")
     .replace(Duration.Half, "2")

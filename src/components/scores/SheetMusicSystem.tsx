@@ -115,7 +115,7 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
     const stave = new VF.Stave(x, y, vWidth);
     if (i === 0) {
       // HARDCODED clef
-      stave.addClef("treble").addTimeSignature(tsToString(bars[i].ts));
+      stave.addClef("treble").addTimeSignature(tsToString(bars[i].timeSig));
     }
     const staveWidth = (vWidth + stave.getModifierXShift()) * 1.25;
     stave.setWidth(staveWidth);
