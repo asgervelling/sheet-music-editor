@@ -143,6 +143,8 @@ function drawBars(context: VF.RenderContext, bars: SheetMusicBar[]) {
     if (x + width > containerWidth) {
       x = 0;
       y += height;
+      bar.stave.setX(x);
+      bar.stave.setY(y);
     } else {
       x += width;
     }
