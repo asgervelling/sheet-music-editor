@@ -256,10 +256,9 @@ export function groupTiedEvents(events_: MusicalEvent[]): MusicalEvent[][] {
  *   ['q', 'h'] -> ['q', 'h']
  */
 export function simplifyPair(a: MusicalEvent, b: MusicalEvent): MusicalEvent[] {
-  const zip = (nA: Note[], nB: Note[]) => nA.map((n, i) => [n, nB[i]]);
   if (
     a.notes.length === b.notes.length &&
-    zip(a.notes, b.notes).map((pair) => noteEquals(pair[0], pair[1])) &&
+    A.zip(a.notes, b.notes).map((pair) => noteEquals(pair[0], pair[1])) &&
     a.duration !== Duration.Whole
   ) {
     return [{ ...b, duration: incrementDuration(b.duration) }];

@@ -89,6 +89,10 @@ export function partitionToMaxSum(numbers: number[], max: number): number[][] {
   return [p, ...partitionToMaxSum(numbers.slice(p.length), max)];
 }
 
+/**
+ * Zip two arrays together, \
+ * creating an array where the i'th element is `[l[i], m[i]]`.
+ */
 export function zip<T, U>(l: T[], m: U[]): [T, U][] {
   return l.map((x, i) => [x, m[i]]);
 }
