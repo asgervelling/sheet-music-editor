@@ -86,7 +86,6 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
     x: number,
     y: number
   ): SheetMusicBar[] {
-    console.log(`create(${i}, ${x}, ${y})`);
     if (bars.length === 0) return [];
 
     const [bar, ...rest] = bars;
@@ -143,8 +142,12 @@ function print2DArray(arr: any[][]): void {
 }
 
 function drawBars(context: VF.RenderContext, bars: SheetMusicBar[]) {
+  let container = document.getElementById(DIV_ID.CONTAINER);
+  let containerWidth = container?.offsetWidth ?? 1300; // HARDCODED
+
   let i = 0;
-  print2DArray(staveWidths(bars));
+  const sums = staveWidths(bars).map((row) => row.reduce((acc, n) => acc + n, i));
+  console.log("Max:", containerWidth, ", ", "Sums:", sums)
   staveWidths(bars).forEach((group, row) => {
     let x = 0;
     group.forEach((width) => {
@@ -152,7 +155,7 @@ function drawBars(context: VF.RenderContext, bars: SheetMusicBar[]) {
       bar.stave.setX(x);
       bar.stave.setY(row * bar.stave.getHeight());
 
-      console.log(`Set bar ${i}'s x and y: (${x}, ${row * bar.stave.getHeight()})`);
+      // console.log(`Set bar ${i}'s x and y: (${x}, ${row * bar.stave.getHeight()})`);
       
       bar.stave.setContext(context).draw();
       bar.voices.forEach((v) => v.draw(context, bar.stave));
