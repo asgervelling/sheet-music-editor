@@ -66,3 +66,29 @@ export function pair<T>(l: T[]): [T | null, T][] {
   }
   return first(l).map((t, i) => [t, l[i + 1]]);
 }
+
+/**
+ * Create an array of number arrays, where each array
+ * has a sum of at most `max`.
+ */
+export function partitionToMaxSum(numbers: number[], max: number): number[][] {
+  if (numbers.length === 0) return [];
+
+  function partition(numbers: number[], max: number): number[] {
+      if (numbers.length === 0) return [];
+
+      const [n, ...rest] = numbers;
+      if (n > max) {
+          return [n];
+      } else {
+          return [n, ...partition(rest, max - n)];
+      }
+  }
+
+  const p = partition(numbers, max);
+  return [p, ...partitionToMaxSum(numbers.slice(p.length), max)];
+}
+
+export function zip<T, U>(l: T[], m: U[]): [T, U][] {
+  return l.map((x, i) => [x, m[i]]);
+}

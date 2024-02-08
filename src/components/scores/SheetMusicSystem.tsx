@@ -10,6 +10,7 @@
 import { createTies, staveNote } from "@/app/sheet_music";
 import { StateContext } from "@/app/state/StateContext";
 import { Bar } from "@/app/state/music";
+import { partitionToMaxSum, zip } from "@/app/state/music/arrays";
 import { createBars } from "@/app/state/music/bars";
 import { Duration } from "@/app/state/music/durations";
 import { NoteName } from "@/app/state/music/events";
@@ -64,7 +65,7 @@ export default function SheetMusicSystem() {
   return (
     <div>
       <div id={DIV_ID.ERROR}></div>
-      <div id={DIV_ID.CONTAINER} ref={containerRef} className="h-[900px]">
+      <div id={DIV_ID.CONTAINER} ref={containerRef} className="h-[900px] w-[700px]">
         <div id={DIV_ID.OUTPUT}></div>
       </div>
     </div>
@@ -85,6 +86,7 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
     x: number,
     y: number
   ): SheetMusicBar[] {
+    console.log(`create(${i}, ${x}, ${y})`);
     if (bars.length === 0) return [];
 
     const [bar, ...rest] = bars;
@@ -128,32 +130,64 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
   return create(bars, i, x, y);
 }
 
-function drawBars(context: VF.RenderContext, bars: SheetMusicBar[]) {
+function staveWidths(bars: SheetMusicBar[]): number[][] {
   let container = document.getElementById(DIV_ID.CONTAINER);
   let containerWidth = container?.offsetWidth ?? 1300; // HARDCODED
-  let x = 0;
-  let y = 0;
-  for (let i = 0; i < bars.length; i++) {
-    const bar = bars[i];
-    bar.stave.setX(x);
-    bar.stave.setY(y);
 
-    const width = bar.stave.getWidth();
-    const height = bar.stave.getHeight();
-    if (x + width > containerWidth) {
-      x = 0;
-      y += height;
+  const widths = bars.map((b) => Math.min(b.stave.getWidth(), containerWidth));
+  return partitionToMaxSum(widths, containerWidth);
+}
+
+function print2DArray(arr: any[][]): void {
+  console.log(`[${arr.map(row => `[${row.join(", ")}]`).join(", ")}]`);
+}
+
+function drawBars(context: VF.RenderContext, bars: SheetMusicBar[]) {
+  let i = 0;
+  print2DArray(staveWidths(bars));
+  staveWidths(bars).forEach((group, row) => {
+    let x = 0;
+    group.forEach((width) => {
+      const bar = bars[i];
       bar.stave.setX(x);
-      bar.stave.setY(y);
-    } else {
+      bar.stave.setY(row * bar.stave.getHeight());
+
+      console.log(`Set bar ${i}'s x and y: (${x}, ${row * bar.stave.getHeight()})`);
+      
+      bar.stave.setContext(context).draw();
+      bar.voices.forEach((v) => v.draw(context, bar.stave));
+      bar.beams.forEach((b) => b.setContext(context).draw());
+      bar.ties.forEach((t) => t.setContext(context).draw());
+
       x += width;
-    }
-    console.log(`Bar. x: ${bar.stave.getX()}, y: ${bar.stave.getY()}. Own x: ${x}, y: ${y}`);
-    bar.stave.setContext(context).draw();
-    bar.voices.forEach((v) => v.draw(context, bar.stave));
-    bar.beams.forEach((b) => b.setContext(context).draw());
-    bar.ties.forEach((t) => t.setContext(context).draw());
-  }
+      i++;
+    })
+  })
+
+  // let x = 0;
+  // let y = 0;
+  // let row = 0;
+  // for (let i = 0; i < bars.length; i++) {
+  //   const bar = bars[i];
+  //   bar.stave.setX(x % containerWidth);
+    
+  //   const width = bar.stave.getWidth();
+  //   const height = bar.stave.getHeight();
+  //   const newRow = Math.floor((x + width + width) / containerWidth);
+  //   if (newRow > row) {
+  //     row = newRow;
+  //     x = newRow * containerWidth;
+  //     bar.stave.setX(x % containerWidth);
+  //   } else {
+  //     x += width;
+  //   }
+  //   bar.stave.setY(row * height);
+  //   bar.stave.setContext(context).draw();
+  //   bar.voices.forEach((v) => v.draw(context, bar.stave));
+  //   bar.beams.forEach((b) => b.setContext(context).draw());
+  //   bar.ties.forEach((t) => t.setContext(context).draw());
+  // }
+  console.log();
 }
 
 function voiceWidth(voice: VF.Voice) {
