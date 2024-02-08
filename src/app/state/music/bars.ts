@@ -1,5 +1,5 @@
 import { first, last } from "./arrays";
-import { MusicalEvent, chunk, expandTo32nds, reciprocalChunk } from "./events";
+import { MusicalEvent, NoteName, chunk, expandTo32nds, reciprocalChunk } from "./events";
 import { TimeSignature, tsTo32nds } from "./time_signatures";
 
 /**
@@ -7,6 +7,7 @@ import { TimeSignature, tsTo32nds } from "./time_signatures";
  */
 export type Bar = {
   timeSig: TimeSignature;
+  keySig: NoteName;
   events: MusicalEvent[];
 };
 
@@ -14,7 +15,7 @@ export type Bar = {
  * Distribute the `events` into bars based on the time signature `timeSig`. \
  * If the last bar is missing some events, add pauses to it.
  */
-export function createBars(events_: MusicalEvent[], timeSig: TimeSignature): Bar[] {
+export function createBars(events_: MusicalEvent[], timeSig: TimeSignature, keySig: NoteName): Bar[] {
   if (events_.length === 0) {
     return [];
   }
@@ -26,6 +27,6 @@ export function createBars(events_: MusicalEvent[], timeSig: TimeSignature): Bar
   return [
     ...first(chunks),
     [...last(chunks), ...reciprocalChunk(last(chunks), chunkSize)],
-  ].map((events) => ({ timeSig, events }));
+  ].map((events) => ({ timeSig, keySig, events }));
 
 }

@@ -55,7 +55,7 @@ export default function SheetMusicSystem() {
     renderContextRef.current = context;
 
     try {
-      const bars = createBars(state.history, [4, Duration.Quarter]); // HARDCODED time signature
+      const bars = createBars(state.history, [4, Duration.Quarter], NoteName.C); // HARDCODED time and key signature
       drawBars(context, sheetMusicBars(bars));
     } catch (e) {
       displayError(e);
@@ -110,7 +110,7 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
     new VF.Formatter().joinVoices(voices).format(voices);
     const minLength = 100;
     const vWidth = Math.max(voiceWidth(voice), minLength);
-    
+
     // Stave
     const stave = new VF.Stave(x, y, vWidth);
     if (i === 0) {
