@@ -133,28 +133,8 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
     return [b, ...create(rest, i + 1, x + staveWidth, y)];
   }
 
-  function createVoice(bar: Bar): VF.Voice {
-    const voice = new VF.Voice({ num_beats: 4, beat_value: 4 }); // HARDCODED
-    const voices = [voice.addTickables(bar.events.map(staveNote))];
-    VF.Accidental.applyAccidentals(voices, bar.keySig);
-    new VF.Formatter().joinVoices(voices).format(voices);
-    return voice;
-  }
-
   const [i, x, y] = [0, 0, 0];
   return create(bars, i, x, y);
-}
-
-/**
- * Create rows of widths, where each row has a sum \
- * smaller than or equal to the size of the container.
- */
-function staveWidths(bars: SheetMusicBar[]): number[][] {
-  let container = document.getElementById(DIV_ID.CONTAINER);
-  let containerWidth = container?.offsetWidth ?? 1300; // HARDCODED
-
-  const widths = bars.map((b) => Math.min(b.stave.getWidth(), containerWidth));
-  return partitionToMaxSum(widths, containerWidth);
 }
 
 function drawBars(context: VF.RenderContext, bars: SheetMusicBar[]): void {
@@ -180,13 +160,33 @@ function drawBars(context: VF.RenderContext, bars: SheetMusicBar[]): void {
   zip(widthRows, barRows).forEach((row, i) => drawRow(row, i));
 }
 
+/**
+ * Create rows of widths, where each row has a sum \
+ * smaller than or equal to the size of the container.
+ */
+function staveWidths(bars: SheetMusicBar[]): number[][] {
+  let container = document.getElementById(DIV_ID.CONTAINER);
+  let containerWidth = container?.offsetWidth ?? 1300; // HARDCODED
+
+  const widths = bars.map((b) => Math.min(b.stave.getWidth(), containerWidth));
+  return partitionToMaxSum(widths, containerWidth);
+}
+
+/**
+ * The width of a voice, which should be slightly
+ * smaller than the width of a stave.
+ */
 function voiceWidth(voice: VF.Voice) {
-  return voice.getTickables().reduce((acc, t) => {
-    const smallestXShift = t
-      .getModifiers()
-      .reduce((acc, m) => Math.min(acc, m.getXShift()), 0);
-    return acc + t.getWidth() + Math.abs(smallestXShift);
-  }, 0);
+  const minWidth = 100;
+  return Math.max(
+    minWidth,
+    voice.getTickables().reduce((acc, t) => {
+      const smallestXShift = t
+        .getModifiers()
+        .reduce((acc, m) => Math.min(acc, m.getXShift()), 0);
+      return acc + t.getWidth() + Math.abs(smallestXShift);
+    }, 0)
+  );
 }
 
 /**
