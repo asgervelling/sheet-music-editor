@@ -13,6 +13,7 @@ import { Bar } from "@/app/state/music";
 import {
   chunk,
   head,
+  last,
   partitionToMaxSum,
   tail,
   zip,
@@ -20,7 +21,7 @@ import {
 import { createBars } from "@/app/state/music/bars";
 import { Duration } from "@/app/state/music/durations";
 import { NoteName } from "@/app/state/music/events";
-import { tsToString } from "@/app/state/music/time_signatures";
+import { beatValue, tsToString } from "@/app/state/music/time_signatures";
 import { useContext, useEffect, useRef } from "react";
 import * as VF from "vexflow";
 
@@ -100,16 +101,17 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
     if (bars.length === 0) return [];
 
     const [bar, ...rest] = bars;
-    const key = NoteName.C; // HARDCODED key
     const notes = bar.events.map(staveNote);
 
     // Voice
-    const voice = new VF.Voice({ num_beats: 4, beat_value: 4 }); // HARDCODED
-    const voices = [voice.addTickables(notes)];
-    VF.Accidental.applyAccidentals(voices, key);
+    const voice = new VF.Voice({
+      num_beats: bar.timeSig[0],
+      beat_value: beatValue(bar.timeSig),
+    });
+    const voices = [voice.addTickables(bar.events.map(staveNote))];
+    VF.Accidental.applyAccidentals(voices, bar.keySig);
     new VF.Formatter().joinVoices(voices).format(voices);
-    const minLength = 100;
-    const vWidth = Math.max(voiceWidth(voice), minLength);
+    const vWidth = voiceWidth(voice);
 
     // Stave
     const stave = new VF.Stave(x, y, vWidth);
@@ -119,7 +121,7 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
     }
     const staveWidth = (vWidth + stave.getModifierXShift()) * 1.25;
     stave.setWidth(staveWidth);
-    new VF.Formatter().joinVoices(voices).format(voices, vWidth);
+    new VF.Formatter().joinVoices([voice]).format([voice], vWidth);
 
     // Beams ♫
     const beams = VF.Beam.generateBeams(notes);
@@ -127,16 +129,17 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
     // Ties ♪‿♪
     const ties = createTies(bar, notes);
 
-    const b: SheetMusicBar = { stave, voices, beams, ties };
+    const b: SheetMusicBar = { stave, voices: [voice], beams, ties };
     return [b, ...create(rest, i + 1, x + staveWidth, y)];
   }
 
-  // function voice(bar: Bar) {
-  //   const voice = new VF.Voice({ num_beats: 4, beat_value: 4 }); // HARDCODED
-  //   const voices = [voice.addTickables(bar.events.map(staveNote))];
-  //   VF.Accidental.applyAccidentals(voices, key);
-  //   new VF.Formatter().joinVoices(voices).format(voices);
-  // }
+  function createVoice(bar: Bar): VF.Voice {
+    const voice = new VF.Voice({ num_beats: 4, beat_value: 4 }); // HARDCODED
+    const voices = [voice.addTickables(bar.events.map(staveNote))];
+    VF.Accidental.applyAccidentals(voices, bar.keySig);
+    new VF.Formatter().joinVoices(voices).format(voices);
+    return voice;
+  }
 
   const [i, x, y] = [0, 0, 0];
   return create(bars, i, x, y);

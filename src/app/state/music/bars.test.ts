@@ -1,6 +1,6 @@
 import { describe, it, expect } from "@jest/globals";
 
-import { Bar, createBars } from "./bars";
+import { createBars } from "./bars";
 import {
   D,
   c1,
@@ -17,8 +17,6 @@ import {
   e2,
   e2t,
   e8t,
-  fmtChunk,
-  fmtChunks,
   p4,
   p8,
 } from "./test_helpers";
