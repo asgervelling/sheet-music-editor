@@ -57,8 +57,6 @@ export default function SheetMusicSystem() {
     try {
       const bars = createBars(state.history, [4, Duration.Quarter]); // HARDCODED time signature
       drawBars(context, sheetMusicBars(bars));
-      // drawSMBars(context, createSheetMusicBars(bars));
-      // drawBars(context, bars);
     } catch (e) {
       displayError(e);
     }
@@ -84,7 +82,7 @@ export default function SheetMusicSystem() {
       <div
         id={DIV_ID.CONTAINER}
         ref={containerRef}
-        className="h-[900px] w-[700px]"
+        className="h-[900px] w-[600px] border border-black"
       >
         <div id={DIV_ID.OUTPUT}></div>
       </div>
@@ -110,9 +108,9 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
     const voices = [voice.addTickables(notes)];
     VF.Accidental.applyAccidentals(voices, key);
     new VF.Formatter().joinVoices(voices).format(voices);
-    const vWidth = voiceWidth(voice);
-    new VF.Formatter().joinVoices(voices).format(voices, vWidth);
-
+    const minLength = 100;
+    const vWidth = Math.max(voiceWidth(voice), minLength);
+    
     // Stave
     const stave = new VF.Stave(x, y, vWidth);
     if (i === 0) {
@@ -121,6 +119,7 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
     }
     const staveWidth = (vWidth + stave.getModifierXShift()) * 1.25;
     stave.setWidth(staveWidth);
+    new VF.Formatter().joinVoices(voices).format(voices, vWidth);
 
     // Beams ♫
     const beams = VF.Beam.generateBeams(notes);
