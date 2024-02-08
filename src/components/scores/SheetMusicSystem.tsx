@@ -39,8 +39,9 @@ export default function SheetMusicSystem() {
 
     try {
       const bars = createBars(state.history, [4, Duration.Quarter]); // HARDCODED time signature
+      drawBars(context, sheetMusicBars(bars));
       // drawSMBars(context, createSheetMusicBars(bars));
-      drawBars(context, bars);
+      // drawBars(context, bars);
     } catch (e) {
       displayError(e);
     }
@@ -63,17 +64,28 @@ export default function SheetMusicSystem() {
   return (
     <div>
       <div id={DIV_ID.ERROR}></div>
-      <div id={DIV_ID.CONTAINER} ref={containerRef}>
+      <div id={DIV_ID.CONTAINER} ref={containerRef} className="h-[900px]">
         <div id={DIV_ID.OUTPUT}></div>
       </div>
     </div>
   );
 }
 
-function drawBars(context: VF.RenderContext, bars: Bar[]) {
-  
-  function draw(bars: Bar[], i: number, x: number, y: number) {
-    if (bars.length === 0) return;
+type SheetMusicBar = {
+  stave: VF.Stave;
+  voices: VF.Voice[];
+  beams: VF.Beam[];
+  ties: VF.StaveTie[];
+};
+
+function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
+  function create(
+    bars: Bar[],
+    i: number,
+    x: number,
+    y: number
+  ): SheetMusicBar[] {
+    if (bars.length === 0) return [];
 
     const [bar, ...rest] = bars;
     const key = NoteName.C; // HARDCODED key
@@ -86,7 +98,7 @@ function drawBars(context: VF.RenderContext, bars: Bar[]) {
     new VF.Formatter().joinVoices([voice]).format([voice]);
     const vWidth = voiceWidth(voice);
     new VF.Formatter().joinVoices([voice]).format([voice], vWidth);
-    
+
     // Stave
     const stave = new VF.Stave(x, y, vWidth);
     if (i === 0) {
@@ -94,35 +106,61 @@ function drawBars(context: VF.RenderContext, bars: Bar[]) {
       stave.addClef("treble").addTimeSignature(tsToString(bars[i].ts));
     }
     const staveWidth = (vWidth + stave.getModifierXShift()) * 1.25;
-    console.log(`${staveWidth} = ${stave.getWidth()} + ${stave.getModifierXShift()}`)
     stave.setWidth(staveWidth);
-    
+
     // Beams ♫
     const beams = VF.Beam.generateBeams(notes);
-    
+
     // Ties ♪‿♪
     const ties = createTies(bar, notes);
 
-    // Draw bar
-    stave.setContext(context).draw();
-    voice.draw(context, stave);
-    beams.forEach((b) => b.setContext(context).draw());
-    ties.forEach((t) => t.setContext(context).draw());
+    const b: SheetMusicBar = {
+      stave,
+      voices: [voice],
+      beams,
+      ties,
+    };
 
-    // Draw the next bars
-    draw(rest, i + 1, x + staveWidth, y);
+    return [b, ...create(rest, i + 1, x + staveWidth, y)];
   }
 
-  const [x, y] = [0, 0];
-  draw(bars, 0, x, y);
+  const [i, x, y] = [0, 0, 0];
+  return create(bars, i, x, y);
+}
+
+function drawBars(context: VF.RenderContext, bars: SheetMusicBar[]) {
+  let container = document.getElementById(DIV_ID.CONTAINER);
+  let containerWidth = container?.offsetWidth ?? 1300; // HARDCODED
+  let x = 0;
+  let y = 0;
+  for (let i = 0; i < bars.length; i++) {
+    const bar = bars[i];
+    bar.stave.setX(x);
+    bar.stave.setY(y);
+
+    const width = bar.stave.getWidth();
+    const height = bar.stave.getHeight();
+    if (x + width > containerWidth) {
+      x = 0;
+      y += height;
+    } else {
+      x += width;
+    }
+    console.log(`Bar. x: ${bar.stave.getX()}, y: ${bar.stave.getY()}. Own x: ${x}, y: ${y}`);
+    bar.stave.setContext(context).draw();
+    bar.voices.forEach((v) => v.draw(context, bar.stave));
+    bar.beams.forEach((b) => b.setContext(context).draw());
+    bar.ties.forEach((t) => t.setContext(context).draw());
+  }
 }
 
 function voiceWidth(voice: VF.Voice) {
   return voice.getTickables().reduce((acc, t) => {
-    const smallestXShift = t.getModifiers().reduce((acc, m) => Math.min(acc, m.getXShift()), 0);
-    console.log(t.getWidth() + Math.abs(smallestXShift));
+    const smallestXShift = t
+      .getModifiers()
+      .reduce((acc, m) => Math.min(acc, m.getXShift()), 0);
     return acc + t.getWidth() + Math.abs(smallestXShift);
-  }, 0)
+  }, 0);
 }
 
 /**
