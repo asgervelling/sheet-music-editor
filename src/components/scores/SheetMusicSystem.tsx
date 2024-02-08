@@ -7,20 +7,17 @@
  * and let this component use VexFlow instead.
  */
 "use client";
+import { useContext, useEffect, useRef } from "react";
+import * as VF from "vexflow";
+
 import { createTies, staveNote } from "@/app/sheet_music";
 import { StateContext } from "@/app/state/StateContext";
 import { Bar } from "@/app/state/music";
-import {
-  chunk,
-  partitionToMaxSum,
-  zip,
-} from "@/app/state/music/arrays";
+import { chunk, partitionToMaxSum, zip } from "@/app/state/music/arrays";
 import { createBars } from "@/app/state/music/bars";
 import { Duration } from "@/app/state/music/durations";
 import { NoteName } from "@/app/state/music/events";
 import { beatValue, tsToString } from "@/app/state/music/time_signatures";
-import { useContext, useEffect, useRef } from "react";
-import * as VF from "vexflow";
 
 const { Renderer } = VF.Vex.Flow;
 
@@ -53,7 +50,11 @@ export default function SheetMusicSystem() {
     renderContextRef.current = context;
 
     try {
-      const bars = createBars(state.history, [4, Duration.Quarter], NoteName.Bb); // HARDCODED time and key signature
+      const bars = createBars(
+        state.history,
+        [4, Duration.Quarter],
+        NoteName.Bb
+      ); // HARDCODED time and key signature
       drawBars(context, sheetMusicBars(bars));
     } catch (e) {
       displayError(e);
@@ -112,12 +113,11 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
     new VF.Formatter().joinVoices(voices).format(voices);
     const vWidth = voiceWidth(voice);
 
-    // Stave
-    
     if (i === 0) {
       // HARDCODED clef
       stave.addClef("treble").addTimeSignature(tsToString(bars[i].timeSig));
     }
+    // Modify stave's width to fit its contents
     const staveWidth = (vWidth + stave.getModifierXShift()) * 1.25;
     stave.setWidth(staveWidth);
     new VF.Formatter().joinVoices([voice]).format([voice], vWidth);
