@@ -7,6 +7,7 @@ import { MusicalEvent, NoteName, Clef } from ".";
  * a key signature and some musical events.
  */
 export type Bar = {
+  // Todo:                    Add Clef to Bar.
   timeSig: TimeSignature;
   keySig: NoteName;
   events: MusicalEvent[];

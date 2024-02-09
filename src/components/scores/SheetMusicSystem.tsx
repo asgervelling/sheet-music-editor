@@ -103,7 +103,7 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
     const key = bar.keySig;
     const notes = bar.events.map(staveNote);
 
-    const stave = new VF.Stave(x, y, 0).addKeySignature(key);
+    const stave = new VF.Stave(x, y, 0);
 
     // Voice
     const voice = new VF.Voice({
@@ -118,19 +118,22 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
 
     if (i === 0) {
       // HARDCODED clef
-      stave.addClef("treble").addTimeSignature(tsToString(bars[i].timeSig));
+      stave
+        .addClef("treble")
+        .addTimeSignature(tsToString(bars[i].timeSig))
+        .addKeySignature(key);
     }
     // Modify stave's width to fit its contents
     const staveWidth = (vWidth + stave.getModifierXShift()) * 1.25;
     stave.setWidth(staveWidth);
-    
+
     // Beams ♫
     const beams = VF.Beam.generateBeams(notes);
 
     // Ties ♪‿♪
     console.log("Bar", i);
     const ties = createTies(bar, notes);
-    console.log()
+    console.log();
 
     const b: SheetMusicBar = { stave, voices: [voice], beams, ties };
     return [b, ...create(rest, i + 1, x + staveWidth, y)];
@@ -149,7 +152,10 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
 function BarControls() {
   // https://stackoverflow.com/a/5624017/12819647
   return (
-    <div className="tooltip">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent augue justo, venenatis non tincidunt sit amet, suscipit eget ligula.</div>
+    <div className="tooltip">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent augue
+      justo, venenatis non tincidunt sit amet, suscipit eget ligula.
+    </div>
 
     // <div className="relative w-64 h-32 border border-black rounded">
     //   <p className="p-3">BarControls</p>
