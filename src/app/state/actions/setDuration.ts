@@ -1,4 +1,4 @@
-import { Duration } from "../music";
+import { Duration } from "../../music";
 import { State } from "../state";
 
 /**

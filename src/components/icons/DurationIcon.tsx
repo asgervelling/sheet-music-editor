@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Duration } from "@/app/state/music"
+import { Duration } from "@/app/music"
 import WholeNoteIcon from "./WholeNoteIcon";
 import HalfNoteIcon from "./HalfNoteIcon";
 import QuarterNoteIcon from "./QuarterNoteIcon";

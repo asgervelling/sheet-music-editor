@@ -1,5 +1,5 @@
 import { Message } from "../messages";
-import { Duration, NoteName } from "../music";
+import { Duration, NoteName } from "../../music";
 
 export { default as setDuration } from "./setDuration";
 export { default as toggleActiveNote } from "./toggleActiveNote";

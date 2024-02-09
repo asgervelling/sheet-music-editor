@@ -1,8 +1,8 @@
 import { describe, it, expect } from "@jest/globals";
-import { staveNote } from "./sheet_music";
-import { D, e16, e8, e8t, event } from "./state/music/test_helpers";
+import { D, e16, e8, e8t, event } from "./test_helpers";
 import { StaveNote } from "vexflow";
-import { NoteName } from "./state/music";
+import { NoteName } from ".";
+import { staveNote } from "./sheet_music";
 
 describe("staveNote", () => {
   function assertNoteHas(note: StaveNote, keys: string[], duration: string) {

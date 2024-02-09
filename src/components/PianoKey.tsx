@@ -1,6 +1,6 @@
 "use client";
 import React, { useContext } from "react";
-import { NoteName, NoteToKey } from "@/app/state/music";
+import { NoteName, NoteToKey } from "@/app/music";
 import { StateContext } from "@/app/state/StateContext";
 
 const WHITE_KEY_WIDTH = 4;

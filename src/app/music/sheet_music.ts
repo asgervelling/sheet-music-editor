@@ -7,8 +7,9 @@
  */
 import * as VF from "vexflow";
 
-import { Bar, MusicalEvent, NoteName } from "./state/music";
-import { Note, isPause } from "./state/music/events";
+import { Bar, MusicalEvent, NoteName } from ".";
+import { isPause } from "./events";
+import { Note } from "./notes";
 
 /**
  * Convert a NoteName to the note name format used by VexFlow.

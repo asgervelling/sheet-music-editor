@@ -2,7 +2,7 @@
 import { useContext, useEffect } from "react";
 import { StateContext } from "@/app/state/StateContext";
 import { Message } from "@/app/state/messages";
-import { KeyToNote, KeyToDuration, DurationToKey, NoteToKey } from "@/app/state/music";
+import { KeyToNote, KeyToDuration, DurationToKey, NoteToKey } from "@/app/music";
 
 /**
  * Listens for keyboard input and dispatches actions to the state

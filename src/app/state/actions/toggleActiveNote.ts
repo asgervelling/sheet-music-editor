@@ -1,4 +1,4 @@
-import { NoteName } from "../music";
+import { NoteName } from "../../music";
 import { State } from "../state";
 
 /**

@@ -1,4 +1,4 @@
-import { MusicalEvent, Duration, NoteName } from "./music";
+import { MusicalEvent, Duration, NoteName } from "../music";
 
 export type State = {
   currDuration: Duration;

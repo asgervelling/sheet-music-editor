@@ -1,7 +1,7 @@
 "use client";
 import React, { useContext } from "react";
 import { StateContext } from "@/app/state/StateContext";
-import { Duration, DurationToKey } from "@/app/state/music";
+import { Duration, DurationToKey } from "@/app/music";
 import { DurationIcon } from "../icons";
 
 interface DurationKeyProps {

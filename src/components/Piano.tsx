@@ -1,4 +1,4 @@
-import { NoteName } from "@/app/state/music";
+import { NoteName } from "@/app/music";
 import PianoKey from "./PianoKey";
 
 const Piano = () => {

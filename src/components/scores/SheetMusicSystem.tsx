@@ -10,13 +10,13 @@
 import { useContext, useEffect, useRef } from "react";
 import * as VF from "vexflow";
 
-import { createTies, staveNote } from "@/app/sheet_music";
+import { createTies, staveNote } from "@/app/music/sheet_music";
 import { StateContext } from "@/app/state/StateContext";
-import { Bar } from "@/app/state/music";
-import { chunk, partitionToMaxSum, zip } from "@/app/state/music/arrays";
-import { createBars } from "@/app/state/music/bars";
-import { NoteName, Duration } from "@/app/state/music";
-import { beatValue, tsToString } from "@/app/state/music/time_signatures";
+import { Bar } from "@/app/music";
+import { chunk, partitionToMaxSum, zip } from "@/app/music/arrays";
+import { createBars } from "@/app/music/bars";
+import { NoteName, Duration } from "@/app/music";
+import { beatValue, tsToString } from "@/app/music/time_signatures";
 
 const { Renderer } = VF.Vex.Flow;
 

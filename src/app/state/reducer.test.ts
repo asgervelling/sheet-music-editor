@@ -3,9 +3,9 @@ import { describe, it, expect } from "@jest/globals";
 import reducer from "./reducer";
 import { Action } from "./actions";
 import { State } from "./state";
-import { Duration, NoteName, MusicalEvent } from "./music";
+import { Duration, NoteName, MusicalEvent } from "../music";
 import { Message } from "./messages";
-import { D, c4, db4, event } from "./music/test_helpers";
+import { D, c4, db4, event } from "../music/test_helpers";
 
 function createState(): State {
   return {
