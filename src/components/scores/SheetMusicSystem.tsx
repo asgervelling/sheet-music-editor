@@ -49,23 +49,16 @@ export default function SheetMusicSystem() {
     const context = createRenderContext(DIV_ID.CONTAINER, DIV_ID.OUTPUT);
     renderContextRef.current = context;
 
-    
-    const bars = createBars(
-      state.history,
-      [4, Duration.Quarter],
-      NoteName.Bb
-    ); // HARDCODED time and key signature
-    drawBars(context, sheetMusicBars(bars));
-    // try {
-      // const bars = createBars(
-        // state.history,
-        // [4, Duration.Quarter],
-        // NoteName.Bb
-      // ); // HARDCODED time and key signature
-      // drawBars(context, sheetMusicBars(bars));
-    // } catch (e) {
-      // displayError(e);
-    // }
+    try {
+      const bars = createBars(
+        state.history,
+        [4, Duration.Quarter],
+        NoteName.Bb
+      ); // HARDCODED time and key signature
+      drawBars(context, sheetMusicBars(bars));
+    } catch (e) {
+      displayError(e);
+    }
 
     return cleanUp;
   }, [containerRef.current, state.history]);

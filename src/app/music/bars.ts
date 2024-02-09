@@ -1,8 +1,7 @@
 import { first, last } from "./arrays";
-import { MusicalEvent, chunk, expandTo32nds, reciprocalChunk } from "./events";
-import { NoteName } from "./notes";
+import { chunk, expandTo32nds, reciprocalChunk } from "./events";
 import { TimeSignature, tsTo32nds } from "./time_signatures";
-
+import { MusicalEvent, NoteName, Clef } from ".";
 /**
  * A bar has a time signature,
  * a key signature and some musical events.
