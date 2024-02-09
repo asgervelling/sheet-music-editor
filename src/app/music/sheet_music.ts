@@ -45,13 +45,16 @@ export function createTies(
   const tiedIndices = bar.events
     .map((e, i) => (e.tiedToNext ? i : -1))
     .filter((i) => i !== -1);
-  return tiedIndices.map(
-    (i) =>
-      new VF.StaveTie({
-        first_note: staveNotes[i],
-        last_note: staveNotes[i + 1],
-        first_indices: [0],
-        last_indices: [0],
-      })
-  );
+  return tiedIndices.map((i) => {
+    console.log(
+      "  Tied indices:",
+      bar.events.map((e, i) => (e.tiedToNext ? i : -1))
+    );
+    return new VF.StaveTie({
+      first_note: staveNotes[i],
+      last_note: staveNotes[i + 1],
+      first_indices: [0],
+      last_indices: [0],
+    });
+  });
 }

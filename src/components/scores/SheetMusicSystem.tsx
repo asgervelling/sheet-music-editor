@@ -49,16 +49,23 @@ export default function SheetMusicSystem() {
     const context = createRenderContext(DIV_ID.CONTAINER, DIV_ID.OUTPUT);
     renderContextRef.current = context;
 
-    try {
-      const bars = createBars(
-        state.history,
-        [4, Duration.Quarter],
-        NoteName.Bb
-      ); // HARDCODED time and key signature
-      drawBars(context, sheetMusicBars(bars));
-    } catch (e) {
-      displayError(e);
-    }
+    
+    const bars = createBars(
+      state.history,
+      [4, Duration.Quarter],
+      NoteName.Bb
+    ); // HARDCODED time and key signature
+    drawBars(context, sheetMusicBars(bars));
+    // try {
+      // const bars = createBars(
+        // state.history,
+        // [4, Duration.Quarter],
+        // NoteName.Bb
+      // ); // HARDCODED time and key signature
+      // drawBars(context, sheetMusicBars(bars));
+    // } catch (e) {
+      // displayError(e);
+    // }
 
     return cleanUp;
   }, [containerRef.current, state.history]);
@@ -78,6 +85,7 @@ export default function SheetMusicSystem() {
   return (
     <div>
       <div id={DIV_ID.ERROR}></div>
+      <BarControls />
       <div
         id={DIV_ID.CONTAINER}
         ref={containerRef}
@@ -120,13 +128,15 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
     // Modify stave's width to fit its contents
     const staveWidth = (vWidth + stave.getModifierXShift()) * 1.25;
     stave.setWidth(staveWidth);
-    new VF.Formatter().joinVoices([voice]).format([voice], vWidth);
-
+    
     // Beams ♫
     const beams = VF.Beam.generateBeams(notes);
+    new VF.Formatter().joinVoices([voice]).format([voice], vWidth);
 
     // Ties ♪‿♪
+    console.log("Bar", i);
     const ties = createTies(bar, notes);
+    console.log()
 
     const b: SheetMusicBar = { stave, voices: [voice], beams, ties };
     return [b, ...create(rest, i + 1, x + staveWidth, y)];
@@ -136,37 +146,57 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
   return create(bars, i, x, y);
 }
 
+/**
+ * A component to be shown above or below a bar
+ * when that bar is clicked on.
+ * It should provide a small user interface
+ * to set the clef, key signature and time signature of that bar.
+ */
+function BarControls() {
+  // https://stackoverflow.com/a/5624017/12819647
+  return (
+    <div className="tooltip">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent augue justo, venenatis non tincidunt sit amet, suscipit eget ligula.</div>
+
+    // <div className="relative w-64 h-32 border border-black rounded">
+    //   <p className="p-3">BarControls</p>
+    //   <div className="absolute -bottom-2 -left-7 w-0 h-0 border-2 border-white" style={{boxShadow: "0 0 10px 1px #555"}} />
+    //   <div className="absolute -bottom-5 -left-5 w-0 h-0 border-8 border-black border-t-black"/>
+    //   <div className="absolute -bottom-[18px] left-5 w-0 h-0 border border-t-[#f9f9f9]" />
+    // </div>
+  );
+}
+
 function drawBars(context: VF.RenderContext, bars: SheetMusicBar[]): void {
   function drawRow(row: [number[], SheetMusicBar[]], i: number): void {
     zip(...row).reduce((x, [width, bar]) => {
       bar.stave.setX(x);
       bar.stave.setY(i * bar.stave.getHeight());
 
-      const elem = context.openGroup("classss", "iddd");
+      // const elem = context.openGroup("classss", "iddd");
       bar.stave.setContext(context).draw();
 
-      const hoverableArea = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "rect"
-      );
-      hoverableArea.setAttribute("x", `${bar.stave.getX()}`);
-      hoverableArea.setAttribute("y", `${bar.stave.getTopLineTopY()}`);
-      const s: VF.Stave = bar.stave;
-      const areaHeight = s.getBottomLineY() - s.getTopLineTopY();
-      hoverableArea.setAttribute("width", `${bar.stave.getWidth()}`);
-      hoverableArea.setAttribute("height", `${areaHeight}`);
-      hoverableArea.setAttribute("fill", "rgba(255, 0, 0, 0.5)");
+      // const hoverableArea = document.createElementNS(
+      //   "http://www.w3.org/2000/svg",
+      //   "rect"
+      // );
+      // hoverableArea.setAttribute("x", `${bar.stave.getX()}`);
+      // hoverableArea.setAttribute("y", `${bar.stave.getTopLineTopY()}`);
+      // const areaHeight =
+      //   bar.stave.getBottomLineY() - bar.stave.getTopLineTopY();
+      // hoverableArea.setAttribute("width", `${bar.stave.getWidth()}`);
+      // hoverableArea.setAttribute("height", `${areaHeight}`);
+      // hoverableArea.setAttribute("fill", "rgba(255, 0, 0, 0.5)");
 
-      hoverableArea.addEventListener("mouseover", function () {
-        console.log(Date.now());
-      });
+      // hoverableArea.addEventListener("mouseover", () => {
+      //   console.log(Date.now());
+      // });
 
       bar.voices.forEach((v) => v.draw(context, bar.stave));
       bar.beams.forEach((b) => b.setContext(context).draw());
-      bar.ties.forEach((t) => t.setContext(context).draw());
+      // bar.ties.forEach((t) => t.setContext(context).draw());
 
-      elem.appendChild(hoverableArea);
-      context.closeGroup();
+      // elem.appendChild(hoverableArea);
+      // context.closeGroup();
 
       return x + width;
     }, 0);
@@ -226,6 +256,6 @@ function createRenderContext(containerId: string, outputId: string) {
 function displayError(e: any): void {
   const errorDiv = document.getElementById(DIV_ID.ERROR);
   if (errorDiv) {
-    errorDiv.innerHTML = e.message;
+    errorDiv.innerHTML = e;
   }
 }
