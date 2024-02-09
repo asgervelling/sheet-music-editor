@@ -1,9 +1,5 @@
-import * as VF from "vexflow";
-
-import { first, head, pair, rotate } from "./arrays";
-import { MusicalEvent, Note, NoteName, lowerNote, pitches } from "./events";
-import { staveNote } from "../../sheet_music";
-import { fmtEvent } from "./test_helpers";
+import { rotate } from "./arrays";
+import { Note, NoteName } from "./notes";
 
 export type ScaleStep =
   | "1"

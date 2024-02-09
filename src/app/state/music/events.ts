@@ -1,61 +1,6 @@
 import { Duration, expandDuration, incrementDuration } from "./durations";
 import * as A from "./arrays";
-
-/**
- * All the pitch classes C, Db, ..., B as well as PAUSE.
- */
-export enum NoteName {
-  C = "C",
-  Db = "Db",
-  D = "D",
-  Eb = "Eb",
-  E = "E",
-  F = "F",
-  Gb = "Gb",
-  G = "G",
-  Ab = "Ab",
-  A = "A",
-  Bb = "Bb",
-  B = "B",
-  PAUSE = "PAUSE",
-}
-
-/**
- * All the pitch classes C, Db, ..., B.
- */
-export const pitches: NoteName[] = [
-  NoteName.C,
-  NoteName.Db,
-  NoteName.D,
-  NoteName.Eb,
-  NoteName.E,
-  NoteName.F,
-  NoteName.Gb,
-  NoteName.G,
-  NoteName.Ab,
-  NoteName.A,
-  NoteName.Bb,
-  NoteName.B,
-];
-
-/**
- * The lowest note in MIDI is 0 (C/-1) \
- * and the highest is 127 (G/9).
- *
- * We stick to the convention that middle C is C/4
- * and has the MIDI value 60.
- *
- * Helpful chart that follows the same convention:
- * https://syntheway.com/MIDI_Keyboards_Middle_C_MIDI_Note_Number_60_C4.htm
- */
-
-/**
- * A note is the name of the note (or pause) and an octave.
- */
-export type Note = {
-  name: NoteName;
-  octave: number;
-};
+import { Note, NoteName, pitches } from "./notes";
 
 /**
  * A musical event is what will eventually be

@@ -1,7 +1,7 @@
 import { Duration } from "./durations";
 import { MusicalEvent } from "./events";
-import { NoteName } from "./events";
 import { repeat } from "./arrays";
+import { NoteName } from "./notes";
 
 export function event(names: NoteName[], duration: Duration): MusicalEvent {
   // HARDCODED octave

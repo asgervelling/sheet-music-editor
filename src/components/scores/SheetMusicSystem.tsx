@@ -15,8 +15,7 @@ import { StateContext } from "@/app/state/StateContext";
 import { Bar } from "@/app/state/music";
 import { chunk, partitionToMaxSum, zip } from "@/app/state/music/arrays";
 import { createBars } from "@/app/state/music/bars";
-import { Duration } from "@/app/state/music/durations";
-import { NoteName } from "@/app/state/music/events";
+import { NoteName, Duration } from "@/app/state/music";
 import { beatValue, tsToString } from "@/app/state/music/time_signatures";
 
 const { Renderer } = VF.Vex.Flow;

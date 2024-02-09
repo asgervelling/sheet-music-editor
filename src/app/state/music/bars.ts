@@ -1,5 +1,6 @@
 import { first, last } from "./arrays";
-import { MusicalEvent, NoteName, chunk, expandTo32nds, reciprocalChunk } from "./events";
+import { MusicalEvent, chunk, expandTo32nds, reciprocalChunk } from "./events";
+import { NoteName } from "./notes";
 import { TimeSignature, tsTo32nds } from "./time_signatures";
 
 /**

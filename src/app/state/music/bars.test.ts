@@ -22,7 +22,7 @@ import {
 } from "./test_helpers";
 import { TimeSignature } from "./time_signatures";
 import { repeat } from "./arrays";
-import { NoteName } from "./events";
+import { NoteName } from "./notes";
 
 const _3_4: TimeSignature = [3, D.Quarter];
 const _3_16: TimeSignature = [3, D.Sixteenth];
