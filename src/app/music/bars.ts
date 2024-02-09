@@ -4,7 +4,8 @@ import { NoteName } from "./notes";
 import { TimeSignature, tsTo32nds } from "./time_signatures";
 
 /**
- * A bar has a time signature and some musical events.
+ * A bar has a time signature,
+ * a key signature and some musical events.
  */
 export type Bar = {
   timeSig: TimeSignature;

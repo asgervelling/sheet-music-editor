@@ -7,7 +7,8 @@
  * and let this component use VexFlow instead.
  */
 "use client";
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
+import ReactDOM from "react-dom";
 import * as VF from "vexflow";
 
 import { createTies, staveNote } from "@/app/music/sheet_music";
@@ -141,10 +142,31 @@ function drawBars(context: VF.RenderContext, bars: SheetMusicBar[]): void {
       bar.stave.setX(x);
       bar.stave.setY(i * bar.stave.getHeight());
 
+      const elem = context.openGroup("classss", "iddd");
       bar.stave.setContext(context).draw();
+
+      const hoverableArea = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "rect"
+      );
+      hoverableArea.setAttribute("x", `${bar.stave.getX()}`);
+      hoverableArea.setAttribute("y", `${bar.stave.getTopLineTopY()}`);
+      const s: VF.Stave = bar.stave;
+      const areaHeight = s.getBottomLineY() - s.getTopLineTopY();
+      hoverableArea.setAttribute("width", `${bar.stave.getWidth()}`);
+      hoverableArea.setAttribute("height", `${areaHeight}`);
+      hoverableArea.setAttribute("fill", "rgba(255, 0, 0, 0.5)");
+
+      hoverableArea.addEventListener("mouseover", function () {
+        console.log(Date.now());
+      });
+
       bar.voices.forEach((v) => v.draw(context, bar.stave));
       bar.beams.forEach((b) => b.setContext(context).draw());
       bar.ties.forEach((t) => t.setContext(context).draw());
+
+      elem.appendChild(hoverableArea);
+      context.closeGroup();
 
       return x + width;
     }, 0);
