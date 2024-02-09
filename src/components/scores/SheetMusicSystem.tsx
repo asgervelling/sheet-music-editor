@@ -107,19 +107,21 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
     if (bars.length === 0) return [];
 
     const [bar, ...rest] = bars;
+    const key = bar.keySig;
     const notes = bar.events.map(staveNote);
 
-    const stave = new VF.Stave(x, y, 0).addKeySignature(bar.keySig);
+    const stave = new VF.Stave(x, y, 0).addKeySignature(key);
 
     // Voice
     const voice = new VF.Voice({
       num_beats: bar.timeSig[0],
       beat_value: beatValue(bar.timeSig),
     });
-    const voices = [voice.addTickables(bar.events.map(staveNote))];
-    VF.Accidental.applyAccidentals(voices, bar.keySig);
+    const voices = [voice.addTickables(notes)];
+    VF.Accidental.applyAccidentals(voices, key);
     new VF.Formatter().joinVoices(voices).format(voices);
     const vWidth = voiceWidth(voice);
+    new VF.Formatter().joinVoices([voice]).format([voice], vWidth);
 
     if (i === 0) {
       // HARDCODED clef
@@ -131,7 +133,6 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
     
     // Beams ♫
     const beams = VF.Beam.generateBeams(notes);
-    new VF.Formatter().joinVoices([voice]).format([voice], vWidth);
 
     // Ties ♪‿♪
     console.log("Bar", i);
@@ -193,7 +194,7 @@ function drawBars(context: VF.RenderContext, bars: SheetMusicBar[]): void {
 
       bar.voices.forEach((v) => v.draw(context, bar.stave));
       bar.beams.forEach((b) => b.setContext(context).draw());
-      // bar.ties.forEach((t) => t.setContext(context).draw());
+      bar.ties.forEach((t) => t.setContext(context).draw());
 
       // elem.appendChild(hoverableArea);
       // context.closeGroup();
