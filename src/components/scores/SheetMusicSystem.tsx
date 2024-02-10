@@ -117,9 +117,8 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
     new VF.Formatter().joinVoices([voice]).format([voice], vWidth);
 
     if (i === 0) {
-      // HARDCODED clef
       stave
-        .addClef("treble")
+        .addClef(bar.clef)
         .addTimeSignature(tsToString(bars[i].timeSig))
         .addKeySignature(key);
     }
@@ -131,9 +130,7 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
     const beams = VF.Beam.generateBeams(notes);
 
     // Ties ♪‿♪
-    console.log("Bar", i);
     const ties = createTies(bar, notes);
-    console.log();
 
     const b: SheetMusicBar = { stave, voices: [voice], beams, ties };
     return [b, ...create(rest, i + 1, x + staveWidth, y)];
