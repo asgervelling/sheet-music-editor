@@ -147,19 +147,12 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
  * to set the clef, key signature and time signature of that bar.
  */
 function BarControls() {
-  // https://stackoverflow.com/a/5624017/12819647
+  // https://stackoverflow.com/a/5633146
   return (
     <div className="tooltip">
       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent augue
       justo, venenatis non tincidunt sit amet, suscipit eget ligula.
     </div>
-
-    // <div className="relative w-64 h-32 border border-black rounded">
-    //   <p className="p-3">BarControls</p>
-    //   <div className="absolute -bottom-2 -left-7 w-0 h-0 border-2 border-white" style={{boxShadow: "0 0 10px 1px #555"}} />
-    //   <div className="absolute -bottom-5 -left-5 w-0 h-0 border-8 border-black border-t-black"/>
-    //   <div className="absolute -bottom-[18px] left-5 w-0 h-0 border border-t-[#f9f9f9]" />
-    // </div>
   );
 }
 
