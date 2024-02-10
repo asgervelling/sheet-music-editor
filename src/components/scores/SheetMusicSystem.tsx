@@ -7,13 +7,12 @@
  * and let this component use VexFlow instead.
  */
 "use client";
-import { useContext, useEffect, useRef, useState } from "react";
-import ReactDOM from "react-dom";
+import { useContext, useEffect, useRef } from "react";
 import * as VF from "vexflow";
 
 import { createTies, staveNote } from "@/app/music/sheet_music";
 import { StateContext } from "@/app/state/StateContext";
-import { Bar } from "@/app/music";
+import { Bar, Clef } from "@/app/music";
 import { chunk, partitionToMaxSum, zip } from "@/app/music/arrays";
 import { createBars } from "@/app/music/bars";
 import { NoteName, Duration } from "@/app/music";
@@ -52,9 +51,10 @@ export default function SheetMusicSystem() {
     try {
       const bars = createBars(
         state.history,
+        Clef.Treble,
         [4, Duration.Quarter],
         NoteName.Bb
-      ); // HARDCODED time and key signature
+      ); // HARDCODED clef, time and key signature
       drawBars(context, sheetMusicBars(bars));
     } catch (e) {
       displayError(e);
