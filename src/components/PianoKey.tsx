@@ -7,7 +7,7 @@ const WHITE_KEY_WIDTH = 4;
 const BLACK_KEY_WIDTH = 2;
 const WHITE_KEY_HEIGHT = 11;
 const BLACK_KEY_HEIGHT = 7;
-const HIGHLIGHT_COLOR = "var(--color-highlight)";
+const HIGHLIGHT_COLOR = "hsl(var(--accent))";
 
 type PianoKeyProps = {
   noteName: NoteName;
@@ -38,7 +38,7 @@ export default function PianoKey({ noteName }: PianoKeyProps) {
         width={w}
         height={h}
         fill={bgColor}
-        stroke="var(--color-primary)"
+        stroke="hsl(var(--primary))"
         strokeWidth="0.125"
       />
       <text
@@ -75,7 +75,7 @@ function dimensions(noteName: NoteName) {
  * Get the { bgColor, textColor }
  * of a piano key based on its note name
  * and whether it is active.
-//  */
+*/
 function colors(noteName: NoteName, isActive: boolean) {
   const white = "white";
   const black = "black";

@@ -13,9 +13,9 @@ const DurationIndicator: React.FC<DurationKeyProps> = ({ duration }) => {
   const isCurrentNote = state.currDuration === duration;
 
   const style = {
-    backgroundColor: isCurrentNote ? "var(--color-primary)" : "var(--color-bg)",
-    color: isCurrentNote ? "var(--color-bg)" : "var(--color-primary)",
-    border: isCurrentNote ? "none" : "1px solid var(--color-primary)",
+    backgroundColor: isCurrentNote ? "hsl(var(--primary))" : "hsl(var(--background))",
+    color: isCurrentNote ? "hsl(var(--background))" : "hsl(var(--primary))",
+    border: isCurrentNote ? "none" : "1px solid hsl(var(--primary))",
   };
 
   return (

@@ -2,7 +2,7 @@ import KeyIndicator from "./KeyIndicator"
 
 export default function RedoIndicatorGroup() {
   return (
-    <div className="flex gap-2 items-center">
+    <div className="flex gap-2 items-center bg-background">
       <KeyIndicator keyCode="Control" label="Ctrl" />
       +
       <KeyIndicator keyCode="x" label="X" />
