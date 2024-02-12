@@ -1,3 +1,4 @@
+import { arrayEquals } from "./arrays";
 import { Duration, expandDuration, incrementDuration } from "./durations";
 
 /**
@@ -82,5 +83,5 @@ export function tsToString(timeSig: TimeSignature): string {
  * True if `a` equals `b`.
  */
 export function tsEquals(a: TimeSignature, b: TimeSignature): boolean {
-  return a.every((val, i) => val === b[i]);
+  return arrayEquals(a, b);
 }
