@@ -1,6 +1,6 @@
 import { describe, it, expect } from "@jest/globals";
 
-import { createBars } from "./bars";
+import { createBars, setTimeSignature } from "./bars";
 import {
   D,
   c1,
@@ -17,14 +17,17 @@ import {
   e2,
   e2t,
   e8t,
+  p2,
   p4,
   p8,
 } from "./test_helpers";
 import { repeat } from "./arrays";
-import { Clef, NoteName, TimeSignature } from ".";
+import { Bar, Clef, MusicalEvent, NoteName, TimeSignature } from ".";
 
+const _2_4: TimeSignature = [2, D.Quarter];
 const _3_4: TimeSignature = [3, D.Quarter];
 const _3_16: TimeSignature = [3, D.Sixteenth];
+const _4_4: TimeSignature = [4, D.Quarter];
 
 describe("createBars", () => {
   it("should fill the last bar with pauses", () => {
@@ -58,7 +61,15 @@ describe("createBars", () => {
 
   it("should split an event over multiple bars", () => {
     expect(createBars([c1], Clef.Treble, _3_16, NoteName.C)).toEqual([
-      ...repeat({ clef: Clef.Treble, timeSig: _3_16, keySig: NoteName.C, events: [c16t, c8t] }, 5),
+      ...repeat(
+        {
+          clef: Clef.Treble,
+          timeSig: _3_16,
+          keySig: NoteName.C,
+          events: [c16t, c8t],
+        },
+        5
+      ),
       {
         clef: Clef.Treble,
         timeSig: _3_16,
@@ -102,6 +113,40 @@ describe("createBars", () => {
         keySig: NoteName.C,
         events: [e16, p8],
       },
+    ]);
+  });
+});
+
+describe("setTimeSignature", () => {
+  const bar = (events: MusicalEvent[], timeSig: TimeSignature): Bar => ({
+    clef: Clef.Treble,
+    timeSig: timeSig,
+    keySig: NoteName.C,
+    events,
+  });
+
+  it("should add more bars if the new TS is shorter", () => {
+    const bars = [bar([c4, c4, c4, c4], _4_4), bar([c4, c4, c4, c4], _4_4)];
+    expect(setTimeSignature(bars, 1, _2_4)).toEqual([
+      bar([c4, c4, c4, c4], _4_4),
+      bar([c4, c4], _2_4),
+      bar([c4, c4], _2_4),
+    ]);
+  });
+
+  it("should add more bars if the new TS is shorter and bars.length === 1", () => {
+    const bars = [bar([c4, c4, c4, c4], _4_4)];
+    expect(setTimeSignature(bars, 0, _2_4)).toEqual([
+      bar([c4, c4], _2_4),
+      bar([c4, c4], _2_4),
+    ]);
+  });
+
+  it("should add pauses to any straggling bar that may have been created", () => {
+    const bars = [bar([c4, c4, c4, c4], _4_4)];
+    expect(setTimeSignature(bars, 0, _3_4)).toEqual([
+      bar([c4, c4, c4], _3_4),
+      bar([c4, p2], _3_4),
     ]);
   });
 });

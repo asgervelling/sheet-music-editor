@@ -1,7 +1,8 @@
-import { first, last } from "./arrays";
+import { first, head, last } from "./arrays";
 import { chunk, expandTo32nds, reciprocalChunk } from "./events";
 import { TimeSignature, tsTo32nds } from "./time_signatures";
 import { MusicalEvent, NoteName, Clef } from ".";
+import { fmtChunk, fmtChunks } from "./test_helpers";
 
 /**
  * A bar has a time signature,
@@ -61,5 +62,12 @@ export function createBars(
  *  ```
  */
 export function setTimeSignature(bars: Bar[], i: number, ts: TimeSignature): Bar[] {
-  throw new Error("Not implemented");
+  if (bars.length < i || i < 0) return [];
+
+  const [a, b] = [bars.slice(0, i), bars.slice(i)]
+  console.log("a:", fmtChunks(a.map((b) => b.events)), "b:", fmtChunks(b.map((b) => b.events)))
+  const clef = head(bars).clef;
+  const key = head(bars).keySig;
+  const nextEvents = b.flatMap((bar) => bar.events);
+  return [...a, ...createBars(nextEvents, clef, ts, key)]
 }
