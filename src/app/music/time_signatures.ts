@@ -77,3 +77,10 @@ export function tsToString(timeSig: TimeSignature): string {
     .replace(Duration.Half, "2")
     .replace(Duration.Quarter, "4");
 }
+
+/**
+ * True if `a` equals `b`.
+ */
+export function tsEquals(a: TimeSignature, b: TimeSignature): boolean {
+  return a.every((val, i) => val === b[i]);
+}

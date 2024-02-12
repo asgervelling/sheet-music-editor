@@ -1,6 +1,6 @@
 import { first, head, last, tail, takeAsLongAs } from "./arrays";
 import { chunk, expandTo32nds, reciprocalChunk } from "./events";
-import { TimeSignature, tsTo32nds } from "./time_signatures";
+import { TimeSignature, tsEquals, tsTo32nds } from "./time_signatures";
 import { MusicalEvent, NoteName, Clef } from ".";
 import { fmtChunk, fmtChunks } from "./test_helpers";
 
@@ -50,10 +50,10 @@ export function createBars(
  *  ```
  *    bars = [{ 4/4: 4 2 4t }, { 4/4: 4 4 2 }]
  *
- *    setTimeSignature(bars, 1, 2/4)
+ *    bars = setTimeSignature(bars, 1, 2/4)
  *    // bars = [{ 4/4: 4, 2, 4t }, { 2/4: 4 4 }, { 2/4: 2 }]
  *
- *    setTimeSignature(bars, 0, 3/4)
+ *    bars = setTimeSignature(bars, 0, 3/4)
  *    // bars = [{ 3/4: 4 2 }, { 2/4: 2 }, { 2/4: 4 4t }, { 2/4: 4 4p }]
  *
  * where
@@ -70,22 +70,34 @@ export function setTimeSignature(
 
   const [a, b] = [bars.slice(0, i), bars.slice(i)];
   const { clef, keySig, timeSig } = head(bars);
-  const hasSameTs = (bar: Bar) =>
-    bar.timeSig.every((val, i) => val === timeSig[i]);
+  const hasSameTs = (bar: Bar) => tsEquals(bar.timeSig, timeSig);
   const affected = takeAsLongAs(b, hasSameTs);
   const rest = b.slice(affected.length);
   const events = affected.flatMap((bar) => bar.events);
   return [...a, ...createBars(events, clef, ts, keySig), ...rest];
 }
 
+/**
+ * Set the key signatures of `bars[i : m]`, \
+ * where `i` is the index of the first bar to change, \
+ * and `m` is the index of the first bar to have \
+ * a different time signature than `bars[i]`. Ex:
+ * 
+ * ```
+ *    >>> bars = [C, C, C, D] // key signatures
+ *    >>> i = 1
+ *    >>> setKeySignature(bars, i, E)
+ *    [C, E, E, D]
+ * ```
+ */
 export function setKeySignature(bars: Bar[], i: number, keySig: NoteName): Bar[] {
   if (bars.length <= i || i < 0) return [];
 
   const [a, b] = [bars.slice(0, i), bars.slice(i)];
   const oldKeySig = head(bars).keySig;
   const hasSameKeySig = (bar: Bar) => bar.keySig === oldKeySig;
-  const withKeySig = (bar: Bar): Bar => ({ ...bar, keySig })
   const affected = takeAsLongAs(b, hasSameKeySig);
   const rest = b.slice(affected.length);
+  const withKeySig = (bar: Bar): Bar => ({ ...bar, keySig })
   return [...a, ...affected.map(withKeySig), ...rest];
 }
