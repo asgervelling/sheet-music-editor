@@ -24,9 +24,8 @@ export function createBars(
   timeSig: TimeSignature,
   keySig: NoteName
 ): Bar[] {
-  if (events.length === 0) {
-    return [];
-  }
+  if (events.length === 0) return [];
+  
   const chunkSize = tsTo32nds(timeSig).length;
   const total32nds = events.flatMap(expandTo32nds).length;
   const numBars = Math.ceil(total32nds / chunkSize);

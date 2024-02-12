@@ -50,13 +50,11 @@ export function reciprocalChunk(
   const sizeOf = (chunk: MusicalEvent[]): number =>
     chunk.flatMap(expandTo32nds).length;
   const missing32nds: number = chunkSize - sizeOf(chunk);
-  if (missing32nds < 1) {
-    return [];
-  }
-  // HARDCODED octave
+  if (missing32nds < 1) return [];
+
   const _32ndPauses: MusicalEvent[] = A.repeat(
     {
-      notes: [{ name: NoteName.PAUSE, octave: 4 }],
+      notes: [{ name: NoteName.PAUSE, octave: 4 }], // HARDCODED octave
       duration: Duration.ThirtySecond,
       tiedToNext: false,
     },

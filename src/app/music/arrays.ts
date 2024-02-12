@@ -71,13 +71,9 @@ export function partitionToMaxSum(numbers: number[], max: number): number[][] {
 
   function partition(numbers: number[], max: number): number[] {
       if (numbers.length === 0) return [];
-
       const [n, ...rest] = numbers;
-      if (n > max) {
-          return [];
-      } else {
-          return [n, ...partition(rest, max - n)];
-      }
+      if (n > max) return [];
+      else return [n, ...partition(rest, max - n)];
   }
 
   const p = partition(numbers, max);
