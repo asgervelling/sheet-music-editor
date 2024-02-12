@@ -7,4 +7,5 @@ export type State = {
   history: MusicalEvent[];
   undoStack: MusicalEvent[];
   keysBeingHeld: string[];
+  keyboardLocked: boolean;
 };

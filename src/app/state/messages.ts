@@ -4,9 +4,10 @@
  * to update state.
  */
 export enum Message {
-  SET_DURATION = "SET_DURATION",
-  TOGGLE_ACTIVE_NOTE_NAME = "TOGGLE_ACTIVE_NOTE_NAME",
-  COMMIT = "COMMIT",
-  KEY_PRESS = "KEY_PRESS",
-  KEY_RELEASE = "KEY_RELEASE",
+  SetDuration = "SET_DURATION",
+  ToggleActiveNote = "TOGGL_ACTIVE_NOTE",
+  Commit = "COMMIT",
+  KeyPress = "KEY_PRESS",
+  KeyRelease = "KEY_RELEASE",
+  KeyboardLocked = "KEYBOARD_LOCKED",
 }

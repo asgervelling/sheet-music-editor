@@ -13,6 +13,7 @@ const initialState: State = {
   history: [],
   undoStack: [],
   keysBeingHeld: [],
+  keyboardLocked: false,
 };
 
 /**

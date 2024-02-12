@@ -31,6 +31,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Message } from "@/app/state/messages";
 
 const { Renderer } = VF.Vex.Flow;
 
@@ -54,7 +55,7 @@ enum DIV_ID {
  * A system of staves. Will be rendered as sheet music.
  */
 export default function SheetMusicSystem() {
-  const { state } = useContext(StateContext)!;
+  const { state, dispatch } = useContext(StateContext)!;
   const containerRef = useRef(null);
   const renderContextRef = useRef<VF.RenderContext | null>(null);
   const [clickedStave, setClickedStave] = useState<number | null>(null);
@@ -99,9 +100,9 @@ export default function SheetMusicSystem() {
         hoverableArea.setAttribute("height", `${areaHeight}`);
         hoverableArea.setAttribute("fill", "rgba(255, 0, 0, 0.5)");
 
-        hoverableArea.addEventListener("click", (event: MouseEvent) =>
-          handleClickOnStave(event, j)
-        );
+        hoverableArea.addEventListener("click", (event: MouseEvent) => {
+          handleClickOnStave(event, j);
+        });
 
         bar.voices.forEach((v) => v.draw(context, bar.stave));
         bar.beams.forEach((b) => b.setContext(context).draw());
@@ -140,16 +141,17 @@ export default function SheetMusicSystem() {
    * @param open True if the user is opening the BarControls.
    */
   function toggleBarControls(open: boolean) {
-    console.log("Open, clickedStave", open, clickedStave);
+    dispatch({
+      type: Message.KeyboardLocked,
+      payload: { value: open },
+    });
   }
 
   const handleClickOnContainer: MouseEventHandler = (event) => {
-    event.stopPropagation();
     setClickedStave(null);
   };
 
   function handleClickOnStave(event: MouseEvent, staveIndex: number) {
-    event.stopPropagation();
     setClickedStave(staveIndex);
   }
 
@@ -160,7 +162,6 @@ export default function SheetMusicSystem() {
         id={DIV_ID.CONTAINER}
         ref={containerRef}
         className="h-[900px] w-[600px] border border-black"
-        onClick={handleClickOnContainer}
       >
         <Popover onOpenChange={toggleBarControls}>
           <PopoverTrigger asChild>
@@ -170,9 +171,7 @@ export default function SheetMusicSystem() {
             <div className="grid gap-4">
               <div className="space-y-2">
                 <h4 className="font-medium leading-none">Bar</h4>
-                <p className="text-sm text-muted-foreground">
-                  Edit this bar.
-                </p>
+                <p className="text-sm text-muted-foreground">Edit this bar.</p>
               </div>
               <div className="grid gap-2">
                 <div className="grid grid-cols-3 items-center gap-4">

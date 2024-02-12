@@ -2,7 +2,12 @@
 import { useContext, useEffect } from "react";
 import { StateContext } from "@/app/state/StateContext";
 import { Message } from "@/app/state/messages";
-import { KeyToNote, KeyToDuration, DurationToKey, NoteToKey } from "@/app/music";
+import {
+  KeyToNote,
+  KeyToDuration,
+  DurationToKey,
+  NoteToKey,
+} from "@/app/music";
 
 /**
  * Listens for keyboard input and dispatches actions to the state
@@ -10,31 +15,30 @@ import { KeyToNote, KeyToDuration, DurationToKey, NoteToKey } from "@/app/music"
  * No other components should be listening for keyboard input.
  */
 export default function KeyDispatcher() {
-  const { dispatch } = useContext(StateContext)!;
+  const { state, dispatch } = useContext(StateContext)!;
 
-  
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
-      // First, dispatch that a key was pressed
+      if (state.keyboardLocked) return;
+      
+      // Dispatch that a key was pressed
       // and is currently being held down.
       dispatch({
-        type: Message.KEY_PRESS,
+        type: Message.KeyPress,
         payload: { key: event.key },
       });
 
       // Then, dispatch the appropriate action
       if (event.key === "Enter") {
-        dispatch({ type: Message.COMMIT });
-      }
-      else if (isPianoKey(event.key)) {
+        dispatch({ type: Message.Commit });
+      } else if (isPianoKey(event.key)) {
         dispatch({
-          type: Message.TOGGLE_ACTIVE_NOTE_NAME,
+          type: Message.ToggleActiveNote,
           payload: { name: KeyToNote[event.key] },
         });
-      }
-      else if (isDurationKey(event.key)) {
+      } else if (isDurationKey(event.key)) {
         dispatch({
-          type: Message.SET_DURATION,
+          type: Message.SetDuration,
           payload: { duration: KeyToDuration[event.key] },
         });
       }
@@ -42,10 +46,10 @@ export default function KeyDispatcher() {
 
     const handleKeyRelease = (event: KeyboardEvent) => {
       dispatch({
-        type: Message.KEY_RELEASE,
+        type: Message.KeyRelease,
         payload: { key: event.key },
       });
-    }
+    };
 
     window.addEventListener("keydown", handleKeyPress);
     window.addEventListener("keyup", handleKeyRelease);
@@ -54,7 +58,7 @@ export default function KeyDispatcher() {
       window.removeEventListener("keydown", handleKeyPress);
       window.removeEventListener("keyup", handleKeyRelease);
     };
-  }, [dispatch]);
+  }, [state.keyboardLocked, dispatch]);
 
   return null;
 }
