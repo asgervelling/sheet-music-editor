@@ -7,7 +7,7 @@
  * and let this component use VexFlow instead.
  */
 "use client";
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import * as VF from "vexflow";
 
 import { createTies, staveNote } from "@/app/music/sheet_music";
@@ -17,6 +17,7 @@ import { chunk, partitionToMaxSum, zip } from "@/app/music/arrays";
 import { createBars } from "@/app/music/bars";
 import { NoteName, Duration } from "@/app/music";
 import { beatValue, tsToString } from "@/app/music/time_signatures";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 const { Renderer } = VF.Vex.Flow;
 
@@ -43,6 +44,7 @@ export default function SheetMusicSystem() {
   const { state } = useContext(StateContext)!;
   const containerRef = useRef(null);
   const renderContextRef = useRef<VF.RenderContext | null>(null);
+  const [clickedStave, setClickedStave] = useState<number | null>(null);
 
   useEffect(() => {
     const context = createRenderContext(DIV_ID.CONTAINER, DIV_ID.OUTPUT);
@@ -63,6 +65,48 @@ export default function SheetMusicSystem() {
     return cleanUp;
   }, [containerRef.current, state.history]);
 
+  function drawBars(context: VF.RenderContext, bars: SheetMusicBar[]): void {
+    function drawRow(row: [number[], SheetMusicBar[]], i: number): void {
+      zip(...row).reduce((x, [width, bar]) => {
+        bar.stave.setX(x);
+        bar.stave.setY(i * bar.stave.getHeight());
+
+        const elem = context.openGroup("classss", "iddd");
+        bar.stave.setContext(context).draw();
+
+        const hoverableArea = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "rect"
+        );
+        hoverableArea.setAttribute("x", `${bar.stave.getX()}`);
+        hoverableArea.setAttribute("y", `${bar.stave.getTopLineTopY()}`);
+        const areaHeight =
+          bar.stave.getBottomLineY() - bar.stave.getTopLineTopY();
+        hoverableArea.setAttribute("width", `${bar.stave.getWidth()}`);
+        hoverableArea.setAttribute("height", `${areaHeight}`);
+        hoverableArea.setAttribute("fill", "rgba(255, 0, 0, 0.5)");
+
+        hoverableArea.addEventListener("click", () => setClickedStave(i));
+
+        bar.voices.forEach((v) => v.draw(context, bar.stave));
+        bar.beams.forEach((b) => b.setContext(context).draw());
+        bar.ties.forEach((t) => t.setContext(context).draw());
+
+        elem.appendChild(hoverableArea);
+        context.closeGroup();
+
+        return x + width;
+      }, 0);
+    }
+
+    const widthRows = staveWidths(bars);
+    const barRows = chunk(
+      bars,
+      widthRows.map((r) => r.length)
+    );
+    zip(widthRows, barRows).forEach((row, i) => drawRow(row, i));
+  }
+
   /**
    * Remove child elements of output and error divs.
    */
@@ -75,16 +119,30 @@ export default function SheetMusicSystem() {
     });
   }
 
+  /**
+   * Show or hide the BarControls for the bar
+   * the user clicked on.
+   * @param open True if the user is opening the BarControls.
+   */
+  function toggleBarControls(open: boolean) {
+    console.log(open);
+  }
+
   return (
     <div>
       <div id={DIV_ID.ERROR}></div>
-      <BarControls />
       <div
         id={DIV_ID.CONTAINER}
         ref={containerRef}
         className="h-[900px] w-[600px] border border-black"
       >
-        <div id={DIV_ID.OUTPUT}></div>
+        {/* Use PopoverTrigger with the output div */}
+        <Popover onOpenChange={toggleBarControls}>
+          <PopoverTrigger asChild>
+            <div id={DIV_ID.OUTPUT}></div>
+          </PopoverTrigger>
+          <PopoverContent>Content</PopoverContent>
+        </Popover>
       </div>
     </div>
   );
@@ -147,57 +205,12 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
  * to set the clef, key signature and time signature of that bar.
  */
 function BarControls() {
-  // https://stackoverflow.com/a/5633146
   return (
-    <div className="tooltip">
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent augue
-      justo, venenatis non tincidunt sit amet, suscipit eget ligula.
-    </div>
+    <Popover onOpenChange={(open) => console.log("Open:", open)}>
+      <PopoverTrigger>Click me</PopoverTrigger>
+      <PopoverContent>Place content for the popover here.</PopoverContent>
+    </Popover>
   );
-}
-
-function drawBars(context: VF.RenderContext, bars: SheetMusicBar[]): void {
-  function drawRow(row: [number[], SheetMusicBar[]], i: number): void {
-    zip(...row).reduce((x, [width, bar]) => {
-      bar.stave.setX(x);
-      bar.stave.setY(i * bar.stave.getHeight());
-
-      // const elem = context.openGroup("classss", "iddd");
-      bar.stave.setContext(context).draw();
-
-      // const hoverableArea = document.createElementNS(
-      //   "http://www.w3.org/2000/svg",
-      //   "rect"
-      // );
-      // hoverableArea.setAttribute("x", `${bar.stave.getX()}`);
-      // hoverableArea.setAttribute("y", `${bar.stave.getTopLineTopY()}`);
-      // const areaHeight =
-      //   bar.stave.getBottomLineY() - bar.stave.getTopLineTopY();
-      // hoverableArea.setAttribute("width", `${bar.stave.getWidth()}`);
-      // hoverableArea.setAttribute("height", `${areaHeight}`);
-      // hoverableArea.setAttribute("fill", "rgba(255, 0, 0, 0.5)");
-
-      // hoverableArea.addEventListener("mouseover", () => {
-      //   console.log(Date.now());
-      // });
-
-      bar.voices.forEach((v) => v.draw(context, bar.stave));
-      bar.beams.forEach((b) => b.setContext(context).draw());
-      bar.ties.forEach((t) => t.setContext(context).draw());
-
-      // elem.appendChild(hoverableArea);
-      // context.closeGroup();
-
-      return x + width;
-    }, 0);
-  }
-
-  const widthRows = staveWidths(bars);
-  const barRows = chunk(
-    bars,
-    widthRows.map((r) => r.length)
-  );
-  zip(widthRows, barRows).forEach((row, i) => drawRow(row, i));
 }
 
 /**
