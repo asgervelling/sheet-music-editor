@@ -7,7 +7,13 @@
  * and let this component use VexFlow instead.
  */
 "use client";
-import { useContext, useEffect, useRef, useState } from "react";
+import {
+  MouseEventHandler,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import * as VF from "vexflow";
 
 import { createTies, staveNote } from "@/app/music/sheet_music";
@@ -67,7 +73,7 @@ export default function SheetMusicSystem() {
 
   function drawBars(context: VF.RenderContext, bars: SheetMusicBar[]): void {
     function drawRow(row: [number[], SheetMusicBar[]], i: number): void {
-      zip(...row).reduce((x, [width, bar]) => {
+      zip(...row).reduce((x, [width, bar], j) => {
         bar.stave.setX(x);
         bar.stave.setY(i * bar.stave.getHeight());
 
@@ -86,7 +92,9 @@ export default function SheetMusicSystem() {
         hoverableArea.setAttribute("height", `${areaHeight}`);
         hoverableArea.setAttribute("fill", "rgba(255, 0, 0, 0.5)");
 
-        hoverableArea.addEventListener("click", () => setClickedStave(i));
+        hoverableArea.addEventListener("click", (event: MouseEvent) =>
+          handleClickOnStave(event, j)
+        );
 
         bar.voices.forEach((v) => v.draw(context, bar.stave));
         bar.beams.forEach((b) => b.setContext(context).draw());
@@ -125,7 +133,17 @@ export default function SheetMusicSystem() {
    * @param open True if the user is opening the BarControls.
    */
   function toggleBarControls(open: boolean) {
-    console.log(open);
+    console.log("Open, clickedStave", open, clickedStave);
+  }
+
+  const handleClickOnContainer: MouseEventHandler = (event) => {
+    event.stopPropagation();
+    setClickedStave(null);
+  };
+
+  function handleClickOnStave(event: MouseEvent, staveIndex: number) {
+    event.stopPropagation();
+    setClickedStave(staveIndex);
   }
 
   return (
@@ -135,13 +153,14 @@ export default function SheetMusicSystem() {
         id={DIV_ID.CONTAINER}
         ref={containerRef}
         className="h-[900px] w-[600px] border border-black"
+        onClick={handleClickOnContainer}
       >
         {/* Use PopoverTrigger with the output div */}
         <Popover onOpenChange={toggleBarControls}>
           <PopoverTrigger asChild>
             <div id={DIV_ID.OUTPUT}></div>
           </PopoverTrigger>
-          <PopoverContent>Content</PopoverContent>
+          <PopoverContent>Clicked: {clickedStave}</PopoverContent>
         </Popover>
       </div>
     </div>
