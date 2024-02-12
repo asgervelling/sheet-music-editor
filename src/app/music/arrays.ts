@@ -17,12 +17,7 @@ export const arrayEquals = <T>(l: T[], m: T[]): boolean => {
 /** Create an array of `n` `x`'s. */
 export function repeat<T>(x: T, n: number): T[] {
   if (n <= 0 || isNaN(n)) return [];
-  function createArray<T>(a: T[], n: number) {
-    if (n === 1) return a;
-    return createArray([...a, a[0]], n - 1);
-  }
-
-  return createArray([x], n);
+  return [x, ...repeat(x, n - 1)]
 }
 
 /** Split `l` into chunks of sizes `chunkSizes`. */

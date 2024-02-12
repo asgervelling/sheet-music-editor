@@ -1,11 +1,10 @@
-import { first, head, last, tail, takeAsLongAs } from "./arrays";
+import { first, head, last, takeAsLongAs } from "./arrays";
 import { chunk, expandTo32nds, reciprocalChunk } from "./events";
 import { TimeSignature, tsEquals, tsTo32nds } from "./time_signatures";
 import { MusicalEvent, NoteName, Clef } from ".";
-import { fmtChunk, fmtChunks } from "./test_helpers";
 
 /**
- * A bar has a time signature,
+ * A bar has a clef, a time signature,
  * a key signature and some musical events.
  */
 export type Bar = {
@@ -82,7 +81,7 @@ export function setTimeSignature(
  * where `i` is the index of the first bar to change, \
  * and `m` is the index of the first bar to have \
  * a different time signature than `bars[i]`. Ex:
- * 
+ *
  * ```
  *    >>> bars = [C, C, C, D] // key signatures
  *    >>> i = 1
@@ -90,7 +89,11 @@ export function setTimeSignature(
  *    [C, E, E, D]
  * ```
  */
-export function setKeySignature(bars: Bar[], i: number, keySig: NoteName): Bar[] {
+export function setKeySignature(
+  bars: Bar[],
+  i: number,
+  keySig: NoteName
+): Bar[] {
   if (bars.length <= i || i < 0) return [];
 
   const [a, b] = [bars.slice(0, i), bars.slice(i)];
@@ -98,6 +101,6 @@ export function setKeySignature(bars: Bar[], i: number, keySig: NoteName): Bar[]
   const hasSameKeySig = (bar: Bar) => bar.keySig === oldKeySig;
   const affected = takeAsLongAs(b, hasSameKeySig);
   const rest = b.slice(affected.length);
-  const withKeySig = (bar: Bar): Bar => ({ ...bar, keySig })
+  const withKeySig = (bar: Bar): Bar => ({ ...bar, keySig });
   return [...a, ...affected.map(withKeySig), ...rest];
 }
