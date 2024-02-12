@@ -221,5 +221,5 @@ describe("setKeySignature", () => {
 
   it("should handle an empty list", () => {
     expect(setKeySignature([], 0, NN.C)).toEqual([]);
-  })
+  });
 });
