@@ -1,6 +1,6 @@
 import { describe, it, expect } from "@jest/globals";
 
-import { createBars, setTimeSignature } from "./bars";
+import { createBars, setKeySignature, setTimeSignature } from "./bars";
 import {
   D,
   c1,
@@ -32,6 +32,13 @@ const _2_4: TimeSignature = [2, D.Quarter];
 const _3_4: TimeSignature = [3, D.Quarter];
 const _3_16: TimeSignature = [3, D.Sixteenth];
 const _4_4: TimeSignature = [4, D.Quarter];
+
+const bar = (events: MusicalEvent[], timeSig: TimeSignature): Bar => ({
+  clef: Clef.Treble,
+  timeSig: timeSig,
+  keySig: NoteName.C,
+  events,
+});
 
 describe("createBars", () => {
   it("should fill the last bar with pauses", () => {
@@ -122,13 +129,6 @@ describe("createBars", () => {
 });
 
 describe("setTimeSignature", () => {
-  const bar = (events: MusicalEvent[], timeSig: TimeSignature): Bar => ({
-    clef: Clef.Treble,
-    timeSig: timeSig,
-    keySig: NoteName.C,
-    events,
-  });
-
   it("should add more bars if the new TS is shorter", () => {
     const bars = [bar([c4, c4, c4, c4], _4_4), bar([c4, c4, c4, c4], _4_4)];
     expect(setTimeSignature(bars, 1, _2_4)).toEqual([
@@ -195,4 +195,31 @@ describe("setTimeSignature", () => {
       ]);
     }
   );
+});
+
+describe("setKeySignature", () => {
+  const NN = NoteName;
+  it("should set the key signature (KS) of all the bars", () => {
+    const bars = [bar([c4, e2], _3_4), bar([c4, c4, c4], _3_4)];
+    const keySignatures = setKeySignature(bars, 0, NN.Ab).map(
+      (bar) => bar.keySig
+    );
+    expect(keySignatures).toEqual([NN.Ab, NN.Ab]);
+  });
+
+  it("should set the key signature (KS) of some bars", () => {
+    const bars = [
+      bar([c4, e2], _3_4),
+      bar([c4, c4, c4], _3_4),
+      bar([c4, e2], _3_4),
+    ];
+    const keySignatures = setKeySignature(bars, 1, NN.Ab).map(
+      (bar) => bar.keySig
+    );
+    expect(keySignatures).toEqual([NN.C, NN.Ab, NN.Ab]);
+  });
+
+  it("should handle an empty list", () => {
+    expect(setKeySignature([], 0, NN.C)).toEqual([]);
+  })
 });

@@ -74,14 +74,18 @@ export function setTimeSignature(
     bar.timeSig.every((val, i) => val === timeSig[i]);
   const affected = takeAsLongAs(b, hasSameTs);
   const rest = b.slice(affected.length);
-  return [
-    ...a,
-    ...createBars(
-      affected.flatMap((bar) => bar.events),
-      clef,
-      ts,
-      keySig
-    ),
-    ...rest,
-  ];
+  const events = affected.flatMap((bar) => bar.events);
+  return [...a, ...createBars(events, clef, ts, keySig), ...rest];
+}
+
+export function setKeySignature(bars: Bar[], i: number, keySig: NoteName): Bar[] {
+  if (bars.length <= i || i < 0) return [];
+
+  const [a, b] = [bars.slice(0, i), bars.slice(i)];
+  const oldKeySig = head(bars).keySig;
+  const hasSameKeySig = (bar: Bar) => bar.keySig === oldKeySig;
+  const withKeySig = (bar: Bar): Bar => ({ ...bar, keySig })
+  const affected = takeAsLongAs(b, hasSameKeySig);
+  const rest = b.slice(affected.length);
+  return [...a, ...affected.map(withKeySig), ...rest];
 }
