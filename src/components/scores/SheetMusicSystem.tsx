@@ -23,8 +23,14 @@ import { chunk, partitionToMaxSum, zip } from "@/app/music/arrays";
 import { createBars } from "@/app/music/bars";
 import { NoteName, Duration } from "@/app/music";
 import { beatValue, tsToString } from "@/app/music/time_signatures";
-import * as Popover from "@radix-ui/react-popover";
-import { Cross2Icon } from "@radix-ui/react-icons";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const { Renderer } = VF.Vex.Flow;
 
@@ -156,52 +162,47 @@ export default function SheetMusicSystem() {
         className="h-[900px] w-[600px] border border-black"
         onClick={handleClickOnContainer}
       >
-        {/* Use PopoverTrigger with the output div */}
-        <Popover.Root></Popover.Root>
-        <Popover.Root onOpenChange={toggleBarControls}>
-          <Popover.Trigger asChild>
+        <Popover onOpenChange={toggleBarControls}>
+          <PopoverTrigger asChild>
             <div id={DIV_ID.OUTPUT}></div>
-          </Popover.Trigger>
-          <Popover.Portal>
-            <Popover.Content className="PopoverContent" sideOffset={5}>
-              <div
-                style={{ display: "flex", flexDirection: "column", gap: 10 }}
-              >
-                <p className="Text" style={{ marginBottom: 10 }}>
-                  Dimensions
+          </PopoverTrigger>
+          <PopoverContent>
+            <div className="grid gap-4">
+              <div className="space-y-2">
+                <h4 className="font-medium leading-none">Bar</h4>
+                <p className="text-sm text-muted-foreground">
+                  Edit this bar.
                 </p>
-                <fieldset className="Fieldset">
-                  <label className="Label" htmlFor="width">
-                    Width
-                  </label>
-                  <input className="Input" id="width" defaultValue="100%" />
-                </fieldset>
-                <fieldset className="Fieldset">
-                  <label className="Label" htmlFor="maxWidth">
-                    Max. width
-                  </label>
-                  <input className="Input" id="maxWidth" defaultValue="300px" />
-                </fieldset>
-                <fieldset className="Fieldset">
-                  <label className="Label" htmlFor="height">
-                    Height
-                  </label>
-                  <input className="Input" id="height" defaultValue="25px" />
-                </fieldset>
-                <fieldset className="Fieldset">
-                  <label className="Label" htmlFor="maxHeight">
-                    Max. height
-                  </label>
-                  <input className="Input" id="maxHeight" defaultValue="none" />
-                </fieldset>
               </div>
-              <Popover.Close className="PopoverClose" aria-label="Close">
-                <Cross2Icon />
-              </Popover.Close>
-              <Popover.Arrow className="PopoverArrow" />
-            </Popover.Content>
-          </Popover.Portal>
-        </Popover.Root>
+              <div className="grid gap-2">
+                <div className="grid grid-cols-3 items-center gap-4">
+                  <Label htmlFor="width">Clef</Label>
+                  <Input
+                    id="clef"
+                    defaultValue="Treble"
+                    className="col-span-2 h-8"
+                  />
+                </div>
+                <div className="grid grid-cols-3 items-center gap-4">
+                  <Label htmlFor="height">Key</Label>
+                  <Input
+                    id="key"
+                    defaultValue={NoteName.C}
+                    className="col-span-2 h-8"
+                  />
+                </div>
+                <div className="grid grid-cols-3 items-center gap-4">
+                  <Label htmlFor="maxWidth">Time Signature</Label>
+                  <Input
+                    id="timeSignature"
+                    defaultValue="4/4"
+                    className="col-span-2 h-8"
+                  />
+                </div>
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
     </div>
   );
@@ -256,21 +257,6 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
   const [i, x, y] = [0, 0, 0];
   return create(bars, i, x, y);
 }
-
-// /**
-//  * A component to be shown above or below a bar
-//  * when that bar is clicked on.
-//  * It should provide a small user interface
-//  * to set the clef, key signature and time signature of that bar.
-//  */
-// function BarControls() {
-//   return (
-//     <Popover onOpenChange={(open) => console.log("Open:", open)}>
-//       <PopoverTrigger>Click me</PopoverTrigger>
-//       <PopoverContent>Place content for the popover here.</PopoverContent>
-//     </Popover>
-//   );
-// }
 
 /**
  * Create rows of widths, where each row has a sum \

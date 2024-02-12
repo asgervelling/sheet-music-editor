@@ -17,7 +17,12 @@ export type Bar = {
  * Distribute the `events` into bars based on the time signature `timeSig`. \
  * If the last bar is missing some events, add pauses to it.
  */
-export function createBars(events_: MusicalEvent[], clef: Clef, timeSig: TimeSignature, keySig: NoteName): Bar[] {
+export function createBars(
+  events_: MusicalEvent[],
+  clef: Clef,
+  timeSig: TimeSignature,
+  keySig: NoteName
+): Bar[] {
   if (events_.length === 0) {
     return [];
   }
@@ -30,5 +35,4 @@ export function createBars(events_: MusicalEvent[], clef: Clef, timeSig: TimeSig
     ...first(chunks),
     [...last(chunks), ...reciprocalChunk(last(chunks), chunkSize)],
   ].map((events) => ({ clef, timeSig, keySig, events }));
-
 }
