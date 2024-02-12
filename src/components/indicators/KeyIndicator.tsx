@@ -24,9 +24,9 @@ export default function KeyIndicator({ keyCode, label }: KeyIndicatorProps) {
 
   const style = isHighlighted ? {
     backgroundColor: "hsl(var(--primary))",
-    color: "hsl(var(--bg))",
+    color: "hsl(var(--background))",
   } : {
-    backgroundColor: "hsl(var(--bg))",
+    backgroundColor: "hsl(var(--background))",
     color: "hsl(var(--primary))",
   };
 
