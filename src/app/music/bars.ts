@@ -1,4 +1,4 @@
-import { first, head, last } from "./arrays";
+import { first, head, last, tail, takeAsLongAs } from "./arrays";
 import { chunk, expandTo32nds, reciprocalChunk } from "./events";
 import { TimeSignature, tsTo32nds } from "./time_signatures";
 import { MusicalEvent, NoteName, Clef } from ".";
@@ -46,28 +46,42 @@ export function createBars(
  * The bars will be chunked again, and events will land in different bars. \
  * If updating a time signature to a shorter one, extra bars will be added \
  * at the end of the score to make room for the events. Ex:
- * 
+ *
  *  ```
  *    bars = [{ 4/4: 4 2 4t }, { 4/4: 4 4 2 }]
- * 
+ *
  *    setTimeSignature(bars, 1, 2/4)
  *    // bars = [{ 4/4: 4, 2, 4t }, { 2/4: 4 4 }, { 2/4: 2 }]
- * 
+ *
  *    setTimeSignature(bars, 0, 3/4)
  *    // bars = [{ 3/4: 4 2 }, { 2/4: 2 }, { 2/4: 4 4t }, { 2/4: 4 4p }]
- * 
+ *
  * where
  *    t: event.tiedToNext and
  *    p: pause
  *  ```
  */
-export function setTimeSignature(bars: Bar[], i: number, ts: TimeSignature): Bar[] {
-  if (bars.length < i || i < 0) return [];
+export function setTimeSignature(
+  bars: Bar[],
+  i: number,
+  ts: TimeSignature
+): Bar[] {
+  if (bars.length <= i || i < 0) return [];
 
-  const [a, b] = [bars.slice(0, i), bars.slice(i)]
-  console.log("a:", fmtChunks(a.map((b) => b.events)), "b:", fmtChunks(b.map((b) => b.events)))
-  const clef = head(bars).clef;
-  const key = head(bars).keySig;
-  const nextEvents = b.flatMap((bar) => bar.events);
-  return [...a, ...createBars(nextEvents, clef, ts, key)]
+  const [a, b] = [bars.slice(0, i), bars.slice(i)];
+  const { clef, keySig, timeSig } = head(bars);
+  const hasSameTs = (bar: Bar) =>
+    bar.timeSig.every((val, i) => val === timeSig[i]);
+  const affected = takeAsLongAs(b, hasSameTs);
+  const rest = b.slice(affected.length);
+  return [
+    ...a,
+    ...createBars(
+      affected.flatMap((bar) => bar.events),
+      clef,
+      ts,
+      keySig
+    ),
+    ...rest,
+  ];
 }

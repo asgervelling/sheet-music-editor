@@ -1,6 +1,16 @@
 import { describe, it, expect } from "@jest/globals";
 
-import { head, tail, first, last, arrayEquals, repeat, rotate, pair } from "./arrays";
+import {
+  head,
+  tail,
+  first,
+  last,
+  arrayEquals,
+  repeat,
+  rotate,
+  pair,
+  takeAsLongAs,
+} from "./arrays";
 
 describe("head", () => {
   it("should return element 0 of a non-empty array", () => {
@@ -101,7 +111,7 @@ describe("rotate", () => {
     expect(rotate([1, 2, 3, 4], 2)).toEqual([3, 4, 1, 2]);
     expect(rotate([1, 2, 3, 4], 0)).toEqual([1, 2, 3, 4]);
   });
-  
+
   it("should rotate an array n steps counter-clockwise when n is negative", () => {
     expect(rotate([1, 2, 3, 4], -2)).toEqual([3, 4, 1, 2]);
     expect(rotate([1, 2, 3, 4], 0)).toEqual([1, 2, 3, 4]);
@@ -116,8 +126,20 @@ describe("rotate", () => {
     expect(rotate([1, 2, 3, 4], 5)).toEqual([2, 3, 4, 1]);
     expect(rotate([1, 2, 3, 4], -5)).toEqual([4, 1, 2, 3]);
     expect(rotate([1, 2, 3, 4], 8)).toEqual([1, 2, 3, 4]);
-    expect(rotate(["a", "b", "c", "d", "e"], -2)).toEqual(["d", "e", "a", "b", "c"]);
-    expect(rotate(["a", "b", "c", "d", "e"], 4)).toEqual(["e", "a", "b", "c", "d"]);
+    expect(rotate(["a", "b", "c", "d", "e"], -2)).toEqual([
+      "d",
+      "e",
+      "a",
+      "b",
+      "c",
+    ]);
+    expect(rotate(["a", "b", "c", "d", "e"], 4)).toEqual([
+      "e",
+      "a",
+      "b",
+      "c",
+      "d",
+    ]);
     expect(rotate([1, 2, 3, 4], -4)).toEqual([1, 2, 3, 4]);
     expect(rotate([1, 2, 3, 4], -5)).toEqual([4, 1, 2, 3]);
     expect(rotate([1, 2, 3, 4], -9)).toEqual([4, 1, 2, 3]);
@@ -129,8 +151,35 @@ describe("pair", () => {
     expect(pair([])).toEqual([]);
     expect(pair([1])).toEqual([[null, 1]]);
     expect(pair([1, 2])).toEqual([[1, 2]]);
-    expect(pair([1, 2, 3])).toEqual([[1, 2], [2, 3]]);
-    expect(pair([1, 2, 3, 4])).toEqual([[1, 2], [2, 3], [3, 4]]);
-    expect(pair([1, 2, 3, 4, 5])).toEqual([[1, 2], [2, 3], [3, 4], [4, 5]]);
+    expect(pair([1, 2, 3])).toEqual([
+      [1, 2],
+      [2, 3],
+    ]);
+    expect(pair([1, 2, 3, 4])).toEqual([
+      [1, 2],
+      [2, 3],
+      [3, 4],
+    ]);
+    expect(pair([1, 2, 3, 4, 5])).toEqual([
+      [1, 2],
+      [2, 3],
+      [3, 4],
+      [4, 5],
+    ]);
+  });
+});
+
+describe("takeAsLongAs", () => {
+  it("should return elements until predicate returns false", () => {
+    expect(takeAsLongAs([1, 2, 3, 4], (n) => n < 3)).toEqual([1, 2]);
+  });
+
+  it("should return an empty list if the first element does not pass", () => {
+    expect(takeAsLongAs([1, 2, 3, 4], (n) => n > 4)).toEqual([]);
+  });
+
+  it("should take all elements if they all pass", () => {
+    const l = ["a", "b", "c"];
+    expect(takeAsLongAs(l, (s) => s.length === 1)).toEqual(l)
   })
-})
+});

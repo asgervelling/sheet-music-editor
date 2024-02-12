@@ -16,13 +16,17 @@ import {
   e1t,
   e2,
   e2t,
+  e4,
   e8t,
+  fmtChunk,
+  fmtChunks,
   p2,
   p4,
   p8,
 } from "./test_helpers";
-import { repeat } from "./arrays";
+import { repeat, takeAsLongAs } from "./arrays";
 import { Bar, Clef, MusicalEvent, NoteName, TimeSignature } from ".";
+import { tsToString } from "./time_signatures";
 
 const _2_4: TimeSignature = [2, D.Quarter];
 const _3_4: TimeSignature = [3, D.Quarter];
@@ -149,4 +153,46 @@ describe("setTimeSignature", () => {
       bar([c4, p2], _3_4),
     ]);
   });
+
+  it("should move back events if TS is longer", () => {
+    const bars = [bar([c4, c4], _2_4), bar([e4, e4], _2_4)];
+    expect(setTimeSignature(bars, 0, _3_4)).toEqual([
+      bar([c4, c4, e4], _3_4),
+      bar([e4, p2], _3_4),
+    ]);
+  });
+
+  it("should change time signatures of bars [i : n-1]", () => {
+    const bars = [
+      bar([c4, c4, c4, c4], _4_4),
+      bar([c4, c4, c4, c4], _4_4),
+      bar([c4, c4, c4, c4], _4_4),
+    ];
+    expect(setTimeSignature(bars, 1, _3_4)).toEqual([
+      bar([c4, c4, c4, c4], _4_4),
+      bar([c4, c4, c4], _3_4),
+      bar([c4, c4, c4], _3_4),
+      bar([c4, c4, p4], _3_4),
+    ]);
+  });
+
+  it(
+    "should change the time signatures of bars [i : m] " +
+      "where m is the index of the first bar with a different signature",
+    () => {
+      const bars = [
+        bar([c4, c4, c4], _3_4),
+        bar([e4, e4, e4], _3_4),
+        bar([c4, c4, c4], _3_4),
+        bar([e2, e2], _4_4),
+      ];
+      expect(setTimeSignature(bars, 1, _2_4)).toEqual([
+        bar([c4, c4, c4], _3_4),
+        bar([e4, e4], _2_4),
+        bar([e4, c4], _2_4),
+        bar([c4, c4], _2_4),
+        bar([e2, e2], _4_4),
+      ]);
+    }
+  );
 });

@@ -96,3 +96,14 @@ export function partitionToMaxSum(numbers: number[], max: number): number[][] {
 export function zip<T, U>(l: T[], m: U[]): [T, U][] {
   return l.map((x, i) => [x, m[i]]);
 }
+
+/**
+ * Look at the first element `t` in `l`. \
+ * If the predicate returns true for `t`, return `t` and \
+ * the result of calling the function again. \
+ * If not, stop.
+ */
+export function takeAsLongAs<T>(l: T[], predicate: (t: T) => boolean): T[] {
+  if (l.length === 0 || !predicate(head(l))) return [];
+  return [head(l), ...takeAsLongAs(tail(l), predicate)];
+}
