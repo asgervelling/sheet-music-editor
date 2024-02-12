@@ -18,24 +18,13 @@ type KeyIndicatorProps = {
 export default function KeyIndicator({ keyCode, label }: KeyIndicatorProps) {
   const { state } = useContext(StateContext)!;
   const isHighlighted = state.keysBeingHeld.includes(keyCode);
-  
-  // const colors = isHighlighted
-  //   ? "bg-"
-
-  const style = isHighlighted ? {
-    backgroundColor: "hsl(var(--primary))",
-    color: "hsl(var(--background))",
-  } : {
-    backgroundColor: "hsl(var(--background))",
-    color: "hsl(var(--primary))",
-  };
 
   return (
     <>
       <div
-        className="min-w-10 h-10 flex items-center p-2 justify-center
-          border border-[hsl(var(--primary))] select-none"
-        style={style}
+        className={`min-w-10 h-10 flex items-center p-2 justify-center
+          border border-[hsl(var(--primary))] select-none
+          ${isHighlighted ? "bg-primary text-background" : "bg-background text-primary"}`}
       >
         {label}
       </div>
