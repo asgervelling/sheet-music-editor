@@ -23,7 +23,6 @@ import { chunk, partitionToMaxSum, zip } from "@/app/music/arrays";
 import { createBars } from "@/app/music/bars";
 import { NoteName, Duration } from "@/app/music";
 import { beatValue, tsToString } from "@/app/music/time_signatures";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -32,6 +31,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Message } from "@/app/state/messages";
+import BarControls from "./BarControls";
 
 const { Renderer } = VF.Vex.Flow;
 
@@ -87,10 +87,7 @@ export default function SheetMusicSystem() {
    * @returns An SVG Rect that can be clicked.
    */
   function createClickableArea(stave: VF.Stave, i: number): SVGRectElement {
-    const area = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "rect"
-    );
+    const area = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     area.setAttribute("x", `${stave.getX()}`);
     area.setAttribute("y", `${stave.getTopLineTopY()}`);
     const areaHeight = stave.getBottomLineBottomY() - stave.getTopLineTopY();
@@ -111,12 +108,12 @@ export default function SheetMusicSystem() {
         group.addEventListener("click", (event: MouseEvent) => {
           handleClickOnStave(event, i);
         });
-        
+
         bar.stave.setContext(context).draw();
         bar.voices.forEach((v) => v.draw(context, bar.stave));
         bar.beams.forEach((b) => b.setContext(context).draw());
         bar.ties.forEach((t) => t.setContext(context).draw());
-        
+
         context.closeGroup();
         return x + width;
       }, 0);
@@ -167,48 +164,13 @@ export default function SheetMusicSystem() {
   return (
     <div>
       <div id={DIV_ID.ERROR}></div>
-      <div
-        id={DIV_ID.CONTAINER}
-        ref={containerRef}
-        className="h-[900px]"
-      >
+      <div id={DIV_ID.CONTAINER} ref={containerRef} className="h-[900px]">
         <Popover onOpenChange={toggleBarControls}>
           <PopoverTrigger asChild>
             <div id={DIV_ID.OUTPUT}></div>
           </PopoverTrigger>
           <PopoverContent>
-            <div className="grid gap-4">
-              <div className="space-y-2">
-                <h4 className="font-medium leading-none">Bar</h4>
-                <p className="text-sm text-muted-foreground">Edit this bar.</p>
-              </div>
-              <div className="grid gap-2">
-                <div className="grid grid-cols-3 items-center gap-4">
-                  <Label htmlFor="width">Clef</Label>
-                  <Input
-                    id="clef"
-                    defaultValue="Treble"
-                    className="col-span-2 h-8"
-                  />
-                </div>
-                <div className="grid grid-cols-3 items-center gap-4">
-                  <Label htmlFor="height">Key</Label>
-                  <Input
-                    id="key"
-                    defaultValue={NoteName.C}
-                    className="col-span-2 h-8"
-                  />
-                </div>
-                <div className="grid grid-cols-3 items-center gap-4">
-                  <Label htmlFor="maxWidth">Time Signature</Label>
-                  <Input
-                    id="timeSignature"
-                    defaultValue="4/4"
-                    className="col-span-2 h-8"
-                  />
-                </div>
-              </div>
-            </div>
+            <BarControls />
           </PopoverContent>
         </Popover>
       </div>
