@@ -79,38 +79,45 @@ export default function SheetMusicSystem() {
     return cleanUp;
   }, [containerRef.current, state.history]);
 
+  /**
+   * Create an area as big as the stave
+   * to use as a clickable overlay.
+   * @param stave The stave we want to make clickable.
+   * @param i `stave`'s index in the bar.
+   * @returns An SVG Rect that can be clicked.
+   */
+  function createClickableArea(stave: VF.Stave, i: number): SVGRectElement {
+    const area = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "rect"
+    );
+    area.setAttribute("x", `${stave.getX()}`);
+    area.setAttribute("y", `${stave.getTopLineTopY()}`);
+    const areaHeight = stave.getBottomLineBottomY() - stave.getTopLineTopY();
+    area.setAttribute("width", `${stave.getWidth()}`);
+    area.setAttribute("height", `${areaHeight}`);
+
+    return area;
+  }
+
   function drawBars(context: VF.RenderContext, bars: SheetMusicBar[]): void {
     function drawRow(row: [number[], SheetMusicBar[]], i: number): void {
       zip(...row).reduce((x, [width, bar], j) => {
         bar.stave.setX(x);
         bar.stave.setY(i * bar.stave.getHeight());
 
-        const elem = context.openGroup("classss", "iddd");
-        bar.stave.setContext(context).draw();
-
-        const hoverableArea = document.createElementNS(
-          "http://www.w3.org/2000/svg",
-          "rect"
-        );
-        hoverableArea.setAttribute("x", `${bar.stave.getX()}`);
-        hoverableArea.setAttribute("y", `${bar.stave.getTopLineTopY()}`);
-        const areaHeight =
-          bar.stave.getBottomLineY() - bar.stave.getTopLineTopY();
-        hoverableArea.setAttribute("width", `${bar.stave.getWidth()}`);
-        hoverableArea.setAttribute("height", `${areaHeight}`);
-        hoverableArea.setAttribute("fill", "rgba(255, 0, 0, 0.5)");
-
-        hoverableArea.addEventListener("click", (event: MouseEvent) => {
-          handleClickOnStave(event, j);
+        const group = context.openGroup("stavegroup", `stavegroup-${i}-${j}`);
+        group.appendChild(createClickableArea(bar.stave, j));
+        group.addEventListener("click", (event: MouseEvent) => {
+          handleClickOnStave(event, i);
         });
-
+        
+        bar.stave.setContext(context).draw();
         bar.voices.forEach((v) => v.draw(context, bar.stave));
         bar.beams.forEach((b) => b.setContext(context).draw());
         bar.ties.forEach((t) => t.setContext(context).draw());
-
-        elem.appendChild(hoverableArea);
+        
         context.closeGroup();
-
         return x + width;
       }, 0);
     }
@@ -152,7 +159,9 @@ export default function SheetMusicSystem() {
   };
 
   function handleClickOnStave(event: MouseEvent, staveIndex: number) {
+    event.stopPropagation();
     setClickedStave(staveIndex);
+    console.log("Clicked stave", staveIndex);
   }
 
   return (
