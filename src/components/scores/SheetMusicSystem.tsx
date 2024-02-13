@@ -170,7 +170,7 @@ export default function SheetMusicSystem() {
       <div
         id={DIV_ID.CONTAINER}
         ref={containerRef}
-        className="h-[900px] w-[600px] border border-black"
+        className="h-[900px]"
       >
         <Popover onOpenChange={toggleBarControls}>
           <PopoverTrigger asChild>
@@ -229,7 +229,7 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
     const key = bar.keySig;
     const notes = bar.events.map(staveNote);
 
-    const stave = new VF.Stave(x, y, 0);
+    const stave = new VF.Stave(x, y, 300);
 
     // Voice
     const voice = new VF.Voice({
@@ -249,7 +249,7 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
         .addKeySignature(key);
     }
     // Modify stave's width to fit its contents
-    const staveWidth = (vWidth + stave.getModifierXShift()) * 1.25;
+    const staveWidth = vWidth * 1.25 + stave.getModifierXShift();
     stave.setWidth(staveWidth);
 
     // Beams ♫
@@ -291,7 +291,7 @@ function voiceWidth(voice: VF.Voice) {
         .getModifiers()
         .reduce((acc, m) => Math.min(acc, m.getXShift()), 0);
       return acc + t.getWidth() + Math.abs(smallestXShift);
-    }, 0)
+    }, 0) * 1.25
   );
 }
 

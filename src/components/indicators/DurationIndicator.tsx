@@ -22,7 +22,7 @@ const DurationIndicator: React.FC<DurationKeyProps> = ({ duration }) => {
     <div>
       <div
         style={style}
-        className="h-10 w-10 flex items-center justify-center mb-2"
+        className="h-10 w-10 flex items-center justify-center mb-2 select-none"
       >
         {DurationToKey[duration]}
       </div>

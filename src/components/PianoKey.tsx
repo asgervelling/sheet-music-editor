@@ -51,6 +51,7 @@ export default function PianoKey({ noteName }: PianoKeyProps) {
         fontWeight="100"
         fontSize="1"
         fontFamily="'Inter', sans-serif"
+        className="select-none"
       >
         {keyboardShortcut.toUpperCase()}
       </text>

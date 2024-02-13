@@ -2,7 +2,7 @@ import KeyIndicator from "./KeyIndicator"
 
 export default function UndoIndicatorGroup() {
   return (
-    <div className="flex gap-x-2 items-center">
+    <div className="flex gap-x-2 items-center select-none">
       <KeyIndicator keyCode="Control" label="Ctrl" />
       +
       <KeyIndicator keyCode="z" label="Z" />
