@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import ClefIcon from "../icons/ClefIcon";
+import ClefUnicode from "../icons/clefs/ClefUnicode";
 
 /**
  * A user interface for setting up a bar. \
@@ -39,8 +39,8 @@ export default function BarControls() {
               {Object.values(Clef).map((c) => (
                 <SelectItem key={c} value={c}>
                   <div className="flex">
-                    <ClefIcon clef={c} />
-                    <span className="ml-2 capitalize">{c}</span>
+                    <ClefUnicode clef={c} />
+                    <span className="pl-2 capitalize">{c}</span>
                   </div>
                 </SelectItem>
               ))}

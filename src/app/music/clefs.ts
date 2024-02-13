@@ -1,14 +1,14 @@
 export enum Clef {
   Treble = "treble",
-  Bass = "bass",
-  Alto = "alto",
+  French = "french",
+  BaritoneC = "baritone-c",
   Tenor = "tenor",
-  Percussion = "percussion",
+  Alto = "alto",
   Soprano = "soprano",
   MezzoSoprano = "mezzo-soprano",
-  BaritoneC = "baritone-c",
-  BaritoneF = "baritone-f",
+  Bass = "bass",
   Subbass = "subbass",
-  French = "french",
-  Tab = "tab"
+  BaritoneF = "baritone-f",
+  Percussion = "percussion",
+  Tab = "tab",
 }
