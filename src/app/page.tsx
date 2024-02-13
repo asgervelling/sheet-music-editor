@@ -22,6 +22,7 @@ export default function Home() {
           <div className="grid gap-y-2">
             <UndoIndicatorGroup />
             <RedoIndicatorGroup />
+            
           </div>
         </div>
         {/* Top right quarter */}

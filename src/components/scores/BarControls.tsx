@@ -1,9 +1,16 @@
 import { useState } from "react";
-import { DropdownMenu } from "../ui/dropdown-menu";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 
 import { Clef, Duration, NoteName, TimeSignature } from "@/app/music";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import ClefIcon from "../icons/ClefIcon";
 
 /**
  * A user interface for setting up a bar. \
@@ -14,7 +21,6 @@ export default function BarControls() {
   const [clef, setClef] = useState(Clef.Treble);
   const [keySig, setKeySig] = useState(NoteName.C);
   const [timeSig, setTimeSig] = useState<TimeSignature>([4, Duration.Quarter]);
-  
 
   return (
     <div className="grid gap-4">
@@ -25,8 +31,21 @@ export default function BarControls() {
       <div className="grid gap-2">
         <div className="grid grid-cols-3 items-center gap-4">
           <Label htmlFor="width">Clef</Label>
-          <DropdownMenu></DropdownMenu>
-          <Input id="clef" defaultValue="Treble" className="col-span-2 h-8" />
+          <Select defaultValue={Clef.Treble}>
+            <SelectTrigger className="col-span-2">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.values(Clef).map((c) => (
+                <SelectItem key={c} value={c}>
+                  <div className="flex">
+                    <ClefIcon clef={c} />
+                    <span className="ml-2 capitalize">{c}</span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div className="grid grid-cols-3 items-center gap-4">
           <Label htmlFor="height">Key</Label>

@@ -158,7 +158,6 @@ export default function SheetMusicSystem() {
   function handleClickOnStave(event: MouseEvent, staveIndex: number) {
     event.stopPropagation();
     setClickedStave(staveIndex);
-    console.log("Clicked stave", staveIndex);
   }
 
   return (
