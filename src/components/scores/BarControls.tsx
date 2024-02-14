@@ -39,8 +39,13 @@ export default function BarControls() {
   const [timeSig, setTimeSig] = useState<TimeSignature>([4, Duration.Quarter]);
 
   const isNumber = (s: string) => /^\d+$/.test(s);
+
   const formSchema = z.object({
-    timeSignature: z
+    // clef: z.string().refine((c) => clefs.includes(c)),
+    clef: z.string(),
+    // key: z.string().refine((k) => Object.keys(NoteName).includes(k)),
+    key: z.string(),
+    beatCount: z
       .string()
       .transform((val) => val.trim())
       .refine(isNumber, {
@@ -50,16 +55,25 @@ export default function BarControls() {
       .refine((n) => n > 0, {
         message: "Beat count must be a positive number.",
       }),
+    beatValue: z
+      .string()
+
+      // .number()
+      // .refine((d) => Object.values(Duration).map(asNumber).includes(d)),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      timeSignature: 4,
+      clef: Clef.Treble,
+      key: NoteName.C,
+      beatCount: 4,
+      beatValue: Duration.Quarter,
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log("Submit");
     console.log(values);
   }
 
@@ -72,72 +86,108 @@ export default function BarControls() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="grid gap-2">
-            <div className="grid grid-cols-3 items-center gap-4">
-              <Label htmlFor="clef">Clef</Label>
-              <Select defaultValue={Clef.Treble}>
-                <SelectTrigger className="col-span-2">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.values(Clef).map((c) => (
-                    <SelectItem key={c} value={c}>
-                      <div className="flex">
-                        <ClefUnicode clef={c} />
-                        <span className="pl-2 capitalize">{c}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid grid-cols-3 items-center gap-4">
-              <Label htmlFor="key">Key</Label>
-              <Select defaultValue={NoteName.C}>
-                <SelectTrigger className="col-span-2">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.values(pitches).map((n) => (
-                    <SelectItem key={n} value={n}>
-                      {n}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
             <FormField
               control={form.control}
-              name="timeSignature"
+              name="clef"
               render={({ field }) => (
-                <FormItem>
-                  <div className="grid grid-cols-3 items-center gap-4">
-                    <FormLabel>Time Signature</FormLabel>
-                    <div className="col-span-2 grid grid-cols-5 items-center gap-2">
-                      <FormControl className="col-span-2 h-8">
-                        <Input {...field} autoComplete="off" />
-                      </FormControl>
-                      <div className="col-span-1 text-center">/</div>
-                      <div className="col-span-2">
-                        <Select defaultValue={Duration.Quarter}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {Object.values(Duration).map((d) => (
-                              <SelectItem key={d} value={d}>
-                                {asNumber(d)}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                  </div>
+                <FormItem className="grid grid-cols-3 items-center gap-4">
+                  <FormLabel>Clef</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="col-span-2">
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {Object.values(Clef).map((c) => (
+                        <SelectItem key={c} value={c}>
+                          <div className="flex">
+                            <ClefUnicode clef={c} />
+                            <span className="pl-2 capitalize">{c}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <div className="grid grid-cols-5 items-center gap-4">
+            <FormField
+              control={form.control}
+              name="key"
+              render={({ field }) => (
+                <FormItem className="grid grid-cols-3 items-center gap-4">
+                  <FormLabel>Key</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="col-span-2">
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {pitches.map((n) => (
+                        <SelectItem key={n} value={n}>
+                          {n}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="grid grid-cols-3 items-center gap-4">
+              <Label>Time signature</Label>
+              <div className="col-span-2 grid grid-cols-5 items-center gap-2">
+                <FormField
+                  control={form.control}
+                  name="beatCount"
+                  render={({ field }) => (
+                    <FormItem className="h-8 col-span-2">
+                      <FormControl>
+                        <Input {...field} placeholder="4" className="w-full h-full" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="h-8 text-center">/</div>
+                <FormField
+                  control={form.control}
+                  name="beatValue"
+                  render={({ field }) => (
+                    <FormItem className="col-span-2 h-8">
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value.toString()}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {Object.values(Duration).map((d) => (
+                            <SelectItem key={d} value={d}>
+                              {asNumber(d)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-5 items-center gap-4 pt-2">
               <div className="col-span-3" />
               <Button type="submit" className="col-span-2">
                 OK
