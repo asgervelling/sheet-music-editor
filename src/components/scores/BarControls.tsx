@@ -14,7 +14,6 @@ import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -29,12 +28,6 @@ import ClefUnicode from "../icons/clefs/ClefUnicode";
 import { pitches } from "@/app/music/notes";
 import { asNumber } from "@/app/music/durations";
 
-const formSchema = z.object({
-  timeSignature: z.string().min(1, {
-    message: "Time signature must be at least 1 character.",
-  }),
-});
-
 /**
  * A user interface for setting up a bar. \
  * That is, choosing a clef, a key signature
@@ -45,10 +38,24 @@ export default function BarControls() {
   const [keySig, setKeySig] = useState(NoteName.C);
   const [timeSig, setTimeSig] = useState<TimeSignature>([4, Duration.Quarter]);
 
+  const isNumber = (s: string) => /^\d+$/.test(s);
+  const formSchema = z.object({
+    timeSignature: z
+      .string()
+      .transform((val) => val.trim())
+      .refine(isNumber, {
+        message: "Beat count must be a number.",
+      })
+      .transform((val) => parseInt(val))
+      .refine((n) => n > 0, {
+        message: "Beat count must be a positive number.",
+      }),
+  });
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      timeSignature: "4",
+      timeSignature: 4,
     },
   });
 
@@ -102,26 +109,28 @@ export default function BarControls() {
               control={form.control}
               name="timeSignature"
               render={({ field }) => (
-                <FormItem className="grid grid-cols-3 items-center gap-4">
-                  <FormLabel>Time Signature</FormLabel>
-                  <div className="col-span-2 grid grid-cols-5 items-center gap-2">
-                    <FormControl className="col-span-2 h-8">
-                      <Input {...field} />
-                    </FormControl>
-                    <div className="col-span-1 text-center">/</div>
-                    <div className="col-span-2">
-                      <Select defaultValue={Duration.Quarter}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Object.values(Duration).map((d) => (
-                            <SelectItem key={d} value={d}>
-                              {asNumber(d)}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                <FormItem>
+                  <div className="grid grid-cols-3 items-center gap-4">
+                    <FormLabel>Time Signature</FormLabel>
+                    <div className="col-span-2 grid grid-cols-5 items-center gap-2">
+                      <FormControl className="col-span-2 h-8">
+                        <Input {...field} autoComplete="off" />
+                      </FormControl>
+                      <div className="col-span-1 text-center">/</div>
+                      <div className="col-span-2">
+                        <Select defaultValue={Duration.Quarter}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Object.values(Duration).map((d) => (
+                              <SelectItem key={d} value={d}>
+                                {asNumber(d)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                   </div>
                   <FormMessage />
