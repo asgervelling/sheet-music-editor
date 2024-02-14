@@ -34,32 +34,17 @@ import { asNumber } from "@/app/music/durations";
  * and a time signature.
  */
 export default function BarControls() {
-  const [clef, setClef] = useState(Clef.Treble);
-  const [keySig, setKeySig] = useState(NoteName.C);
-  const [timeSig, setTimeSig] = useState<TimeSignature>([4, Duration.Quarter]);
-
+  const clefs: string[] = Object.keys(Clef);
   const isNumber = (s: string) => /^\d+$/.test(s);
+  const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
   const formSchema = z.object({
-    // clef: z.string().refine((c) => clefs.includes(c)),
-    clef: z.string(),
-    // key: z.string().refine((k) => Object.keys(NoteName).includes(k)),
-    key: z.string(),
-    beatCount: z
-      .string()
-      .transform((val) => val.trim())
-      .refine(isNumber, {
-        message: "Beat count must be a number.",
-      })
-      .transform((val) => parseInt(val))
-      .refine((n) => n > 0, {
-        message: "Beat count must be a positive number.",
-      }),
-    beatValue: z
-      .string()
-
-      // .number()
-      // .refine((d) => Object.values(Duration).map(asNumber).includes(d)),
+    clef: z.string().refine((c) => {
+      return clefs.includes(capitalize(c));
+    }),
+    key: z.string().refine((k) => Object.keys(NoteName).includes(k)),
+    beatCount: z.number().positive("Beat count must be a positive number"),
+    beatValue: z.string().refine((d) => Object.values(Duration).includes(d as Duration))
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -73,7 +58,6 @@ export default function BarControls() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Submit");
     console.log(values);
   }
 
@@ -152,7 +136,15 @@ export default function BarControls() {
                   render={({ field }) => (
                     <FormItem className="h-8 col-span-2">
                       <FormControl>
-                        <Input {...field} placeholder="4" className="w-full h-full" />
+                        <Input
+                          {...field}
+                          type="number"
+                          placeholder="4"
+                          className="w-full h-full
+                            [appearance:textfield]
+                            [&::-webkit-outer-spin-button]:appearance-none
+                            [&::-webkit-inner-spin-button]:appearance-none"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -166,7 +158,7 @@ export default function BarControls() {
                     <FormItem className="col-span-2 h-8">
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value.toString()}
+                        defaultValue={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
