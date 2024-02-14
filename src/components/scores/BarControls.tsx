@@ -11,6 +11,9 @@ import {
   SelectValue,
 } from "../ui/select";
 import ClefUnicode from "../icons/clefs/ClefUnicode";
+import { pitches } from "@/app/music/notes";
+import { asNumber } from "@/app/music/durations";
+import { Button } from "../ui/button";
 
 /**
  * A user interface for setting up a bar. \
@@ -30,7 +33,7 @@ export default function BarControls() {
       </div>
       <div className="grid gap-2">
         <div className="grid grid-cols-3 items-center gap-4">
-          <Label htmlFor="width">Clef</Label>
+          <Label htmlFor="clef">Clef</Label>
           <Select defaultValue={Clef.Treble}>
             <SelectTrigger className="col-span-2">
               <SelectValue />
@@ -48,20 +51,46 @@ export default function BarControls() {
           </Select>
         </div>
         <div className="grid grid-cols-3 items-center gap-4">
-          <Label htmlFor="height">Key</Label>
-          <Input
-            id="key"
-            defaultValue={NoteName.C}
-            className="col-span-2 h-8"
-          />
+          <Label htmlFor="key">Key</Label>
+          <Select defaultValue={NoteName.C}>
+            <SelectTrigger className="col-span-2">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.values(pitches).map((n) => (
+                <SelectItem key={n} value={n}>
+                  {n}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div className="grid grid-cols-3 items-center gap-4">
           <Label htmlFor="maxWidth">Time Signature</Label>
-          <Input
-            id="timeSignature"
-            defaultValue="4/4"
-            className="col-span-2 h-8"
-          />
+          <div className="col-span-2 grid grid-cols-5 items-center gap-2">
+            <Input
+              id="timeSignature"
+              defaultValue="4"
+              className="col-span-2 h-8"
+            />
+            <div className="col-span-1 text-center">/</div>
+            <Select defaultValue={Duration.Quarter}>
+              <SelectTrigger className="col-span-2">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.values(Duration).map((d) => (
+                  <SelectItem key={d} value={d}>
+                    {asNumber(d)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <div className="grid grid-cols-5 items-center gap-4">
+          <div className="col-span-3" />
+          <Button className="col-span-2">OK</Button>
         </div>
       </div>
     </div>

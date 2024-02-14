@@ -40,3 +40,21 @@ export function incrementDuration(a: Duration): Duration {
     return a;
   }
 }
+
+export function asNumber(d: Duration): number {
+  return 32 / expandDuration(d).length;
+  // switch (d) {
+  //   case Duration.Whole:
+  //     return "Whole";
+  //   case Duration.Half:
+  //     return "Half";
+  //   case Duration.Quarter:
+  //     return "Quarter";
+  //   case Duration.Eighth:
+  //     return "8th";
+  //   case Duration.Sixteenth:
+  //     return "16th";
+  //   case Duration.ThirtySecond:
+  //     return "32nd";
+  // }
+}
