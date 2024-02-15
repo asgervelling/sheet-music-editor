@@ -1,3 +1,5 @@
+import * as VF from "vexflow";
+
 export enum Clef {
   Treble = "treble",
   French = "french",
@@ -12,3 +14,9 @@ export enum Clef {
   Percussion = "percussion",
   Tab = "tab",
 }
+
+// function humanReadableClef(clef: Clef) {
+//   switch (clef) {
+//     case Clef.BaritoneC:
+//   }
+// }

@@ -23,15 +23,13 @@ import { chunk, partitionToMaxSum, zip } from "@/app/music/arrays";
 import { createBars } from "@/app/music/bars";
 import { NoteName, Duration } from "@/app/music";
 import { beatValue, tsToString } from "@/app/music/time_signatures";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Message } from "@/app/state/messages";
-import BarControls from "./BarControls";
+import { BarControls } from "./BarControls";
 
 const { Renderer } = VF.Vex.Flow;
 
