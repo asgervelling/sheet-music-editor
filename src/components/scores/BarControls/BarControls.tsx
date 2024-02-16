@@ -2,7 +2,7 @@
 import React from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 
 import { Form, FormLabel } from "@/components/ui/form";
 import { Button } from "../../ui/button";
@@ -66,19 +66,19 @@ export default function BarControls() {
         <h4 className="font-medium leading-none">Bar</h4>
         <p className="text-sm text-muted-foreground">Edit this bar.</p>
       </div>
-      <Form {...form}>
+      <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="grid gap-2">
             <BarControlsLine>
               <FormLabel>Clef</FormLabel>
-              <BarControlsSelect control={form.control} name="clef">
+              <BarControlsSelect name="clef">
                 <ClefOptions />
               </BarControlsSelect>
             </BarControlsLine>
 
             <BarControlsLine>
               <FormLabel>Key</FormLabel>
-              <BarControlsSelect control={form.control} name="key">
+              <BarControlsSelect name="key">
                 <KeyOptions />
               </BarControlsSelect>
             </BarControlsLine>
@@ -86,20 +86,23 @@ export default function BarControls() {
             <BarControlsLine>
               <FormLabel>Time signature</FormLabel>
               <div className="col-span-2 grid grid-cols-5 items-center gap-2">
-                <BeatCountInput control={form.control} name="beatCount" />
+                <BeatCountInput name="beatCount" />
                 <div className="h-8 text-center">/</div>
-                <BarControlsSelect control={form.control} name="beatValue">
+                <BarControlsSelect name="beatValue">
                   <BeatValueOptions />
                 </BarControlsSelect>
               </div>
             </BarControlsLine>
 
-            <SubmitLine>
-              <Button type="submit">OK</Button>
-            </SubmitLine>
+            <div className="grid grid-cols-5 items-center gap-4 pt-2">
+              <div className="col-span-3" />
+              <div className="col-span-2">
+                <Button type="submit">OK</Button>
+              </div>
+            </div>
           </div>
         </form>
-      </Form>
+      </FormProvider>
     </div>
-  );
+  );  
 }

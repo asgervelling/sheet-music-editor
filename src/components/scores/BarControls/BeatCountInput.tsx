@@ -5,16 +5,16 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { FieldValues, UseControllerProps } from "react-hook-form";
+import { FieldValues, UseControllerProps, useFormContext } from "react-hook-form";
 
 type InputProps<T extends FieldValues> = {
   name: "clef" | "key" | "beatCount" | "beatValue";
 } & UseControllerProps<T>;
 
 export function BeatCountInput<T extends FieldValues>({
-  control,
   name,
 }: InputProps<T>) {
+  const { control } = useFormContext();
   return (
     <>
       <FormField

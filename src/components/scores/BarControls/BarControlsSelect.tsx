@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FieldValues, UseControllerProps } from "react-hook-form";
+import { FieldValues, UseControllerProps, useFormContext } from "react-hook-form";
 
 type SelectProps<T extends FieldValues> = {
   name: "clef" | "key" | "beatCount" | "beatValue";
@@ -18,10 +18,10 @@ type SelectProps<T extends FieldValues> = {
 } & UseControllerProps<T>;
 
 export function BarControlsSelect<T extends FieldValues>({
-  control,
   name,
   children,
 }: SelectProps<T>) {
+  const { control } = useFormContext();
   return (
     <FormField
       control={control}
