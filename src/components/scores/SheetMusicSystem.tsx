@@ -9,6 +9,7 @@
 "use client";
 import {
   MouseEventHandler,
+  ReactPortal,
   useContext,
   useEffect,
   useRef,
@@ -30,6 +31,8 @@ import {
 } from "@/components/ui/popover";
 import { Message } from "@/app/state/messages";
 import { BarControls } from "./BarControls";
+import { PopoverPortal } from "@radix-ui/react-popover";
+import { createPortal } from "react-dom";
 
 const { Renderer } = VF.Vex.Flow;
 
@@ -166,9 +169,11 @@ export default function SheetMusicSystem() {
           <PopoverTrigger asChild>
             <div id={DIV_ID.OUTPUT}></div>
           </PopoverTrigger>
-          <PopoverContent>
-            <BarControls />
-          </PopoverContent>
+          <PopoverPortal>
+            <PopoverContent>
+              <BarControls />
+            </PopoverContent>
+          </PopoverPortal>
         </Popover>
       </div>
     </div>

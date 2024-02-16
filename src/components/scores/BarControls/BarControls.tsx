@@ -56,7 +56,7 @@ export default function BarControls() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: FormValues) {
     console.log(values);
   }
 
@@ -96,13 +96,13 @@ export default function BarControls() {
 
             <div className="grid grid-cols-5 items-center gap-4 pt-2">
               <div className="col-span-3" />
-              <div className="col-span-2">
-                <Button type="submit">OK</Button>
-              </div>
+              <Button type="submit" className="col-span-2">
+                OK
+              </Button>
             </div>
           </div>
         </form>
       </FormProvider>
     </div>
-  );  
+  );
 }
