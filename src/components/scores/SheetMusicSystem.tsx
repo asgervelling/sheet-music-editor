@@ -75,10 +75,6 @@ export default function SheetMusicSystem() {
       [4, Duration.Quarter],
       NoteName.Bb
     );
-    console.log(
-      "Events:",
-      bars.flatMap((bar) => bar.events.length)
-    );
     setSheetMusicData(drawBars(context, vexFlowBars(bars)));
 
     return cleanUp;
@@ -89,6 +85,7 @@ export default function SheetMusicSystem() {
    */
   function cleanUp() {
     [DIV_ID.OUTPUT, DIV_ID.ERROR].forEach((id) => {
+      console.log("Resetting output div")
       const div: HTMLElement | null = document.getElementById(id);
       if (div) {
         div.innerHTML = "";
@@ -166,6 +163,8 @@ function drawBars(
 
       return x + width;
     }, 0);
+
+    console.log("Functions:", functions.length)
 
     return functions;
   }
