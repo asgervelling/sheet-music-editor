@@ -33,13 +33,14 @@ import { Message } from "@/app/state/messages";
 import { BarControls } from "./BarControls";
 import { PopoverPortal } from "@radix-ui/react-popover";
 import { createPortal } from "react-dom";
+import ReactWrapper, { RenderFunction } from "../ReactWrapper";
 
 const { Renderer } = VF.Vex.Flow;
 
 /**
  * The VexFlow representation of a `Bar`.
  */
-type SheetMusicBar = {
+type VexFlowBar = {
   stave: VF.Stave;
   voices: VF.Voice[];
   beams: VF.Beam[];
@@ -60,73 +61,28 @@ export default function SheetMusicSystem() {
   const containerRef = useRef(null);
   const renderContextRef = useRef<VF.RenderContext | null>(null);
   const [clickedStave, setClickedStave] = useState<number | null>(null);
+  const [sheetMusicData, setSheetMusicData] = useState<
+    RenderFunction | null
+  >(null);
 
   useEffect(() => {
     const context = createRenderContext(DIV_ID.CONTAINER, DIV_ID.OUTPUT);
     renderContextRef.current = context;
 
-    try {
-      const bars = createBars(
-        state.history,
-        Clef.Treble,
-        [4, Duration.Quarter],
-        NoteName.Bb
-      ); // HARDCODED clef, time and key signature
-      drawBars(context, sheetMusicBars(bars));
-    } catch (e) {
-      displayError(e);
-    }
+    const bars = createBars(
+      state.history,
+      Clef.Treble,
+      [4, Duration.Quarter],
+      NoteName.Bb
+    );
+    console.log(
+      "Events:",
+      bars.flatMap((bar) => bar.events.length)
+    );
+    setSheetMusicData(drawBars(context, vexFlowBars(bars)));
 
     return cleanUp;
   }, [containerRef.current, state.history]);
-
-  /**
-   * Create an area as big as the stave
-   * to use as a clickable overlay.
-   * @param stave The stave we want to make clickable.
-   * @param i `stave`'s index in the bar.
-   * @returns An SVG Rect that can be clicked.
-   */
-  function createClickableArea(stave: VF.Stave, i: number): SVGRectElement {
-    const area = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    area.setAttribute("x", `${stave.getX()}`);
-    area.setAttribute("y", `${stave.getTopLineTopY()}`);
-    const areaHeight = stave.getBottomLineBottomY() - stave.getTopLineTopY();
-    area.setAttribute("width", `${stave.getWidth()}`);
-    area.setAttribute("height", `${areaHeight}`);
-
-    return area;
-  }
-
-  function drawBars(context: VF.RenderContext, bars: SheetMusicBar[]): void {
-    function drawRow(row: [number[], SheetMusicBar[]], i: number): void {
-      zip(...row).reduce((x, [width, bar], j) => {
-        bar.stave.setX(x);
-        bar.stave.setY(i * bar.stave.getHeight());
-
-        const group = context.openGroup("stavegroup", `stavegroup-${i}-${j}`);
-        group.appendChild(createClickableArea(bar.stave, j));
-        group.addEventListener("click", (event: MouseEvent) => {
-          handleClickOnStave(event, i);
-        });
-
-        bar.stave.setContext(context).draw();
-        bar.voices.forEach((v) => v.draw(context, bar.stave));
-        bar.beams.forEach((b) => b.setContext(context).draw());
-        bar.ties.forEach((t) => t.setContext(context).draw());
-
-        context.closeGroup();
-        return x + width;
-      }, 0);
-    }
-
-    const widthRows = staveWidths(bars);
-    const barRows = chunk(
-      bars,
-      widthRows.map((r) => r.length)
-    );
-    zip(widthRows, barRows).forEach((row, i) => drawRow(row, i));
-  }
 
   /**
    * Remove child elements of output and error divs.
@@ -165,28 +121,102 @@ export default function SheetMusicSystem() {
     <div>
       <div id={DIV_ID.ERROR}></div>
       <div id={DIV_ID.CONTAINER} ref={containerRef} className="h-[900px]">
-        <Popover onOpenChange={toggleBarControls}>
-          <PopoverTrigger asChild>
-            <div id={DIV_ID.OUTPUT}></div>
-          </PopoverTrigger>
-          <PopoverPortal>
-            <PopoverContent>
-              <BarControls />
-            </PopoverContent>
-          </PopoverPortal>
-        </Popover>
+        <div id={DIV_ID.OUTPUT}>
+          {renderContextRef.current && sheetMusicData && (
+            <System
+              context={renderContextRef.current}
+              sheetMusicData={sheetMusicData}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
 }
 
-function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
-  function create(
-    bars: Bar[],
-    i: number,
-    x: number,
-    y: number
-  ): SheetMusicBar[] {
+// Todo: Rename
+function drawBars(
+  context: VF.RenderContext,
+  bars: VexFlowBar[]
+): RenderFunction {
+  console.log(`drawBars()`);
+  function drawRow(row: [number[], VexFlowBar[]], i: number): RenderFunction[] {
+    console.log(`  drawRow(${i})`);
+    let functions: RenderFunction[] = [];
+
+    zip(...row).reduce((x, [width, bar], j) => {
+      bar.stave.setX(x);
+      bar.stave.setY(i * bar.stave.getHeight());
+
+      const render: RenderFunction = () => {
+        const group = context.openGroup("stavegroup", `stavegroup-${i}-${j}`);
+        console.log(`    render(` + `stavegroup-${i}-${j}` + ")");
+        group.appendChild(createClickableArea(bar.stave, j));
+        group.addEventListener("click", (event: MouseEvent) => {
+          console.log("Clicked bar", i + j);
+        });
+        bar.stave.setContext(context).draw();
+        bar.voices.forEach((v) => v.draw(context, bar.stave));
+        bar.beams.forEach((b) => b.setContext(context).draw());
+        bar.ties.forEach((t) => t.setContext(context).draw());
+        context.closeGroup();
+      };
+
+      functions.push(render);
+
+      return x + width;
+    }, 0);
+
+    return functions;
+  }
+
+  const widthRows = staveWidths(bars);
+  const barRows = chunk(
+    bars,
+    widthRows.map((r) => r.length)
+  );
+  const functions = zip(widthRows, barRows).map((row, i) => drawRow(row, i));
+  const render: RenderFunction = () =>
+    functions.forEach((row) => {
+      row.forEach((fn) => fn());
+    });
+  return render;
+}
+
+function System({
+  context,
+  sheetMusicData,
+}: {
+  context: VF.RenderContext;
+  sheetMusicData: RenderFunction;
+}) {
+  return (
+    <>
+      <ReactWrapper render={sheetMusicData} />
+    </>
+  );
+}
+
+/**
+ * Create an area as big as the stave
+ * to use as a clickable overlay.
+ * @param stave The stave we want to make clickable.
+ * @param i `stave`'s index in the bar.
+ * @returns An SVG Rect that can be clicked.
+ */
+function createClickableArea(stave: VF.Stave, i: number): SVGRectElement {
+  const area = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  area.setAttribute("x", `${stave.getX()}`);
+  area.setAttribute("y", `${stave.getTopLineTopY()}`);
+  const areaHeight = stave.getBottomLineBottomY() - stave.getTopLineTopY();
+  area.setAttribute("width", `${stave.getWidth()}`);
+  area.setAttribute("height", `${areaHeight}`);
+
+  return area;
+}
+
+function vexFlowBars(bars: Bar[]): VexFlowBar[] {
+  function create(bars: Bar[], i: number, x: number, y: number): VexFlowBar[] {
     if (bars.length === 0) return [];
 
     const [bar, ...rest] = bars;
@@ -222,7 +252,7 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
     // Ties ♪‿♪
     const ties = createTies(bar, notes);
 
-    const b: SheetMusicBar = { stave, voices: [voice], beams, ties };
+    const b: VexFlowBar = { stave, voices: [voice], beams, ties };
     return [b, ...create(rest, i + 1, x + staveWidth, y)];
   }
 
@@ -234,7 +264,7 @@ function sheetMusicBars(bars: Bar[]): SheetMusicBar[] {
  * Create rows of widths, where each row has a sum \
  * smaller than or equal to the size of the container.
  */
-function staveWidths(bars: SheetMusicBar[]): number[][] {
+function staveWidths(bars: VexFlowBar[]): number[][] {
   let container = document.getElementById(DIV_ID.CONTAINER);
   let containerWidth = container?.offsetWidth ?? 1300; // HARDCODED
 
