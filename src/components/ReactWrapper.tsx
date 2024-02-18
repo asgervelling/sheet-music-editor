@@ -16,6 +16,7 @@ export default function ReactWrapper({ render }: ReactWrapperProps) {
 
   useEffect(() => {
     if (containerRef.current) {
+      console.log("Rendering")
       render();
     }
   }, [render]);

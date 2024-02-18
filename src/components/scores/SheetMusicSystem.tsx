@@ -61,11 +61,14 @@ export default function SheetMusicSystem() {
   const containerRef = useRef(null);
   const renderContextRef = useRef<VF.RenderContext | null>(null);
   const [clickedStave, setClickedStave] = useState<number | null>(null);
-  const [sheetMusicData, setSheetMusicData] = useState<
-    RenderFunction | null
-  >(null);
-
+  const [sheetMusicData, setSheetMusicData] = useState<RenderFunction | null>(
+    null
+  );
+  // sheetMusicData: variable is never used
+  
   useEffect(() => {
+    console.log("useEffect triggered");
+
     const context = createRenderContext(DIV_ID.CONTAINER, DIV_ID.OUTPUT);
     renderContextRef.current = context;
 
@@ -75,23 +78,13 @@ export default function SheetMusicSystem() {
       [4, Duration.Quarter],
       NoteName.Bb
     );
-    setSheetMusicData(drawBars(context, vexFlowBars(bars)));
+
+    const drawnBars: RenderFunction = drawBars(context, vexFlowBars(bars));
+
+    setSheetMusicData(() => drawnBars);
 
     return cleanUp;
   }, [containerRef.current, state.history]);
-
-  /**
-   * Remove child elements of output and error divs.
-   */
-  function cleanUp() {
-    [DIV_ID.OUTPUT, DIV_ID.ERROR].forEach((id) => {
-      console.log("Resetting output div")
-      const div: HTMLElement | null = document.getElementById(id);
-      if (div) {
-        div.innerHTML = "";
-      }
-    });
-  }
 
   /**
    * Show or hide the BarControls for the bar
@@ -131,23 +124,34 @@ export default function SheetMusicSystem() {
   );
 }
 
+/**
+ * Remove child elements of output and error divs.
+ */
+function cleanUp() {
+  [DIV_ID.OUTPUT, DIV_ID.ERROR].forEach((id) => {
+    const div: HTMLElement | null = document.getElementById(id);
+    if (div) {
+      div.innerHTML = "";
+    }
+  });
+}
+
 // Todo: Rename
 function drawBars(
   context: VF.RenderContext,
   bars: VexFlowBar[]
 ): RenderFunction {
-  console.log(`drawBars()`);
-  function drawRow(row: [number[], VexFlowBar[]], i: number): RenderFunction[] {
-    console.log(`  drawRow(${i})`);
+  function drawRow(row: [number[], VexFlowBar[]], i: number): RenderFunction {
     let functions: RenderFunction[] = [];
 
     zip(...row).reduce((x, [width, bar], j) => {
       bar.stave.setX(x);
       bar.stave.setY(i * bar.stave.getHeight());
 
+      console.log("Bar", i, j);
+
       const render: RenderFunction = () => {
         const group = context.openGroup("stavegroup", `stavegroup-${i}-${j}`);
-        console.log(`    render(` + `stavegroup-${i}-${j}` + ")");
         group.appendChild(createClickableArea(bar.stave, j));
         group.addEventListener("click", (event: MouseEvent) => {
           console.log("Clicked bar", i + j);
@@ -164,9 +168,7 @@ function drawBars(
       return x + width;
     }, 0);
 
-    console.log("Functions:", functions.length)
-
-    return functions;
+    return () => functions.forEach((fn) => fn());
   }
 
   const widthRows = staveWidths(bars);
@@ -174,11 +176,17 @@ function drawBars(
     bars,
     widthRows.map((r) => r.length)
   );
-  const functions = zip(widthRows, barRows).map((row, i) => drawRow(row, i));
-  const render: RenderFunction = () =>
-    functions.forEach((row) => {
-      row.forEach((fn) => fn());
+  const functions = zip(widthRows, barRows).map((row, i) => {
+    return drawRow(row, i);
+  });
+  const render: RenderFunction = () => {
+    functions.forEach((row, i) => {
+      console.log("row", i)
+      row();
     });
+  };
+
+  console.log();
   return render;
 }
 
@@ -189,6 +197,7 @@ function System({
   context: VF.RenderContext;
   sheetMusicData: RenderFunction;
 }) {
+  console.log("system");
   return (
     <>
       <ReactWrapper render={sheetMusicData} />
