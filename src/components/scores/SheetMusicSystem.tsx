@@ -61,14 +61,9 @@ export default function SheetMusicSystem() {
   const containerRef = useRef(null);
   const renderContextRef = useRef<VF.RenderContext | null>(null);
   const [clickedStave, setClickedStave] = useState<number | null>(null);
-  const [sheetMusicData, setSheetMusicData] = useState<RenderFunction | null>(
-    null
-  );
-  // sheetMusicData: variable is never used
-  
-  useEffect(() => {
-    console.log("useEffect triggered");
+  const [renderStaves, setRenderStaves] = useState<RenderFunction | null>(null);
 
+  useEffect(() => {
     const context = createRenderContext(DIV_ID.CONTAINER, DIV_ID.OUTPUT);
     renderContextRef.current = context;
 
@@ -79,9 +74,7 @@ export default function SheetMusicSystem() {
       NoteName.Bb
     );
 
-    const drawnBars: RenderFunction = drawBars(context, vexFlowBars(bars));
-
-    setSheetMusicData(() => drawnBars);
+    setRenderStaves(() => createRenderFunction(context, vexFlowBars(bars)));
 
     return cleanUp;
   }, [containerRef.current, state.history]);
@@ -112,11 +105,8 @@ export default function SheetMusicSystem() {
       <div id={DIV_ID.ERROR}></div>
       <div id={DIV_ID.CONTAINER} ref={containerRef} className="h-[900px]">
         <div id={DIV_ID.OUTPUT}>
-          {renderContextRef.current && sheetMusicData && (
-            <System
-              context={renderContextRef.current}
-              sheetMusicData={sheetMusicData}
-            />
+          {renderContextRef.current && renderStaves && (
+            <System renderStaves={renderStaves} />
           )}
         </div>
       </div>
@@ -136,19 +126,25 @@ function cleanUp() {
   });
 }
 
-// Todo: Rename
-function drawBars(
+/**
+ * Create the function that renders sheet music.
+ */
+function createRenderFunction(
   context: VF.RenderContext,
   bars: VexFlowBar[]
 ): RenderFunction {
-  function drawRow(row: [number[], VexFlowBar[]], i: number): RenderFunction {
+  /**
+   * Create the function that renders a row of staves.
+   */
+  function createRowRenderFunction(
+    row: [number[], VexFlowBar[]],
+    i: number
+  ): RenderFunction {
     let functions: RenderFunction[] = [];
 
     zip(...row).reduce((x, [width, bar], j) => {
       bar.stave.setX(x);
       bar.stave.setY(i * bar.stave.getHeight());
-
-      console.log("Bar", i, j);
 
       const render: RenderFunction = () => {
         const group = context.openGroup("stavegroup", `stavegroup-${i}-${j}`);
@@ -176,31 +172,16 @@ function drawBars(
     bars,
     widthRows.map((r) => r.length)
   );
-  const functions = zip(widthRows, barRows).map((row, i) => {
-    return drawRow(row, i);
-  });
-  const render: RenderFunction = () => {
-    functions.forEach((row, i) => {
-      console.log("row", i)
-      row();
-    });
-  };
-
-  console.log();
-  return render;
+  return () =>
+    zip(widthRows, barRows)
+      .map((row, i) => createRowRenderFunction(row, i))
+      .forEach((renderRow) => renderRow());
 }
 
-function System({
-  context,
-  sheetMusicData,
-}: {
-  context: VF.RenderContext;
-  sheetMusicData: RenderFunction;
-}) {
-  console.log("system");
+function System({ renderStaves }: { renderStaves: RenderFunction }) {
   return (
     <>
-      <ReactWrapper render={sheetMusicData} />
+      <ReactWrapper render={renderStaves} />
     </>
   );
 }
